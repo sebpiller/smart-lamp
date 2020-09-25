@@ -1,0 +1,14 @@
+<settings>
+
+    <mirrors>
+
+        <mirror>
+            <id>nexus</id>
+            <name>Local Nexus Maven Central Proxy</name>
+            <url>http://spidybox.home:8091/repository/maven-public/</url>
+            <mirrorOf>*</mirrorOf>
+        </mirror>
+
+    </mirrors>
+
+</settings>

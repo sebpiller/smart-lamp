@@ -1,0 +1,17 @@
+###
+# Default config fallback. These values are used when they are not overridden in another file.
+###
+local-bt-adapter: hci0
+mac: C4:AC:05:42:73:A4
+
+### UUID for services endpoints - should never change for Lamp F, but you could try to connect to some other compatible
+##  hardware if needed. In such case, adapt the values here.
+custom-control-service:
+  uuid: 44092840-0567-11e6-b862-0002a5d5c51b
+  user-external-api-endpoint:
+    uuid: 44092842-0567-11e6-b862-0002a5d5c51b
+
+
+
+
+

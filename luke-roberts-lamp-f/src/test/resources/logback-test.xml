@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-4r [%t] %-5p %c - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>target/luke-roberts-lamp-f.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>target/ARCHIVE-luke-roberts-lamp-f.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{dd.MM.yyyy. HH:mm:ss} %level [%thread] %logger{20} - %msg%n</pattern>
+        </encoder>
+        <Encoding>utf-8</Encoding>
+    </appender>
+
+    <root level="WARN">
+        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+    </root>
+
+    <logger name="ch.sebpiller" level="DEBUG"/>
+    <logger name="javax.bluetooth" level="INFO"/>
+    <logger name="org.freedesktop.dbus" level="INFO"/>
+    <logger name="com.github.hypfvieh" level="INFO"/>
+</configuration>

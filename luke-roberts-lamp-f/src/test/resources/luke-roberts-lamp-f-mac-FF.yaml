@@ -1,0 +1,3 @@
+### A config file defining a mac address FF:FF... and and adapter hci27
+local-bt-adapter: hci27
+mac: FF:FF:FF:FF:FF:FF
