@@ -7,7 +7,7 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>smart-lamp</artifactId>
+    <artifactId>smart-lamp-api</artifactId>
 
     <dependencies>
         <dependency>

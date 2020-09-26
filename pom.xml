@@ -38,7 +38,7 @@
     </distributionManagement>
 
     <modules>
-        <module>smart-lamp</module>
+        <module>smart-lamp-api</module>
         <module>luke-roberts-lamp-f</module>
         <module>smart-lamp-sequencer</module>
         <module>bluetooth</module>
@@ -97,7 +97,7 @@
         <dependencies>
             <dependency>
                 <groupId>ch.sebpiller.iot</groupId>
-                <artifactId>smart-lamp</artifactId>
+                <artifactId>smart-lamp-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

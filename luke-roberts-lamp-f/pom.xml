@@ -76,7 +76,7 @@
         </dependency>
         <dependency>
             <groupId>ch.sebpiller.iot</groupId>
-            <artifactId>smart-lamp</artifactId>
+            <artifactId>smart-lamp-api</artifactId>
         </dependency>
     </dependencies>
 </project>
