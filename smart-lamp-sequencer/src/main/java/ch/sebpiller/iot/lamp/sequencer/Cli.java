@@ -3,6 +3,8 @@ package ch.sebpiller.iot.lamp.sequencer;
 import ch.sebpiller.iot.bluetooth.luke.roberts.LukeRoberts;
 import ch.sebpiller.iot.bluetooth.luke.roberts.lamp.f.LukeRobertsLampF;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
+import ch.sebpiller.sound.beatdetect.BpmSourceAudioListener;
+import ch.sebpiller.tictac.BpmSource;
 import ch.sebpiller.tictac.TicTac;
 import ch.sebpiller.tictac.TicTacBuilder;
 import org.apache.commons.cli.*;
@@ -32,16 +34,16 @@ public class Cli {
         CommandLineParser parser = new DefaultParser();
 
         Options options = new Options();
-        options.addOption(Option.builder().longOpt("mac-addr")
-                .desc("MAC address of the device")
-                .hasArg()
-                .argName("MAC")
-                .build());
         options.addOption(Option.builder().longOpt("adapter")
                 .desc("Bluetooth adapter to use")
                 .hasArg()
                 .argName("ADAPTER")
                 .type(String.class)
+                .build());
+        options.addOption(Option.builder().longOpt("mac")
+                .desc("MAC address of the device")
+                .hasArg()
+                .argName("MAC")
                 .build());
         options.addOption(Option.builder().longOpt("timeout")
                 .desc("How much time in seconds to run the sequence (default=0, unlimited)")
@@ -50,34 +52,55 @@ public class Cli {
                 .type(Long.class)
                 .build());
         options.addOption(Option.builder().longOpt("bpm")
-                .desc("Run the sequencer at the given rate (if not specified, connects to system line-in and try to detect the beat from the ambient music)")
+                .desc("Run the sequencer at the given rate. If not specified, connects to system line-in and try to detect the beat from the ambient music.")
                 .hasArg()
                 .argName("BPM")
+                .type(Long.class)
+                .build());
+        options.addOption(Option.builder().longOpt("script")
+                .desc("Load a scripted sequence from an external file")
+                .hasArg()
+                .argName("SCRIPT")
                 .type(Long.class)
                 .build());
 
         LukeRoberts.LampF.Config config = LukeRoberts.LampF.Config.getDefaultConfig();
         long timeout = 0;
+        int bpm = 0;
+
         try {
             CommandLine line = parser.parse(options, args);
 
             LukeRoberts.LampF.Config c = new LukeRoberts.LampF.Config();
             if (line.hasOption("adapter")) {
-                // print the value of block-size
                 c.setLocalBtAdapter(line.getOptionValue("adapter"));
             }
-            if (line.hasOption("mac-addr")) {
-                // print the value of block-size
-                c.setMac(line.getOptionValue("mac-addr"));
+            if (line.hasOption("mac")) {
+                c.setMac(line.getOptionValue("mac"));
             }
+            config = config.merge(c);
+
             if (line.hasOption("timeout")) {
                 timeout = Long.parseLong(line.getOptionValue("timeout"));
             }
-
-            config = config.merge(c);
+            if (line.hasOption("bpm")) {
+                bpm = Integer.parseInt(line.getOptionValue("bpm"));
+            }
+            if (line.hasOption("script")) {
+                // TODO implement scripted sequence
+                throw new RuntimeException("not implemented yet");
+            }
         } catch (ParseException exp) {
             System.err.println("Unexpected exception:" + exp.getMessage());
             System.exit(-1);
+        }
+
+        BpmSource source;
+        if (bpm > 0) {
+            int finalBpm = bpm;
+            source = () -> finalBpm;
+        } else {
+            source = BpmSourceAudioListener.getBpmFromLineIn();
         }
 
         LukeRobertsLampF lukeRobertsLampF = new LukeRobertsLampF(config);
@@ -89,8 +112,8 @@ public class Cli {
         final SmartLampFacade lamp = lukeRobertsLampF;
 
         TicTac ticTac = new TicTacBuilder()
-                .connectedToBpm(() -> 120)
-                .withListener((ticOrTac, bpm) -> playback.playNext(lamp))
+                .connectedToBpm(source)
+                .withListener((ticOrTac, _bpm) -> playback.playNext(lamp))
                 //.withListener((ticOrTac, bpm) -> LOG.info(ticOrTac ?"tic":"  tac"))
                 .build();
 
