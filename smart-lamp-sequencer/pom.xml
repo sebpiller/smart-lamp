@@ -62,5 +62,9 @@
             <groupId>ch.sebpiller</groupId>
             <artifactId>metronom</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+        </dependency>
     </dependencies>
 </project>
