@@ -119,7 +119,7 @@
             <dependency>
                 <groupId>ch.sebpiller</groupId>
                 <artifactId>metronom</artifactId>
-                <version>0.1.1-SNAPSHOT</version>
+                <version>0.1.1</version>
             </dependency>
 
             <dependency>
