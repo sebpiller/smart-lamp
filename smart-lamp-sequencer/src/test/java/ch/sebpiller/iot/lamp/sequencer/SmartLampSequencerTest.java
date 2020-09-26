@@ -75,4 +75,26 @@ public class SmartLampSequencerTest {
 
         ticTac.stop();
     }
+
+
+    @Test
+    public void testSequencerFromScript() throws InterruptedException {
+        final ScriptParser seq = ScriptParser.fromInputStream(getClass().getResourceAsStream("/embedded-scripts/boom.yaml"));
+
+        final SmartLampFacade lamp = new LoggingLamp();
+        seq.getInitialisationSequence().playNext(lamp);
+
+        SmartLampSequencer smartLampSequencer = seq.buildSequence();
+
+        TicTac ticTac = new TicTacBuilder()
+                .connectedToBpm(() -> 120)
+                .withListener((ticOrTac, bpm) -> smartLampSequencer.playNext(lamp))
+                .build();
+
+        Thread.sleep(20_000);
+
+        ticTac.stop();
+    }
+
+
 }

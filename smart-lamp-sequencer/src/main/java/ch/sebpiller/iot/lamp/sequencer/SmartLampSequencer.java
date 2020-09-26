@@ -20,11 +20,11 @@ public class SmartLampSequencer implements SmartLampFacade {
     private int playIndex = 0;
     private SmartLampSequencer parent;
 
-    private SmartLampSequencer() {
+    protected SmartLampSequencer() {
         this(null);
     }
 
-    private SmartLampSequencer(SmartLampSequencer parent) {
+    protected SmartLampSequencer(SmartLampSequencer parent) {
         this.parent = parent;
     }
 
@@ -130,21 +130,7 @@ public class SmartLampSequencer implements SmartLampFacade {
             return this;
         }
 
-        final SmartLampSequencer inner = new SmartLampSequencer(this) {
-            @Override
-            public SmartLampSequencer playNext(SmartLampFacade realFacade) {
-                synchronized (callables) {
-                    LOG.debug("invoking {} callables in one step", callables.size());
-
-                    for (InvokeOnSmartLamp lambda : callables) {
-                        lambda.invoke(realFacade);
-                    }
-                }
-
-                return this;
-            }
-        };
-
+        final SmartLampSequencer inner = new PlayAllAtOneTimeSequencer();
         add(facade -> inner.playNext(facade));
         return inner;
     }
