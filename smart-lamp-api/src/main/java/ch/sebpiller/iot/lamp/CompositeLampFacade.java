@@ -10,6 +10,7 @@ import java.util.concurrent.Future;
 /**
  * Control several lamps at the same time, and asynchronously.
  */
+// FIXME fails at the moment
 public final class CompositeLampFacade implements SmartLampFacade {
     public final CompletableFuture<CompositeLampFacade> futureMe = new CompletableFuture<CompositeLampFacade>() {
         @Override

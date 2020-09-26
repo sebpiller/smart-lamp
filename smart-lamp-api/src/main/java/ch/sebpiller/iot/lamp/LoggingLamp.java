@@ -11,7 +11,7 @@ import java.util.concurrent.Future;
  */
 public class LoggingLamp implements SmartLampFacade {
     private static final Logger LOG = LoggerFactory.getLogger(LoggingLamp.class);
-    private final CompletableFuture<LoggingLamp> now = new CompletableFuture<LoggingLamp>() {
+    private final Future<LoggingLamp> now = new CompletableFuture<LoggingLamp>() {
         @Override
         public LoggingLamp get() {
             return LoggingLamp.this;
