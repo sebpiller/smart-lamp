@@ -1,6 +1,4 @@
-package ch.sebpiller.iot.bluetooth.luke.roberts.lamp.f;
-
-import ch.sebpiller.iot.lamp.SmartLampFacade;
+package ch.sebpiller.iot.lamp;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -8,19 +6,20 @@ import java.util.Optional;
 import java.util.Scanner;
 
 /**
- * A small command line interface to command a Lamp F.
+ * A small command line interface to command a lamp.
  */
-class LukeRobertsLampFCli {
-    private final LukeRobertsLampF facade;
+public class SmartLampCli {
+    private final SmartLampFacade facade;
     private Scanner scanner;
 
     private int blinkOnTime = 100, blinkOffTime = 250, blinkCount = 20;
     private byte fadeBrightFrom = 0, fadeBrightTo = 100;
     private int fadeTempFrom = 2700, fadeTempTo = 4000;
+
     private SmartLampFacade.FadeStyle fadeBrightStyle = SmartLampFacade.FadeStyle.NORMAL,
             fadeTempStyle = SmartLampFacade.FadeStyle.NORMAL;
 
-    public LukeRobertsLampFCli(LukeRobertsLampF facade) {
+    public SmartLampCli(SmartLampFacade facade) {
         this.facade = Objects.requireNonNull(facade);
     }
 
@@ -88,9 +87,11 @@ class LukeRobertsLampFCli {
 
                 break;
             case "2":
-                System.out.print("Scene ID (0=power off): ");
-                line = scanner.nextLine();
-                facade.selectScene(Byte.parseByte(line));
+                System.err.println("not implemented yet");
+                scanner.nextLine();
+//                System.out.print("Scene ID (0=power off): ");
+//                line = scanner.nextLine();
+//                facade.selectScene(Byte.parseByte(line));
                 break;
             case "3":
                 System.out.print("Percentage: ");
@@ -162,20 +163,22 @@ class LukeRobertsLampFCli {
                 break;
 
             case "7":
-                System.out.print("Ping version (1/2) : ");
-                line = scanner.nextLine();
-                switch (line) {
-                    case "1":
-                        facade.pingV1();
-                        System.out.println("Ping v1 sent");
-                        scanner.nextLine();
-                        break;
-                    case "2":
-                        facade.pingV2();
-                        System.out.println("Ping v2 sent");
-                        scanner.nextLine();
-                        break;
-                }
+                System.err.println("not implemented yet");
+                scanner.nextLine();
+//                System.out.print("Ping version (1/2) : ");
+//                line = scanner.nextLine();
+//                switch (line) {
+//                    case "1":
+//                        facade.pingV1();
+//                        System.out.println("Ping v1 sent");
+//                        scanner.nextLine();
+//                        break;
+//                    case "2":
+//                        facade.pingV2();
+//                        System.out.println("Ping v2 sent");
+//                        scanner.nextLine();
+//                        break;
+//                }
 
                 break;
             case "9":

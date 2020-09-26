@@ -175,6 +175,7 @@ public final class LukeRoberts {
             public static Config loadFromStream(InputStream inputStream) {
                 try (InputStream is = inputStream) {
                     Constructor c = new Constructor(LukeRoberts.LampF.Config.class);
+                    // convert dash-separator to camel-case
                     c.setPropertyUtils(new PropertyUtils() {
                         @Override
                         public Property getProperty(Class<? extends Object> type, String name) {

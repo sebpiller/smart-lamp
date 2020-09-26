@@ -71,11 +71,11 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.hypfvieh</groupId>
-            <artifactId>bluez-dbus</artifactId>
+            <groupId>ch.sebpiller.iot</groupId>
+            <artifactId>bluetooth</artifactId>
         </dependency>
         <dependency>
-            <groupId>ch.sebpiller</groupId>
+            <groupId>ch.sebpiller.iot</groupId>
             <artifactId>smart-lamp</artifactId>
         </dependency>
     </dependencies>

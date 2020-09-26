@@ -1,6 +1,8 @@
 package ch.sebpiller.iot.bluetooth.luke.roberts.lamp.f;
 
 import ch.sebpiller.iot.bluetooth.luke.roberts.LukeRoberts;
+
+import ch.sebpiller.iot.lamp.SmartLampCli;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Random;
 import java.util.concurrent.*;
 
+@Deprecated
 public class Cli {
     private static final String SYSPROP_CONFIG = "config";
     private static final Logger LOG = LoggerFactory.getLogger(Cli.class);
@@ -34,7 +37,7 @@ public class Cli {
                 LOG.error("oups ! " + e.getMessage(), e);
             }
         } else {
-            new LukeRobertsLampFCli(smartLamp).run();
+            new SmartLampCli(smartLamp).run();
         }
     }
 
@@ -85,10 +88,5 @@ public class Cli {
                     .sleep(500)
             ;
         }
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
     }
 }
