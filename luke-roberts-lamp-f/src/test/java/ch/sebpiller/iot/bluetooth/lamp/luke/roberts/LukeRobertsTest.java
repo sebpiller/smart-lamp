@@ -23,7 +23,7 @@ public class LukeRobertsTest extends TestCase {
     }
 
     @Test
-    public void testConfigCanBeLoaded() throws Exception {
+    public void testConfigCanBeLoaded() {
         LukeRoberts.LampF.Config defaultConfig = LukeRoberts.LampF.Config.getDefaultConfig();
 
         assertThat(defaultConfig).isNotNull();

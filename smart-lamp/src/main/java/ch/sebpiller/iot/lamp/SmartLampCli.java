@@ -16,8 +16,10 @@ public class SmartLampCli {
     private byte fadeBrightFrom = 0, fadeBrightTo = 100;
     private int fadeTempFrom = 2700, fadeTempTo = 4000;
 
-    private SmartLampFacade.FadeStyle fadeBrightStyle = SmartLampFacade.FadeStyle.NORMAL,
-            fadeTempStyle = SmartLampFacade.FadeStyle.NORMAL;
+    private SmartLampFacade.FadeStyle //
+            fadeBrightStyle = SmartLampFacade.FadeStyle.NORMAL,//
+            fadeTempStyle = SmartLampFacade.FadeStyle.NORMAL //
+                    ;
 
     public SmartLampCli(SmartLampFacade facade) {
         this.facade = Objects.requireNonNull(facade);
@@ -47,8 +49,8 @@ public class SmartLampCli {
     // return true when cli is done
     private boolean showMenu() {
         cls();
-        System.out.println("Luke Roberts' Lamp F cli");
-        System.out.println("========================");
+        System.out.println("Smart Lamp - cli");
+        System.out.println("================");
         System.out.println();
         System.out.println("1. Change power status");
         System.out.println("2. Change scene");
