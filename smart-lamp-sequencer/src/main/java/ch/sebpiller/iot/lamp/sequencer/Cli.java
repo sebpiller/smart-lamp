@@ -49,6 +49,12 @@ public class Cli {
                 .argName("TIMEOUT")
                 .type(Long.class)
                 .build());
+        options.addOption(Option.builder().longOpt("bpm")
+                .desc("Run the sequencer at the given rate (if not specified, connects to system line-in and try to detect the beat from the ambient music)")
+                .hasArg()
+                .argName("BPM")
+                .type(Long.class)
+                .build());
 
         LukeRoberts.LampF.Config config = LukeRoberts.LampF.Config.getDefaultConfig();
         long timeout = 0;
