@@ -5,7 +5,7 @@
     <parent>
         <groupId>ch.sebpiller.iot</groupId>
         <artifactId>smart-lamp-parent</artifactId>
-        <version>0.1.0</version>
+        <version>0.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>smart-lamp-sequencer</artifactId>
     <packaging>jar</packaging>
