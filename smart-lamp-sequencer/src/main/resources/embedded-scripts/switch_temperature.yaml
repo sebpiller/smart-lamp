@@ -1,0 +1,11 @@
+####
+# boom.yaml
+#
+# This script changes the temperature at each beat
+####
+init: temperature=2700;sleep=2000;
+steps:
+  - temperature=4000;
+  - temperature=3500;
+  - temperature=3200;
+  - temperature=2700;

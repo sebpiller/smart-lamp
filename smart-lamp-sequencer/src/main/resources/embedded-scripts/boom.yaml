@@ -1,0 +1,11 @@
+####
+# boom.yaml
+#
+# This script only blink the lamp one time at each beat, and 2 times at each 4th beat.
+####
+init: brightness=100;sleep=2000;
+steps:
+  - brightness=100;sleep=50;brightness=0;
+  - brightness=100;sleep=50;brightness=0;
+  - brightness=100;sleep=50;brightness=0;
+  - brightness=100;sleep=50;brightness=0;sleep=50;brightness=100;sleep=50;brightness=0;

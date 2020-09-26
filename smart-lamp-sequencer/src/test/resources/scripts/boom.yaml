@@ -1,3 +1,0 @@
-# This script only blink the lamp one time at each beat.
-steps:
-  - brightness=100;sleep=50;brightness=0;
