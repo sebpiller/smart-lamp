@@ -82,7 +82,7 @@ public class SmartLampSequencerTest {
         final ScriptParser seq = ScriptParser.fromInputStream(getClass().getResourceAsStream("/embedded-scripts/boom.yaml"));
 
         final SmartLampFacade lamp = new LoggingLamp();
-        seq.getInitialisationSequence().playNext(lamp);
+        seq.getBeforeSequence().playNext(lamp);
 
         SmartLampSequencer smartLampSequencer = seq.buildSequence();
 

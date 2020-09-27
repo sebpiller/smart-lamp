@@ -1,0 +1,9 @@
+####
+# this script is invalid and should raise errors when parsing
+####
+sequences:
+  bla:
+    - on;brightness=100;
+steps:
+  - seq=i_dont_exist
+

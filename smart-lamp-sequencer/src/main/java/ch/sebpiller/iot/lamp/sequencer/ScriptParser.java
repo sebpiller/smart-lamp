@@ -1,7 +1,8 @@
 package ch.sebpiller.iot.lamp.sequencer;
 
-import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -22,16 +23,16 @@ public class ScriptParser {
     }
 
     public static class Script {
-        private String init, finalizer;
+        private String before, after;
         private String[] steps;
         private Map<String, String[]> sequences = new HashMap<>();
 
-        public String getInit() {
-            return init;
+        public String getBefore() {
+            return before;
         }
 
-        public void setInit(String init) {
-            this.init = init;
+        public void setBefore(String before) {
+            this.before = before;
         }
 
         public String[] getSteps() {
@@ -50,13 +51,23 @@ public class ScriptParser {
             this.sequences = sequences;
         }
 
-        public String getFinalizer() {
-            return finalizer;
+        public String getAfter() {
+            return after;
         }
 
-        public void setFinalizer(String finalizer) {
-            this.finalizer = finalizer;
+        public void setAfter(String after) {
+            this.after = after;
         }
+    }
+
+
+    public static ScriptParser embeddedScript(String scriptName) {
+        InputStream is = ScriptParser.class.getResourceAsStream("/embedded-scripts/" + scriptName + ".yaml");
+        if (is == null) {
+            throw new IllegalArgumentException(scriptName + " is not an existing script");
+        }
+
+        return fromInputStream(is);
     }
 
     public static ScriptParser fromFile(String filename) {
@@ -69,21 +80,25 @@ public class ScriptParser {
 
     public static ScriptParser fromInputStream(InputStream is) {
         Yaml yaml = new Yaml();
-        Script script = yaml.loadAs(is, Script.class);
-        return new ScriptParser(script);
+
+        try {
+            return new ScriptParser(yaml.loadAs(is, Script.class));
+        } catch (YAMLException ye) {
+            throw new IllegalArgumentException("the document given is invalid: "+ye, ye);
+        }
     }
 
-    public SmartLampSequencer getInitialisationSequence() {
-        SmartLampSequencer record = parseStep(new PlayAllAtOneTimeSequencer(SmartLampSequencer.record()), script.getInit());
+    public SmartLampSequencer getBeforeSequence() {
+        SmartLampSequencer record = parseStep(new PlayAllAtOneTimeSequencer(SmartLampSequencer.record()), script.getBefore());
         return record;
     }
 
-    public SmartLampSequencer getFinalizerSequence() {
-        SmartLampSequencer record = parseStep(new PlayAllAtOneTimeSequencer(SmartLampSequencer.record()), script.getFinalizer());
+    public SmartLampSequencer getAfterSequence() {
+        SmartLampSequencer record = parseStep(new PlayAllAtOneTimeSequencer(SmartLampSequencer.record()), script.getAfter());
         return record;
     }
 
-    public Map<String, SmartLampSequencer> getSequence() {
+    public Map<String, SmartLampSequencer> getSequences() {
         Map<String, SmartLampSequencer> sequences = new HashMap<>();
 
         for (Map.Entry<String, String[]> current : script.getSequences().entrySet()) {
@@ -99,7 +114,7 @@ public class ScriptParser {
     }
 
     public SmartLampSequencer getSequence(String name) {
-        return getSequence().get(name);
+        return getSequences().get(name);
     }
 
     public SmartLampSequencer buildSequence() {
@@ -113,6 +128,10 @@ public class ScriptParser {
     }
 
     private SmartLampSequencer parseStep(SmartLampSequencer record, String step) {
+        if (StringUtils.isBlank(step)) {
+            return record;
+        }
+
         StringTokenizer tokenizer = new StringTokenizer(step, ";");
         String token;
 
@@ -147,11 +166,13 @@ public class ScriptParser {
                     break;
                 case "seq":
                     SmartLampSequencer sequence = getSequence(value);
-                    Validate.notNull(sequence, "the sequence '" + value + "' is not defined in the sequences section");
+                    if (sequence == null) {
+                        throw new IllegalArgumentException("the sequence '" + value + "' is not defined in the sequences section");
+                    }
                     record = record.then(sequence);
                     break;
                 default:
-                    throw new RuntimeException("script parse error: could not understand " + key);
+                    throw new IllegalArgumentException("script parse error: could not understand " + key);
             }
 
             System.out.println("set " + key + " to " + value);

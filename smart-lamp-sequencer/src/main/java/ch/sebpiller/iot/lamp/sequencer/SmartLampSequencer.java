@@ -193,9 +193,9 @@ public class SmartLampSequencer implements SmartLampFacade {
     }
 
     /**
-     * Append another sequence to the one actually in creation. The content is copied, and no reference to the
-     * sequence is kept. Thus, later modifications of the sequence given in parameter will not affect
-     * the current sequence.
+     * Append another sequence to the one actually in creation.
+     *
+     * @param next Steps to append to the current content. Later modifications of this object will not be reflected.
      */
     public SmartLampSequencer then(SmartLampSequencer next) {
         callables.addAll(next.callables);

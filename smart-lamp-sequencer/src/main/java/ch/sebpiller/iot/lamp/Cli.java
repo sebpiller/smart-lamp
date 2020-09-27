@@ -1,8 +1,10 @@
-package ch.sebpiller.iot.lamp.sequencer;
+package ch.sebpiller.iot.lamp;
 
 import ch.sebpiller.iot.bluetooth.luke.roberts.LukeRoberts;
 import ch.sebpiller.iot.bluetooth.luke.roberts.lamp.f.LukeRobertsLampF;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
+import ch.sebpiller.iot.lamp.sequencer.ScriptParser;
+import ch.sebpiller.iot.lamp.sequencer.SmartLampSequencer;
 import ch.sebpiller.sound.beatdetect.BpmSourceAudioListener;
 import ch.sebpiller.tictac.BpmSource;
 import ch.sebpiller.tictac.TicTac;

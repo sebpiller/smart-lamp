@@ -3,7 +3,7 @@
 #
 # This script changes the temperature at each beat
 ####
-init: power=on;brightness=100;temperature=2700;sleep=2000;
+before: power=on;brightness=100;temperature=2700;sleep=2000;
 steps:
   - temperature=4000;
   - temperature=3500;

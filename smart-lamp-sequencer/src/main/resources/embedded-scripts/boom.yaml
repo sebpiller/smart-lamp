@@ -17,7 +17,7 @@ sequences:
 
 
 ### initialization action
-init: seq=init
+before: seq=init
 
 ### steps: define the main loop that will repeat as long as necessary
 steps:
@@ -27,5 +27,5 @@ steps:
   - seq=double-flash
 
 ### after action
-finalizer: seq=stop
+after: seq=stop
 

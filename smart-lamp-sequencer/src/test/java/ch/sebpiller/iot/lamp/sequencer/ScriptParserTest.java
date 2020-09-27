@@ -7,34 +7,28 @@ public class ScriptParserTest {
     public void testParseBoomFile() {
         ScriptParser scriptParser = ScriptParser
                 .fromInputStream(getClass().getResourceAsStream("/embedded-scripts/boom.yaml"));
-        SmartLampSequencer init = scriptParser.getInitialisationSequence();
-        SmartLampSequencer sequence = scriptParser.buildSequence();
+        scriptParser.buildSequence();
     }
 
     @Test
     public void testParseSwitchTemperatureFile() {
         ScriptParser scriptParser = ScriptParser
                 .fromInputStream(getClass().getResourceAsStream("/embedded-scripts/switch_temperature.yaml"));
-
-        SmartLampSequencer init = scriptParser.getInitialisationSequence();
-        SmartLampSequencer sequence = scriptParser.buildSequence();
+        scriptParser.buildSequence();
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testParseBadlyFormattedFile() {
         ScriptParser scriptParser = ScriptParser
                 .fromInputStream(getClass().getResourceAsStream("/scripts/badly_formatted.yaml"));
-
-        SmartLampSequencer init = scriptParser.getInitialisationSequence();
-        SmartLampSequencer sequence = scriptParser.buildSequence();
+        scriptParser.buildSequence();
     }
-    @Test(expected = Exception.class)
+
+    @Test(expected = IllegalArgumentException.class)
     public void testParseSequenceNotDefined() {
         ScriptParser scriptParser = ScriptParser
                 .fromInputStream(getClass().getResourceAsStream("/scripts/sequence_not_defined.yaml"));
-
-        SmartLampSequencer init = scriptParser.getInitialisationSequence();
-        SmartLampSequencer sequence = scriptParser.buildSequence();
+        scriptParser.buildSequence();
     }
 
 }

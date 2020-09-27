@@ -1,6 +1,3 @@
 init: power=on;brightness=100;sleep=2000;
 steps:
   - brigh_tness=100;sleep=50;brightness=0;
-  - brigh_tness=100;sleep=50;brightness=0;
-  - br_ightness=100;sleep=50;brightness=0;
-  - bri_ghtness=100;sleep=50;brightness=0;sleep=50;brightness=100;sleep=50;brightness=0;
