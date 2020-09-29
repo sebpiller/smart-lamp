@@ -25,7 +25,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ch.sebpiller.iot.lamp.sequencer.Cli</mainClass>
+                            <mainClass>ch.sebpiller.iot.lamp.Cli</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

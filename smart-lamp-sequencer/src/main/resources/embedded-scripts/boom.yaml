@@ -24,6 +24,10 @@ steps:
   - seq=flash
   - seq=flash
   - seq=flash
+  - seq=flash
+  - seq=flash
+  - seq=flash
+  - seq=flash
   - seq=double-flash
 
 ### after action
