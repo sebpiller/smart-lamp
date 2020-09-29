@@ -1,0 +1,35 @@
+####
+# bim.yaml
+#
+# This script only blink the lamp one time at each beat to 20%, and one time at 100% at each 8th beat.
+####
+
+### define sequences to be used in the main loop
+sequences:
+  before:
+    - on;brightness=0;
+  after:
+    - off;
+  flash:
+    - brightness=20;brightness=0;
+  big-flash:
+    - brightness=100;brightness=0;
+
+
+### initialization action
+before: seq=before
+
+### loop: define the main actions that will repeat as long as necessary
+loop:
+  - seq=flash
+  - seq=flash
+  - seq=flash
+  - seq=flash
+  - seq=flash
+  - seq=flash
+  - seq=flash
+  - seq=big-flash
+
+### after action
+after: seq=after
+

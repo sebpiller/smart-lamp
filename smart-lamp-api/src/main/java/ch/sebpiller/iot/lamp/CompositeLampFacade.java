@@ -70,4 +70,10 @@ public final class CompositeLampFacade implements SmartLampFacade {
         composites.parallelStream().forEach(smartLampFacade -> smartLampFacade.fadeTemperatureTo(kelvin, fadeStyle));
         return futureMe;
     }
+
+    @Override
+    public CompositeLampFacade setScene(byte scene) throws UnsupportedOperationException {
+        composites.parallelStream().forEach(smartLampFacade -> smartLampFacade.setScene(scene));
+        return this;
+    }
 }

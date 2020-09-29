@@ -194,6 +194,9 @@ public class SmartLampScript {
                 case "sleep":
                     record = record.sleep(Integer.parseInt(value));
                     break;
+                case "scene":
+                    record = record.setScene(Byte.parseByte(value));
+                    break;
                 case "seq":
                     SmartLampSequence sequence = getSequence(value);
                     if (sequence == null) {
@@ -204,8 +207,6 @@ public class SmartLampScript {
                 default:
                     throw new IllegalArgumentException("script parse error: could not understand " + key);
             }
-
-            System.out.println("set " + key + " to " + value);
         }
 
         record = record.end();

@@ -120,6 +120,12 @@ public class SmartLampSequence implements SmartLampFacade {
         return present();
     }
 
+    @Override
+    public SmartLampSequence setScene(byte scene) throws UnsupportedOperationException {
+        add(facade -> facade.setScene(scene));
+        return this;
+    }
+
     /**
      * Invoke start to begin the recording of several actions to play sequentially during the same frame (beat).
      */

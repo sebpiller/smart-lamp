@@ -155,8 +155,10 @@ public class LukeRobertsLampF extends AbstractLampBase {
         sendCommandToExternalApi(LukeRoberts.LampF.Command.SELECT_SCENE, sceneId);
     }
 
-    public void setScene(byte sceneId) {
+    @Override
+    public LukeRobertsLampF setScene(byte sceneId) {
         selectScene(sceneId);
+        return this;
     }
 
 
@@ -176,7 +178,7 @@ public class LukeRobertsLampF extends AbstractLampBase {
     public SmartLampFacade setTemperature(int kelvin) {
         // 2700K..4000K no exception on invalid value here
         int k = Math.max(2700, Math.min(4000, kelvin));
-        sendCommandToExternalApi(LukeRoberts.LampF.Command.COLOR_TEMP, (byte) (k >> 8), (byte) (k >> 0));
+        sendCommandToExternalApi(LukeRoberts.LampF.Command.COLOR_TEMP, (byte) (k >> 8), (byte) (k));
         return this;
     }
 

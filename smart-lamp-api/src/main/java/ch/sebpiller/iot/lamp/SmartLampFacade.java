@@ -73,6 +73,13 @@ public interface SmartLampFacade {
     Future<? extends SmartLampFacade> fadeTemperatureTo(int kelvin, FadeStyle fadeStyle);
 
     /**
+     * For lamp supporting it, modify the scene actually in use.
+     *
+     * @throws UnsupportedOperationException in case this lamp does not support the concept of scene.
+     */
+    SmartLampFacade setScene(byte scene) throws UnsupportedOperationException;
+
+    /**
      * Describes the different available styles to fade a value.
      */
     enum FadeStyle {

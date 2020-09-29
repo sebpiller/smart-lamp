@@ -5,5 +5,5 @@
 #  consumer of an event linked (eg. a webcam has detected motion in a part of the house that is under surveillance).
 ####
 
-before: sleep=200;brightness=100;brightness=0;brightness=100;brightness=0;brightness=100;brightness=0;brightness=100;brightness=0;brightness=100;brightness=0;
-after: brightness=0;
+before: on;brightness=0;brightness=100;brightness=0;brightness=100;brightness=0;brightness=100;brightness=0;brightness=100;brightness=0;brightness=100;
+after: off;
