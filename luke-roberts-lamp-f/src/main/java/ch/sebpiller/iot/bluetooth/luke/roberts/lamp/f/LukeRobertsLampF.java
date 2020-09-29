@@ -17,10 +17,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static ch.sebpiller.iot.bluetooth.BluetoothHelper.discoverDeviceManager;
 import static ch.sebpiller.iot.bluetooth.BluetoothHelper.findDeviceOnAdapter;
@@ -168,14 +165,14 @@ public class LukeRobertsLampF extends AbstractLampBase {
      * @return
      */
     @Override
-    public SmartLampFacade setBrightness(byte percent) {
+    public LukeRobertsLampF setBrightness(byte percent) {
         Validate.inclusiveBetween(0, 100, percent, "percentage must be in range 0..100");
         sendCommandToExternalApi(LukeRoberts.LampF.Command.BRIGHTNESS, percent);
         return this;
     }
 
     @Override
-    public SmartLampFacade setTemperature(int kelvin) {
+    public LukeRobertsLampF setTemperature(int kelvin) {
         // 2700K..4000K no exception on invalid value here
         int k = Math.max(2700, Math.min(4000, kelvin));
         sendCommandToExternalApi(LukeRoberts.LampF.Command.COLOR_TEMP, (byte) (k >> 8), (byte) (k));
@@ -183,7 +180,7 @@ public class LukeRobertsLampF extends AbstractLampBase {
     }
 
     @Override
-    public SmartLampFacade power(boolean on) {
+    public LukeRobertsLampF power(boolean on) {
         selectScene(on ?
                 LukeRoberts.LampF.LukeRobertsScene.DEFAULT_SCENE :
                 LukeRoberts.LampF.LukeRobertsScene.SHUTDOWN_SCENE
@@ -212,12 +209,56 @@ public class LukeRobertsLampF extends AbstractLampBase {
 
             boolean b = device.disconnect();
 
-            if (LOG.isDebugEnabled() && !b) {
+            if (!b && LOG.isDebugEnabled()) {
                 LOG.debug("was unable to disconnect");
             }
         } finally {
             super.close();
         }
+    }
+
+    public void immediateLight(int duration, int sat, int hue, int temp, int mtemp, int mbrightness) {
+        System.out.println(String.format("setting to duration %s, sat %s, hue %s, temp %s, mtemp %s, mbright %s",
+                duration, sat, hue, temp, mtemp, mbrightness
+        ));
+        /* structure:
+         * XX Flags that specify what content is present
+         *
+         * DDDD Duration in ms, 0 for infinite
+         * SS Saturation 0 .. 255
+         * HHHH Hue 0 .. 65535
+         * HHHH Kelvin 2700 .. 4000 for white light when SS = 0
+         *
+         * KKKK Kelvin 2700 .. 4000
+         * BB Brightness 0 .. 255
+         */
+        List<Byte> bytes = new ArrayList<>(12);
+        byte xx = 0x00;
+
+        bytes.add((byte) (duration >> 8));
+        bytes.add((byte) (duration));
+
+        ////////
+        if (true) {
+            xx |= 0x01;
+            int i = sat == 0 ? hue : temp;
+            bytes.add((byte) sat);
+            bytes.add((byte) (i >> 8));
+            bytes.add((byte) (i));
+            bytes.add((byte) (mbrightness));
+        }
+
+        ////////
+        if (true) {
+            xx |= 0x02;
+            bytes.add((byte) (mtemp >> 8));
+            bytes.add((byte) (mtemp));
+            bytes.add((byte) (mbrightness));
+        }
+
+        bytes.add(0, xx);
+
+        sendCommandToExternalApi(LukeRoberts.LampF.Command.IMMEDIATE_LIGHT, bytes.toArray(new Byte[bytes.size()]));
     }
 }
 

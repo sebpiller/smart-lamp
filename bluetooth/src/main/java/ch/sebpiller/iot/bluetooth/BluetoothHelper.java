@@ -23,7 +23,7 @@ public class BluetoothHelper {
         try {
             man = DeviceManager.getInstance();
         } catch (IllegalStateException e) {
-            LOG.trace("caught - {}", e.toString(), e);
+            LOG.trace("caught: " + e.toString(), e);
 
             try {
                 man = DeviceManager.createInstance(false);
@@ -83,7 +83,7 @@ public class BluetoothHelper {
     public static BluetoothDevice findDeviceOnAdapter(DeviceManager manager, String localBtAdapter, String remoteDeviceMac) throws DBusException {
         LOG.info("searching for device {} on {}", localBtAdapter, remoteDeviceMac);
         if (LOG.isDebugEnabled()) {
-            LOG.debug("dbus connection status: {}", manager.getDbusConnection().isConnected() ? "connected" : "disconnected");
+            LOG.debug("  > dbus connection status: {}", manager.getDbusConnection().isConnected() ? "connected" : "disconnected");
         }
         manager.registerPropertyHandler(new ScanPropertiesChangedHandler(manager, localBtAdapter));
 
@@ -99,7 +99,7 @@ public class BluetoothHelper {
         return manager.getDevices(true).stream()
                 .filter(e -> Objects.equals(e.getAddress(), remoteDeviceMac))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("lamp f at " + remoteDeviceMac + " is not a registered device. Please use 'bluetoothctl' in bash to trust this device."));
+                .orElseThrow(() -> new IllegalStateException("device " + remoteDeviceMac + " is not registered. Please use 'bluetoothctl' in bash to trust/connect this device."));
 
     }
 }

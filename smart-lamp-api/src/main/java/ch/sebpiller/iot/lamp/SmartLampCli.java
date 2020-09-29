@@ -1,9 +1,7 @@
 package ch.sebpiller.iot.lamp;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Scanner;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 /**
  * A small command line interface to command a lamp.
@@ -60,6 +58,7 @@ public class SmartLampCli {
         System.out.println("6. Fade temperature (main bulb only)");
         System.out.println("7. Ping");
         System.out.println();
+        System.out.println("8. Immediate light");
         System.out.println("9. Blink this scene (" + blinkCount + " times, on " + blinkOnTime + "ms, off " + blinkOffTime + "ms)");
         System.out.println("b. Change blink params");
         System.out.println();
@@ -89,11 +88,9 @@ public class SmartLampCli {
 
                 break;
             case "2":
-                System.err.println("not implemented yet");
-                scanner.nextLine();
-//                System.out.print("Scene ID (0=power off): ");
-//                line = scanner.nextLine();
-//                facade.selectScene(Byte.parseByte(line));
+                System.out.print("Scene ID (0=power off): ");
+                line = scanner.nextLine();
+                facade.setScene(Byte.parseByte(line));
                 break;
             case "3":
                 System.out.print("Percentage: ");
@@ -163,7 +160,6 @@ public class SmartLampCli {
                 }
 
                 break;
-
             case "7":
                 System.err.println("not implemented yet");
                 scanner.nextLine();
@@ -183,47 +179,37 @@ public class SmartLampCli {
 //                }
 
                 break;
-            case "9":
-                facade.setBrightness((byte) 0);
-
-                for (int i = 0; i < blinkCount; i++) {
-                    facade
-                            .setBrightness((byte) 100).sleep(blinkOnTime)
-                            .setBrightness((byte) 0).sleep(blinkOffTime)
-                    ;
+            case "8":
+                // FIXME crappy code
+                if (facade.getClass().getName().contains("LukeRobertsLampF")) {
+                    try {
+                        Random random = new Random();
+                        facade.getClass().getMethod("immediateLight",
+                                int.class, int.class, int.class, int.class, int.class, int.class
+                        ).invoke(facade,
+                                0,
+                                random.nextInt(255),
+                                random.nextInt(65500),
+                                random.nextInt(1300) + 2700,
+                                random.nextInt(1300) + 2700,
+                                0//random.nextInt(255)
+                        );
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    }
                 }
-
-                System.out.println("Blink done");
                 scanner.nextLine();
-                break;
-            case "b":
-                System.out.print("modify 1) blink count, 2) blink on time, 3) blink off time: ");
-                line = scanner.nextLine();
-
-                switch (line) {
-                    case "1":
-                        System.out.print("blink count: ");
-                        line = scanner.nextLine();
-                        blinkCount = Integer.parseInt(line);
-                        break;
-                    case "2":
-                        System.out.print("blink on (ms): ");
-                        line = scanner.nextLine();
-                        blinkOnTime = Integer.parseInt(line);
-                        break;
-                    case "3":
-                        System.out.print("blink off (ms): ");
-                        line = scanner.nextLine();
-                        blinkOffTime = Integer.parseInt(line);
-                        break;
-                }
-
                 break;
             case "q":
                 return false;
             default:
                 System.out.println();
                 System.out.println("invalid option: " + line);
+                scanner.nextLine();
         }
 
         return true;

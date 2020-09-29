@@ -128,10 +128,7 @@ public final class LukeRoberts {
         public static final class Config {
             private static final String LUKE_ROBERTS_DEFAULTS = "/config/luke-roberts-defaults.yaml";
             private static final Logger LOG = LoggerFactory.getLogger(Config.class);
-            /**
-             * The config loaded from the jar. Contains default values for UUIDs and bt adapter. As well as my own lamp MAC :).
-             */
-            private static Config def;
+
             private String mac, localBtAdapter;
             private CustomControlService customControlService;
 
@@ -141,16 +138,6 @@ public final class LukeRoberts {
                 } catch (IOException e) {
                     throw new IllegalStateException("can not load configuration file from jar file: " + e, e);
                 }
-            }
-
-            /**
-             * Merge an external file located in a path given in a system property (`java -Dxxx`) named #syspropConfigFile
-             * with the default configuration file embedded in the jar. If the system property is not defined, the
-             * default config is returned.
-             */
-            public static Config loadOverriddenConfigFromSysprop(String syspropConfigFile) {
-                String s = System.getProperty(syspropConfigFile);
-                return loadOverriddenConfigFromFile(s);
             }
 
             public static Config loadOverriddenConfigFromFile(String file) {
