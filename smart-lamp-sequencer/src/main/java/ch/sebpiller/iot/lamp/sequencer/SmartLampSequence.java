@@ -14,37 +14,36 @@ import java.util.concurrent.FutureTask;
  * Fluent api exposing the interface of a {@link SmartLampFacade}, but that actually only records a sequence of call
  * to be played in a loop later.
  */
-public class SmartLampSequencer implements SmartLampFacade {
-    private static final Logger LOG = LoggerFactory.getLogger(SmartLampSequencer.class);
+public class SmartLampSequence implements SmartLampFacade {
+    public static final SmartLampSequence NOOP = new SmartLampSequence();
+    private static final Logger LOG = LoggerFactory.getLogger(SmartLampSequence.class);
     protected final List<InvokeOnSmartLamp> callables = Collections.synchronizedList(new ArrayList<>());
     private int playIndex = 0;
-    private SmartLampSequencer parent;
+    private SmartLampSequence parent;
 
-    protected SmartLampSequencer() {
+    public SmartLampSequence() {
         this(null);
     }
 
-    protected SmartLampSequencer(SmartLampSequencer parent) {
+    protected SmartLampSequence(SmartLampSequence parent) {
         this.parent = parent;
     }
 
-    public static SmartLampSequencer record() {
-        return new SmartLampSequencer();
+    public static SmartLampSequence record() {
+        return new SmartLampSequence();
     }
 
-    public SmartLampSequencer sleep(int millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            // nothing
-        }
+    @Override
+    public SmartLampSequence sleep(int millis) {
+        add(facade -> facade.sleep(millis));
         return this;
     }
 
-    public SmartLampSequencer playNext(SmartLampFacade realFacade) {
+    public SmartLampSequence play(SmartLampFacade realLamp) {
         synchronized (callables) {
-            if (LOG.isDebugEnabled())
+            if (LOG.isDebugEnabled()) {
                 LOG.debug("invoking callable #{} of {}", playIndex, callables.size());
+            }
             InvokeOnSmartLamp invoke = null;
 
             if (!callables.isEmpty()) {
@@ -56,7 +55,7 @@ public class SmartLampSequencer implements SmartLampFacade {
             }
 
             if (invoke != null) {
-                invoke.invoke(realFacade);
+                invoke.invoke(realLamp);
             }
         }
 
@@ -68,19 +67,19 @@ public class SmartLampSequencer implements SmartLampFacade {
     }
 
     @Override
-    public SmartLampSequencer power(boolean on) {
+    public SmartLampSequence power(boolean on) {
         add(facade -> facade.power(on));
         return this;
     }
 
     @Override
-    public SmartLampSequencer setBrightness(byte percent) throws UnsupportedOperationException {
+    public SmartLampSequence setBrightness(byte percent) throws UnsupportedOperationException {
         add(facade -> facade.setBrightness(percent));
         return this;
     }
 
     @Override
-    public Future<SmartLampSequencer> fadeBrightnessFromTo(byte from, byte to, FadeStyle fadeStyle) {
+    public Future<SmartLampSequence> fadeBrightnessFromTo(byte from, byte to, FadeStyle fadeStyle) {
         add(facade -> facade.fadeBrightnessFromTo(from, to, fadeStyle));
         return present();
     }
@@ -88,35 +87,35 @@ public class SmartLampSequencer implements SmartLampFacade {
     /**
      * A fake future object that has already been completed (we may call it the "present").
      */
-    private FutureTask<SmartLampSequencer> present() {
-        return new FutureTask<SmartLampSequencer>(() -> this) {
+    private FutureTask<SmartLampSequence> present() {
+        return new FutureTask<SmartLampSequence>(() -> this) {
             @Override
-            public SmartLampSequencer get() {
-                return SmartLampSequencer.this;
+            public SmartLampSequence get() {
+                return SmartLampSequence.this;
             }
         };
     }
 
     @Override
-    public Future<SmartLampSequencer> fadeBrightnessTo(byte percent, FadeStyle fadeStyle) {
+    public Future<SmartLampSequence> fadeBrightnessTo(byte percent, FadeStyle fadeStyle) {
         add(facade -> facade.fadeBrightnessTo(percent, fadeStyle));
         return present();
     }
 
     @Override
-    public SmartLampSequencer setTemperature(int kelvin) {
+    public SmartLampSequence setTemperature(int kelvin) {
         add(facade -> facade.setTemperature(kelvin));
         return this;
     }
 
     @Override
-    public Future<SmartLampSequencer> fadeTemperatureFromTo(int from, int to, FadeStyle fadeStyle) {
+    public Future<SmartLampSequence> fadeTemperatureFromTo(int from, int to, FadeStyle fadeStyle) {
         add(facade -> facade.fadeTemperatureFromTo(from, to, fadeStyle));
         return present();
     }
 
     @Override
-    public Future<SmartLampSequencer> fadeTemperatureTo(int kelvin, FadeStyle fadeStyle) {
+    public Future<SmartLampSequence> fadeTemperatureTo(int kelvin, FadeStyle fadeStyle) {
         add(facade -> facade.fadeTemperatureTo(kelvin, fadeStyle));
         return present();
     }
@@ -124,28 +123,28 @@ public class SmartLampSequencer implements SmartLampFacade {
     /**
      * Invoke start to begin the recording of several actions to play sequentially during the same frame (beat).
      */
-    public SmartLampSequencer start() {
+    public SmartLampSequence start() {
         // protect against multiple call to start()
         if (parent != null) {
             return this;
         }
 
-        final SmartLampSequencer inner = new PlayAllAtOneTimeSequencer();
-        add(facade -> inner.playNext(facade));
+        final SmartLampSequence inner = new PlayAllAtOneTimeSequence(this);
+        add(facade -> inner.play(facade));
         return inner;
     }
 
-    public SmartLampSequencer end() {
+    public SmartLampSequence end() {
         // protect against multiple call to end()
         return parent == null ? this : parent;
     }
 
-    public SmartLampSequencer pause() {
+    public SmartLampSequence pause() {
         return start().end();
     }
 
-    public SmartLampSequencer pause(int beats) {
-        SmartLampSequencer seq = this;
+    public SmartLampSequence pause(int beats) {
+        SmartLampSequence seq = this;
 
         for (int i = 0; i < beats; i++) {
             seq = seq.pause();
@@ -154,8 +153,8 @@ public class SmartLampSequencer implements SmartLampFacade {
         return seq;
     }
 
-    public SmartLampSequencer flash(int times) {
-        SmartLampSequencer start = start();
+    public SmartLampSequence flash(int times) {
+        SmartLampSequence start = start();
 
         for (int i = 0; i < times; i++) {
             start = start
@@ -167,7 +166,7 @@ public class SmartLampSequencer implements SmartLampFacade {
         return start;
     }
 
-    public SmartLampSequencer run(Runnable r) {
+    public SmartLampSequence run(Runnable r) {
         add(new InvokeOnSmartLamp() {
             private int errorCount = 0;
 
@@ -185,7 +184,7 @@ public class SmartLampSequencer implements SmartLampFacade {
                     }
                 }
 
-                return SmartLampSequencer.this;
+                return SmartLampSequence.this;
             }
         });
 
@@ -197,7 +196,7 @@ public class SmartLampSequencer implements SmartLampFacade {
      *
      * @param next Steps to append to the current content. Later modifications of this object will not be reflected.
      */
-    public SmartLampSequencer then(SmartLampSequencer next) {
+    public SmartLampSequence then(SmartLampSequence next) {
         callables.addAll(next.callables);
         return this;
     }

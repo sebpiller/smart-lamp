@@ -1,0 +1,9 @@
+####
+# alarm.yaml
+#
+# This script blinks the lamp 5 times very quickly, and can be used as a way to notify with an optical alert the
+#  consumer of an event linked (eg. a webcam has detected motion in a part of the house that is under surveillance).
+####
+
+before: sleep=200;brightness=100;brightness=0;brightness=100;brightness=0;brightness=100;brightness=0;brightness=100;brightness=0;brightness=100;brightness=0;
+after: brightness=0;

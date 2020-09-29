@@ -25,6 +25,12 @@ public class LoggingLamp implements SmartLampFacade {
     }
 
     @Override
+    public SmartLampFacade sleep(int millis) {
+        LOG.info("sleeping({})", millis);
+        return this;
+    }
+
+    @Override
     public SmartLampFacade setBrightness(byte b) throws UnsupportedOperationException {
         LOG.info("setBrightness({})", b);
         return this;

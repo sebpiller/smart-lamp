@@ -13,18 +13,30 @@ import java.util.Objects;
 import java.util.StringTokenizer;
 
 /**
- * A parser that produce {@link SmartLampSequencer} reading instructions in a yaml formatted resource.
+ * A parser that produce {@link SmartLampSequence} reading instructions in a yaml formatted resource.
  */
-public class ScriptParser {
-    private Script script;
+public class SmartLampScript {
+    private YamlScript yamlScript;
+    private String name;
 
-    public ScriptParser(Script script) {
-        this.script = Objects.requireNonNull(script);
+    public SmartLampScript() {
     }
 
-    public static class Script {
+    private SmartLampScript(YamlScript yamlScript) {
+        this.yamlScript = Objects.requireNonNull(yamlScript);
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public static class YamlScript {
         private String before, after;
-        private String[] steps;
+        private String[] loop;
         private Map<String, String[]> sequences = new HashMap<>();
 
         public String getBefore() {
@@ -35,12 +47,12 @@ public class ScriptParser {
             this.before = before;
         }
 
-        public String[] getSteps() {
-            return steps;
+        public String[] getLoop() {
+            return loop;
         }
 
-        public void setSteps(String[] steps) {
-            this.steps = steps;
+        public void setLoop(String[] loop) {
+            this.loop = loop;
         }
 
         public Map<String, String[]> getSequences() {
@@ -61,16 +73,18 @@ public class ScriptParser {
     }
 
 
-    public static ScriptParser embeddedScript(String scriptName) {
-        InputStream is = ScriptParser.class.getResourceAsStream("/embedded-scripts/" + scriptName + ".yaml");
+    public static SmartLampScript embeddedScript(String scriptName) {
+        InputStream is = SmartLampScript.class.getResourceAsStream("/embedded-scripts/" + scriptName + ".yaml");
         if (is == null) {
             throw new IllegalArgumentException(scriptName + " is not an existing script");
         }
 
-        return fromInputStream(is);
+        SmartLampScript smartLampScript = fromInputStream(is);
+        smartLampScript.setName(scriptName);
+        return smartLampScript;
     }
 
-    public static ScriptParser fromFile(String filename) {
+    public static SmartLampScript fromFile(String filename) {
         try {
             return fromInputStream(new FileInputStream(filename));
         } catch (FileNotFoundException e) {
@@ -78,34 +92,44 @@ public class ScriptParser {
         }
     }
 
-    public static ScriptParser fromInputStream(InputStream is) {
+    public static SmartLampScript fromInputStream(InputStream is) {
         Yaml yaml = new Yaml();
 
         try {
-            return new ScriptParser(yaml.loadAs(is, Script.class));
+            return new SmartLampScript(yaml.loadAs(is, YamlScript.class));
         } catch (YAMLException ye) {
-            throw new IllegalArgumentException("the document given is invalid: "+ye, ye);
+            throw new IllegalArgumentException("the document given is invalid: " + ye, ye);
         }
     }
 
-    public SmartLampSequencer getBeforeSequence() {
-        SmartLampSequencer record = parseStep(new PlayAllAtOneTimeSequencer(SmartLampSequencer.record()), script.getBefore());
+    public SmartLampSequence getBeforeSequence() {
+        String before = yamlScript.getBefore();
+        if (StringUtils.isBlank(before)) {
+            return new SmartLampSequence();
+        }
+
+        SmartLampSequence record = parseStep(new PlayAllAtOneTimeSequence(), before);
         return record;
     }
 
-    public SmartLampSequencer getAfterSequence() {
-        SmartLampSequencer record = parseStep(new PlayAllAtOneTimeSequencer(SmartLampSequencer.record()), script.getAfter());
+    public SmartLampSequence getAfterSequence() {
+        String after = yamlScript.getAfter();
+        if (StringUtils.isBlank(after)) {
+            return new SmartLampSequence();
+        }
+
+        SmartLampSequence record = parseStep(new PlayAllAtOneTimeSequence(), after);
         return record;
     }
 
-    public Map<String, SmartLampSequencer> getSequences() {
-        Map<String, SmartLampSequencer> sequences = new HashMap<>();
+    public Map<String, SmartLampSequence> getSequences() {
+        Map<String, SmartLampSequence> sequences = new HashMap<>();
 
-        for (Map.Entry<String, String[]> current : script.getSequences().entrySet()) {
-            SmartLampSequencer record = SmartLampSequencer.record();
+        for (Map.Entry<String, String[]> current : yamlScript.getSequences().entrySet()) {
+            SmartLampSequence record = SmartLampSequence.record();
 
             for (String step : current.getValue()) {
-                SmartLampSequencer currentSeq = parseStep(record, step);
+                SmartLampSequence currentSeq = parseStep(record, step);
                 sequences.put(current.getKey(), currentSeq);
             }
         }
@@ -113,21 +137,27 @@ public class ScriptParser {
         return sequences;
     }
 
-    public SmartLampSequencer getSequence(String name) {
+    public SmartLampSequence getSequence(String name) {
         return getSequences().get(name);
     }
 
-    public SmartLampSequencer buildSequence() {
-        SmartLampSequencer record = SmartLampSequencer.record();
+    public SmartLampSequence buildMainLoopSequence() {
+        String[] steps = yamlScript.getLoop();
 
-        for (String step : script.getSteps()) {
+        if (steps == null || steps.length <= 0) {
+            return SmartLampSequence.NOOP;
+        }
+
+        SmartLampSequence record = SmartLampSequence.record();
+
+        for (String step : steps) {
             record = parseStep(record, step);
         }
 
         return record;
     }
 
-    private SmartLampSequencer parseStep(SmartLampSequencer record, String step) {
+    private SmartLampSequence parseStep(SmartLampSequence record, String step) {
         if (StringUtils.isBlank(step)) {
             return record;
         }
@@ -165,7 +195,7 @@ public class ScriptParser {
                     record = record.sleep(Integer.parseInt(value));
                     break;
                 case "seq":
-                    SmartLampSequencer sequence = getSequence(value);
+                    SmartLampSequence sequence = getSequence(value);
                     if (sequence == null) {
                         throw new IllegalArgumentException("the sequence '" + value + "' is not defined in the sequences section");
                     }

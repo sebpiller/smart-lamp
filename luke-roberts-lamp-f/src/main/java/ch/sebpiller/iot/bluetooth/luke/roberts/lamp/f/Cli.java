@@ -1,7 +1,6 @@
 package ch.sebpiller.iot.bluetooth.luke.roberts.lamp.f;
 
 import ch.sebpiller.iot.bluetooth.luke.roberts.LukeRoberts;
-
 import ch.sebpiller.iot.lamp.SmartLampCli;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
 import org.slf4j.Logger;

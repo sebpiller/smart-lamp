@@ -1,0 +1,12 @@
+####
+# boom.yaml
+#
+# This script changes the temperature at each beat, with 50% brightness
+####
+before: power=on;brightness=50;temperature=4000;sleep=500;
+after: power=off;
+loop:
+  - temperature=4000;
+  - temperature=3500;
+  - temperature=3200;
+  - temperature=2700;

@@ -4,6 +4,6 @@
 sequences:
   bla:
     - on;brightness=100;
-steps:
+loop:
   - seq=i_dont_exist
 

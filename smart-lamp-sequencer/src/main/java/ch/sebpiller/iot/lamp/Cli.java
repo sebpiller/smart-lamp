@@ -2,19 +2,21 @@ package ch.sebpiller.iot.lamp;
 
 import ch.sebpiller.iot.bluetooth.luke.roberts.LukeRoberts;
 import ch.sebpiller.iot.bluetooth.luke.roberts.lamp.f.LukeRobertsLampF;
-import ch.sebpiller.iot.lamp.sequencer.ScriptParser;
-import ch.sebpiller.iot.lamp.sequencer.SmartLampSequencer;
+import ch.sebpiller.iot.lamp.sequencer.SmartLampScript;
+import ch.sebpiller.iot.lamp.sequencer.SmartLampSequence;
 import ch.sebpiller.sound.beatdetect.BpmSourceAudioListener;
 import ch.sebpiller.tictac.BpmSource;
 import ch.sebpiller.tictac.TicTac;
 import ch.sebpiller.tictac.TicTacBuilder;
 import org.apache.commons.cli.*;
 
+import java.util.Optional;
+
 public class Cli {
     /**
      * Flashes the lamp 1 time at each beat, 4 times
      */
-    private static final SmartLampSequencer BOOM_BOOM_BOOM_BOOM = SmartLampSequencer.record()
+    private static final SmartLampSequence BOOM_BOOM_BOOM_BOOM = SmartLampSequence.record()
             .start().flash(1).end()
             .start().flash(1).end()
             .start().flash(1).end()
@@ -25,7 +27,7 @@ public class Cli {
     /**
      * The default sequence to be played when the user did not provide any script.
      */
-    private static final SmartLampSequencer DEFAULT_PLAYBACK = SmartLampSequencer.record()
+    private static final SmartLampSequence DEFAULT_PLAYBACK = SmartLampSequence.record()
             .then(BOOM_BOOM_BOOM_BOOM)
             .then(BOOM_BOOM_BOOM_BOOM)
             .then(BOOM_BOOM_BOOM_BOOM)
@@ -36,6 +38,7 @@ public class Cli {
             //
             ;
     private static final String EMBEDDED_PREFIX = "embedded:";
+    private static LukeRobertsLampF lukeRobertsLampF;
 
     public static void main(String[] args) {
         CommandLineParser parser = new DefaultParser();
@@ -44,7 +47,7 @@ public class Cli {
         LukeRoberts.LampF.Config config = LukeRoberts.LampF.Config.getDefaultConfig();
         long timeout = 0;
         int bpmInt = 0;
-        SmartLampSequencer scripted = null;
+        SmartLampScript givenScript = null;
         boolean cli = false;
 
         try {
@@ -65,16 +68,16 @@ public class Cli {
                 if (line.hasOption("timeout")) {
                     timeout = Long.parseLong(line.getOptionValue("timeout"));
                 }
-                if (line.hasOption("bpmInt")) {
-                    bpmInt = Integer.parseInt(line.getOptionValue("bpmInt"));
+                if (line.hasOption("bpm")) {
+                    bpmInt = Integer.parseInt(line.getOptionValue("bpm"));
                 }
                 if (line.hasOption("script")) {
                     String script = line.getOptionValue("script");
 
                     if (script.toLowerCase().startsWith(EMBEDDED_PREFIX)) {
-                        scripted = ScriptParser.embeddedScript(script.substring(EMBEDDED_PREFIX.length())).buildSequence();
+                        givenScript = SmartLampScript.embeddedScript(script.substring(EMBEDDED_PREFIX.length()));
                     } else {
-                        scripted = ScriptParser.fromFile(script).buildSequence();
+                        givenScript = SmartLampScript.fromFile(script);
                     }
                 }
             }
@@ -84,44 +87,81 @@ public class Cli {
             System.exit(-1);
         }
 
-        LukeRobertsLampF lukeRobertsLampF = new LukeRobertsLampF(config);
-        lukeRobertsLampF.selectScene((byte) 4);
+        LukeRobertsLampF lukeRobertsLampF = getLKLampF(config);
 
         try {
             final SmartLampFacade lamp = lukeRobertsLampF;
+            //final SmartLampFacade lamp = new LoggingLamp();
             if (cli) {
                 new SmartLampCli(lamp).run();
             } else {
-                BpmSource source;
-                if (bpmInt > 0) {
-                    int finalBpm = bpmInt;
-                    source = () -> finalBpm;
-                } else {
-                    source = BpmSourceAudioListener.getBpmFromLineIn();
-                }
-
-                final SmartLampSequencer sequence = scripted == null ? DEFAULT_PLAYBACK : scripted;
-
-                TicTac ticTac = new TicTacBuilder()
-                        .connectedToBpm(source)
-                        .withListener((ticOrTac, _bpm) -> sequence.playNext(lamp))
-                        .build();
-
-                if (timeout <= 0) {
-                    ticTac.waitTermination();
-                } else {
-                    try {
-                        Thread.sleep(timeout * 1_000);
-                    } catch (InterruptedException e) {
-                        // ignore
+                SmartLampScript defaultScript = new SmartLampScript() {
+                    @Override
+                    public SmartLampSequence getBeforeSequence() {
+                        return SmartLampSequence.NOOP;
                     }
-                }
 
-                ticTac.stop();
+                    @Override
+                    public SmartLampSequence getAfterSequence() {
+                        return SmartLampSequence.NOOP;
+                    }
+
+                    @Override
+                    public SmartLampSequence buildMainLoopSequence() {
+                        return DEFAULT_PLAYBACK;
+                    }
+                };
+
+                SmartLampScript script = Optional.ofNullable(givenScript).orElse(defaultScript);
+
+                try {
+                    script.getBeforeSequence().play(lamp);
+                    final SmartLampSequence loop = script.buildMainLoopSequence();
+
+                    if (loop != SmartLampSequence.NOOP) {
+                        BpmSource source;
+
+                        if (bpmInt > 0) {
+                            int finalBpm = bpmInt;
+                            source = () -> finalBpm;
+                        } else {
+                            source = BpmSourceAudioListener.getBpmFromLineIn();
+                        }
+
+                        TicTac ticTac = new TicTacBuilder()
+                                .connectedToBpm(source)
+                                .withListener((ticOrTac, _bpm) -> loop.play(lamp))
+                                .build();
+
+                        if (timeout <= 0) {
+                            ticTac.waitTermination();
+                        } else {
+                            try {
+                                Thread.sleep(timeout * 1_000);
+                            } catch (InterruptedException e) {
+                                // ignore
+                            }
+
+                            ticTac.stop();
+                        }
+                    }
+                } finally {
+                    script.getAfterSequence().play(lamp);
+                }
             }
         } finally {
             System.exit(0);
         }
+    }
+
+    private static LukeRobertsLampF getLKLampF(LukeRoberts.LampF.Config config) {
+        // TODO make the implementation in use parameterizable
+        if (lukeRobertsLampF == null) {
+            lukeRobertsLampF = new LukeRobertsLampF(config);
+            lukeRobertsLampF.selectScene((byte) 2);
+        }
+
+        return lukeRobertsLampF;
     }
 
     /**

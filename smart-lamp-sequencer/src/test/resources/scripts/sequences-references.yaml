@@ -1,0 +1,35 @@
+####
+# boom.yaml
+#
+# This script only blink the lamp one time at each beat, and 2 times at each 4th beat.
+####
+
+### define sequences to be used in the main loop
+sequences:
+  init:
+    - on;brightness=100;sleep=2000;
+  stop:
+    - off;
+  flash:
+    - brightness=100;sleep=50;brightness=0;
+  double-flash:
+    - brightness=100;sleep=50;brightness=0;sleep=50;brightness=100;sleep=50;brightness=0;
+
+
+### before action
+before: seq=init
+
+### steps: define the main loop that will repeat as long as necessary
+loop:
+  - seq=flash
+  - seq=flash
+  - seq=flash
+  - seq=flash
+  - seq=flash
+  - seq=flash
+  - seq=flash
+  - seq=double-flash
+
+### after action
+after: seq=stop
+

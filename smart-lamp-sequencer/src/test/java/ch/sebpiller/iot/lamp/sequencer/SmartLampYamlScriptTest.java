@@ -2,33 +2,33 @@ package ch.sebpiller.iot.lamp.sequencer;
 
 import org.junit.Test;
 
-public class ScriptParserTest {
+public class SmartLampYamlScriptTest {
     @Test
     public void testParseBoomFile() {
-        ScriptParser scriptParser = ScriptParser
+        SmartLampScript smartLampScript = SmartLampScript
                 .fromInputStream(getClass().getResourceAsStream("/embedded-scripts/boom.yaml"));
-        scriptParser.buildSequence();
+        smartLampScript.buildMainLoopSequence();
     }
 
     @Test
     public void testParseSwitchTemperatureFile() {
-        ScriptParser scriptParser = ScriptParser
-                .fromInputStream(getClass().getResourceAsStream("/embedded-scripts/switch_temperature.yaml"));
-        scriptParser.buildSequence();
+        SmartLampScript smartLampScript = SmartLampScript
+                .fromInputStream(getClass().getResourceAsStream("/embedded-scripts/temperature.yaml"));
+        smartLampScript.buildMainLoopSequence();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseBadlyFormattedFile() {
-        ScriptParser scriptParser = ScriptParser
+        SmartLampScript smartLampScript = SmartLampScript
                 .fromInputStream(getClass().getResourceAsStream("/scripts/badly_formatted.yaml"));
-        scriptParser.buildSequence();
+        smartLampScript.buildMainLoopSequence();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseSequenceNotDefined() {
-        ScriptParser scriptParser = ScriptParser
+        SmartLampScript smartLampScript = SmartLampScript
                 .fromInputStream(getClass().getResourceAsStream("/scripts/sequence_not_defined.yaml"));
-        scriptParser.buildSequence();
+        smartLampScript.buildMainLoopSequence();
     }
 
 }

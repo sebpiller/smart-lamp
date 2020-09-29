@@ -9,12 +9,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SmartLampSequencerTest {
-    private static final Logger LOG = LoggerFactory.getLogger(SmartLampSequencerTest.class);
+public class SmarlLampSequenceTest {
+    private static final Logger LOG = LoggerFactory.getLogger(SmarlLampSequenceTest.class);
 
     @Test
     public void testBasic() throws InterruptedException {
-        final SmartLampSequencer playback = SmartLampSequencer.record()
+        final SmartLampSequence playback = SmartLampSequence.record()
                 // beat #1
                 .start().flash(1).end();
 
@@ -22,7 +22,7 @@ public class SmartLampSequencerTest {
 
         TicTac ticTac = new TicTacBuilder()
                 .connectedToBpm(() -> 120)
-                .withListener((ticOrTac, bpm) -> playback.playNext(lamp))
+                .withListener((ticOrTac, bpm) -> playback.play(lamp))
                 .build();
 
         Thread.sleep(20_000);
@@ -31,13 +31,13 @@ public class SmartLampSequencerTest {
 
     @Test
     public void testSequencer() throws InterruptedException {
-        final SmartLampSequencer boomBoomBoomBoom = SmartLampSequencer.record()
+        final SmartLampSequence boomBoomBoomBoom = SmartLampSequence.record()
                 .start().flash(1).end()
                 .start().flash(1).end()
                 .start().flash(1).end()
                 .start().flash(1).end();
 
-        final SmartLampSequencer playback = SmartLampSequencer.record()
+        final SmartLampSequence playback = SmartLampSequence.record()
                 // beat #1
                 .start().run(() -> LOG.info("***********************")).flash(3).end()
                 // beat #2
@@ -68,7 +68,7 @@ public class SmartLampSequencerTest {
 
         TicTac ticTac = new TicTacBuilder()
                 .connectedToBpm(() -> 120)
-                .withListener((ticOrTac, bpm) -> playback.playNext(lamp))
+                .withListener((ticOrTac, bpm) -> playback.play(lamp))
                 .build();
 
         Thread.sleep(20_000);
@@ -79,19 +79,20 @@ public class SmartLampSequencerTest {
 
     @Test
     public void testSequencerFromScript() throws InterruptedException {
-        final ScriptParser seq = ScriptParser.fromInputStream(getClass().getResourceAsStream("/embedded-scripts/boom.yaml"));
+        final SmartLampScript seq = SmartLampScript.fromInputStream(getClass().getResourceAsStream("/embedded-scripts/boom.yaml"));
 
         final SmartLampFacade lamp = new LoggingLamp();
-        seq.getBeforeSequence().playNext(lamp);
+        seq.getBeforeSequence().play(lamp);
 
-        SmartLampSequencer smartLampSequencer = seq.buildSequence();
+        SmartLampSequence smarlLampSequence = seq.buildMainLoopSequence();
 
         TicTac ticTac = new TicTacBuilder()
                 .connectedToBpm(() -> 120)
-                .withListener((ticOrTac, bpm) -> smartLampSequencer.playNext(lamp))
+                .withListener((ticOrTac, bpm) -> smarlLampSequence.play(lamp))
                 .build();
 
         Thread.sleep(20_000);
+        seq.getAfterSequence().play(lamp);
 
         ticTac.stop();
     }
