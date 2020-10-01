@@ -50,7 +50,7 @@
         <module>smart-lamp-api</module>
         <module>smart-lamp-sequencer</module>
         <module>luke-roberts-lamp-f</module>
-        <module>luke-roberts-lamp-f-sequencer</module>
+        <module>luke-roberts-lamp-f-cli</module>
         <module>philips-hue</module>
     </modules>
 
