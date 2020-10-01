@@ -52,6 +52,7 @@
         <module>luke-roberts-lamp-f</module>
         <module>luke-roberts-lamp-f-cli</module>
         <module>philips-hue</module>
+        <module>philips-hue-cli</module>
     </modules>
 
     <build>
@@ -112,6 +113,7 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- ======== CHILDREN =============== -->
             <dependency>
                 <groupId>ch.sebpiller.iot</groupId>
                 <artifactId>bluetooth</artifactId>
@@ -134,9 +136,20 @@
             </dependency>
             <dependency>
                 <groupId>ch.sebpiller.iot</groupId>
-                <artifactId>luke-roberts-lamp-f-sequencer</artifactId>
+                <artifactId>luke-roberts-lamp-f-cli</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>ch.sebpiller.iot</groupId>
+                <artifactId>philips-hue</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.sebpiller.iot</groupId>
+                <artifactId>philips-hue-cli</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- ================================= -->
 
             <dependency>
                 <groupId>ch.sebpiller</groupId>
