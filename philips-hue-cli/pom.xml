@@ -10,8 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>philips-hue-cli</artifactId>
-    <name>Smart Lamp - Philips Hue - cli</name>
-
+    <name>Smart Lamp - Philips Hue BLE - CLI</name>
 
     <dependencies>
         <dependency>
@@ -36,27 +35,22 @@
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
-            <version>2.0.0.Final</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>6.0.2.Final</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator-annotation-processor</artifactId>
-            <version>6.0.2.Final</version>
         </dependency>
         <dependency>
             <groupId>javax.el</groupId>
             <artifactId>javax.el-api</artifactId>
-            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>javax.el</artifactId>
-            <version>2.2.6</version>
         </dependency>
 
     </dependencies>
@@ -76,7 +70,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ch.sebpiller.iot.lamp.sequencer.luke.roberts.lamp.f.Cli</mainClass>
+                            <mainClass>ch.sebpiller.iot.lamp.philips.hue.Cli</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

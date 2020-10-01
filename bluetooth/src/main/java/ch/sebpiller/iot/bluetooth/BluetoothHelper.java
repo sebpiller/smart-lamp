@@ -6,6 +6,7 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothAdapter;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattCharacteristic;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +75,7 @@ public class BluetoothHelper {
     }
 
     public static void reconnectIfNeeded(BluetoothGattCharacteristic charac) {
-        if(charac == null) {
+        if (charac == null) {
             LOG.info("can not reconnect a null object");
         } else {
             BluetoothDevice device = charac.getService().getDevice();
@@ -85,26 +86,29 @@ public class BluetoothHelper {
         }
     }
 
-    public static BluetoothDevice findDeviceOnAdapter(DeviceManager manager, String localBtAdapter, String remoteDeviceMac) throws DBusException {
-        LOG.info("searching for device {} on {}", localBtAdapter, remoteDeviceMac);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("  > dbus connection status: {}", manager.getDbusConnection().isConnected() ? "connected" : "disconnected");
+    public static BluetoothDevice findDeviceOnAdapter(DeviceManager manager, String localBtAdapter, String remoteDeviceMac) throws BluetoothException {
+        try {
+            LOG.info("searching for device {} on {}", localBtAdapter, remoteDeviceMac);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("  > dbus connection status: {}", manager.getDbusConnection().isConnected() ? "connected" : "disconnected");
+            }
+            manager.registerPropertyHandler(new ScanPropertiesChangedHandler(manager, localBtAdapter));
+
+            BluetoothAdapter adapter = manager.getAdapters().stream()
+                    .filter(a -> Objects.equals(a.getDeviceName(), localBtAdapter))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("bluetooth adapter " + localBtAdapter + " can not be found"));
+            if (!adapter.isPowered()) {
+                adapter.setPowered(true);
+                LOG.debug("  > switched on {}", localBtAdapter);
+            }
+
+            return manager.getDevices(true).stream()
+                    .filter(e -> Objects.equals(e.getAddress(), remoteDeviceMac))
+                    .findFirst()
+                    .orElseThrow(() -> new BluetoothException("device " + remoteDeviceMac + " is not registered. Please use 'bluetoothctl' in bash to trust/connect this device."));
+        } catch (DBusException | DBusExecutionException e) {
+            throw new BluetoothException("unable to find device " + remoteDeviceMac + "@" + localBtAdapter + ": " + e, e);
         }
-        manager.registerPropertyHandler(new ScanPropertiesChangedHandler(manager, localBtAdapter));
-
-        BluetoothAdapter adapter = manager.getAdapters().stream()
-                .filter(a -> Objects.equals(a.getDeviceName(), localBtAdapter))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("bluetooth adapter " + localBtAdapter + " can not be found"));
-        if (!adapter.isPowered()) {
-            adapter.setPowered(true);
-            LOG.debug("  > switched on {}", localBtAdapter);
-        }
-
-        return manager.getDevices(true).stream()
-                .filter(e -> Objects.equals(e.getAddress(), remoteDeviceMac))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("device " + remoteDeviceMac + " is not registered. Please use 'bluetoothctl' in bash to trust/connect this device."));
-
     }
 }

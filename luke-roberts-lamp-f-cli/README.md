@@ -36,9 +36,9 @@ you may want to redirect the logs from stdout to a file.
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>DEBUG</level>
         </filter>
-        <file>luke-roberts-lamp-f-sequencer.log</file>
+        <file>luke-roberts-lamp-f-cli.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>ARCHIVE-luke-roberts-lamp-f-sequencer.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>ARCHIVE-luke-roberts-lamp-f-cli.log.%d{yyyy-MM-dd}</fileNamePattern>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>

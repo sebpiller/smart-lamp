@@ -6,9 +6,9 @@
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>DEBUG</level>
         </filter>
-        <file>luke-roberts-lamp-f-cli.log</file>
+        <file>philips-hue-cli.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>ARCHIVE-luke-roberts-lamp-f-cli.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>ARCHIVE-philips-hue-cli.log.%d{yyyy-MM-dd}</fileNamePattern>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>

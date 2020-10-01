@@ -1,5 +1,6 @@
 package ch.sebpiller.iot.lamp.philips.hue;
 
+import ch.sebpiller.iot.bluetooth.BluetoothHelper;
 import ch.sebpiller.iot.bluetooth.philipps.hue.PhilipsHueBle;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
 import ch.sebpiller.iot.lamp.SmartLampInteractive;
@@ -35,10 +36,14 @@ import static java.lang.String.format;
 @Command(
         name = "java -jar philips-hue-cli.jar",
         footer = "NO Copyright - 2020",
-        description = "Automated manipulation of a @|bold,underline Luke Roberts' Lamp F|@.",
+        description = "Automated manipulation of a @|bold,underline Philips Hue|@ bulb.",
         sortOptions = false
 )
 public class Cli implements Callable<Integer> {
+    static {
+        BluetoothHelper.printBluetoothEnvironment();
+    }
+
     /**
      * Flashes the lamp 1 time at each beat, 4 times
      */
@@ -76,14 +81,14 @@ public class Cli implements Callable<Integer> {
     )
     private Boolean cliParamHelp;
 
-    @Option(
-            order = 0,
-            names = {"-c", "--config"},
-            description = "A file containing bluetooth adapter to use and the lamp's MAC address.",
-            paramLabel = "<CONFIG_FILE>",
-            type = String.class
-    )
-    private String cliParamConfig;
+//    @Option(
+//            order = 0,
+//            names = {"-c", "--config"},
+//            description = "A file containing bluetooth adapter to use and the lamp's MAC address.",
+//            paramLabel = "<CONFIG_FILE>",
+//            type = String.class
+//    )
+//    private String cliParamConfig;
 
     @Option(order = 1,
             names = {"-a", "--adapter"},
@@ -101,7 +106,7 @@ public class Cli implements Callable<Integer> {
             description = "The MAC address of the lamp to connect.",
             paramLabel = "<MAC>",
             //interactive = true,
-            defaultValue = "C4:AC:05:42:73:A4",
+            defaultValue = "E6:B3:DC:6E:06:32",
             type = String.class
     )
     @Pattern(regexp = "^(([0-9A-F]{2}:){5}[0-9A-F]{2})?$")
@@ -216,11 +221,11 @@ public class Cli implements Callable<Integer> {
         }
     }
 
-    private PhilipsHueBle buildLukeRobertsLampFFacadeFromSettings() {
+    private PhilipsHueBle buildPhilipsHueLampFromSettings() {
 
 
         // load config overrides from file if defined
-        if (cliParamConfig != null) {
+//        if (cliParamConfig != null) {
 //            LukeRoberts.LampF.Config c;
 //            try {
 //                c = LukeRoberts.LampF.Config.loadFromStream(new FileInputStream(cliParamConfig));
@@ -229,7 +234,7 @@ public class Cli implements Callable<Integer> {
 //            }
 //
 //            lampFConfig = lampFConfig.merge(c);
-        }
+//        }
 
         // load cli flags overrides
 //        LukeRoberts.LampF.Config c = new LukeRoberts.LampF.Config();
@@ -264,7 +269,7 @@ public class Cli implements Callable<Integer> {
             }
         }
 
-        PhilipsHueBle lamp = buildLukeRobertsLampFFacadeFromSettings();
+        PhilipsHueBle lamp = buildPhilipsHueLampFromSettings();
 
         try {
             boolean interactive = cliParamScript == null;
@@ -326,7 +331,6 @@ public class Cli implements Callable<Integer> {
     public String toString() {
         return "Cli{" +
                 "cliParamHelp=" + cliParamHelp +
-                ", cliParamConfig='" + cliParamConfig + '\'' +
                 ", cliParamAdapter='" + cliParamAdapter + '\'' +
                 ", cliParamMac='" + cliParamMac + '\'' +
                 ", cliParamScript='" + cliParamScript + '\'' +
