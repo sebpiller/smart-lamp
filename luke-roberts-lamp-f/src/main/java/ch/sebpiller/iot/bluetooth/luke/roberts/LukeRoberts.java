@@ -117,13 +117,63 @@ public final class LukeRoberts {
             }
         }
 
+        /**
+         * List all the scenes available by default in a Lamp F model.
+         * <p>
+         * WARN: the user can override or delete the scenes available by default. Except for {@link #DEFAULT_SCENE}
+         * and {@link #SHUTDOWN_SCENE} which are always available, there is no guarantee that a scene referenced
+         * here will be available in the connect hardware, neither that is hadn't been modified by the user in Luke
+         * Roberts' app.
+         */
         public static class LukeRobertsScene {
+            /**
+             * Use this scene to power on the lamp to the default scene.
+             */
             public static final byte DEFAULT_SCENE = (byte) 0xFF;
+            /**
+             * Use this scene to power off the lamp.
+             */
             public static final byte SHUTDOWN_SCENE = 0x00;
+
+            /**
+             * Reading scene.
+             */
+            public static final byte READING_SCENE = 0x01;
+
+            /**
+             * Candle light scene.
+             */
+            public static final byte CANDLE_LIGHT_SCENE = 0x02;
+
+            /**
+             * Shiny scene.
+             */
+            public static final byte SHINY_SCENE = 0x03;
+
+            /**
+             * Welcome scene.
+             */
+            public static final byte WELCOME_SCENE = 0x04;
+
+            /**
+             * Indirect scene.
+             */
+            public static final byte INDIRECT_SCENE = 0x05;
+
+            /**
+             * Highlights scene.
+             */
+            public static final byte HIGHLIGHTS_SCENE = 0x06;
+
+            /**
+             * Bright scene.
+             */
+            public static final byte BRIGHT_SCENE = 0x07;
         }
 
         /**
-         * Class modeling the configuration structure found in the file luke-roberts-defaults.yaml. Read with SnakeYAML.
+         * Class modeling the configuration structure found in the file luke-roberts-defaults.yaml.
+         * Read with SnakeYAML.
          */
         public static final class Config {
             private static final String LUKE_ROBERTS_DEFAULTS = "/config/luke-roberts-defaults.yaml";

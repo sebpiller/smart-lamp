@@ -113,12 +113,14 @@ public class LukeRobertsLampF extends AbstractLampBase {
 
         try {
             BluetoothGattCharacteristic api = getExternalApi();
-            BluetoothDevice device = api.getService().getDevice();
-            LOG.debug("sending command {} to Lamp F '{}' ({})",
-                    command,
-                    device.getName(),
-                    device.getAddress()
-            );
+            if (LOG.isDebugEnabled()) {
+                BluetoothDevice device = api.getService().getDevice();
+                LOG.debug("sending command {} to Lamp F '{}' ({})",
+                        command,
+                        device.getName(),
+                        device.getAddress()
+                );
+            }
 
             api.writeValue(command.toByteArray(parameters), Collections.emptyMap());
         } catch (DBusException e) {
@@ -233,6 +235,7 @@ public class LukeRobertsLampF extends AbstractLampBase {
      * @param hue Color.
      */
     public void immediateLight(int duration, int sat, int hue, int temp, int mtemp, int mbrightness) {
+        // FIXME improve code
         System.out.println(String.format("setting to duration %s, sat %s, hue %s, temp %s, mtemp %s, mbright %s",
                 duration, sat, hue, temp, mtemp, mbrightness
         ));
