@@ -84,7 +84,7 @@ public class SmartLampSequence implements SmartLampFacade {
     }
 
     @Override
-    public SmartLampSequence setBrightness(byte percent) throws UnsupportedOperationException {
+    public SmartLampSequence setBrightness(byte percent) {
         add(facade -> facade.setBrightness(percent));
         return this;
     }
@@ -132,7 +132,7 @@ public class SmartLampSequence implements SmartLampFacade {
     }
 
     @Override
-    public SmartLampSequence setScene(byte scene) throws UnsupportedOperationException {
+    public SmartLampSequence setScene(byte scene) {
         add(facade -> facade.setScene(scene));
         return this;
     }

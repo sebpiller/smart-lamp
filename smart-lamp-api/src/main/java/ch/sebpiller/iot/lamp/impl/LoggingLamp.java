@@ -32,7 +32,7 @@ public class LoggingLamp implements SmartLampFacade {
     }
 
     @Override
-    public LoggingLamp setBrightness(byte b) throws UnsupportedOperationException {
+    public LoggingLamp setBrightness(byte b) {
         LOG.info("setBrightness({})", b);
         return this;
     }
