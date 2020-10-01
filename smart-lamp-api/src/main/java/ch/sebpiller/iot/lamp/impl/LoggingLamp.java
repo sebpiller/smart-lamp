@@ -1,5 +1,6 @@
-package ch.sebpiller.iot.lamp;
+package ch.sebpiller.iot.lamp.impl;
 
+import ch.sebpiller.iot.lamp.SmartLampFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

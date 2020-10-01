@@ -15,7 +15,18 @@ import java.util.concurrent.FutureTask;
  * to be played in a loop later.
  */
 public class SmartLampSequence implements SmartLampFacade {
-    public static final SmartLampSequence NOOP = new SmartLampSequence();
+    public static final SmartLampSequence NOOP = new SmartLampSequence() {
+        @Override
+        public SmartLampSequence play(SmartLampFacade realLamp) {
+            // NOOP
+            return this;
+        }
+
+        @Override
+        void add(InvokeOnSmartLamp c) {
+            throw new UnsupportedOperationException("unable to populate a NOOP implementation");
+        }
+    };
     private static final Logger LOG = LoggerFactory.getLogger(SmartLampSequence.class);
     protected final List<InvokeOnSmartLamp> callables = Collections.synchronizedList(new ArrayList<>());
     private int playIndex = 0;
@@ -62,7 +73,7 @@ public class SmartLampSequence implements SmartLampFacade {
         return this;
     }
 
-    private void add(InvokeOnSmartLamp c) {
+    void add(InvokeOnSmartLamp c) {
         callables.add(c);
     }
 
@@ -172,6 +183,7 @@ public class SmartLampSequence implements SmartLampFacade {
         return start;
     }
 
+    /** Add an arbitrary execution of code to the current sequence. */
     public SmartLampSequence run(Runnable r) {
         add(new InvokeOnSmartLamp() {
             private int errorCount = 0;
@@ -210,5 +222,32 @@ public class SmartLampSequence implements SmartLampFacade {
     @FunctionalInterface
     interface InvokeOnSmartLamp {
         Object invoke(SmartLampFacade facade);
+    }
+
+    /**
+     * A sequence that plays all the given callbacks at the same frame ({@link #play(SmartLampFacade)}
+     * will loop through all the content and play it sequentially).
+     */
+    static class PlayAllAtOneTimeSequence extends SmartLampSequence {
+        private static final Logger LOG = LoggerFactory.getLogger(PlayAllAtOneTimeSequence.class);
+
+        PlayAllAtOneTimeSequence() {
+            super();
+        }
+
+        PlayAllAtOneTimeSequence(SmartLampSequence parent) {
+            super(parent);
+        }
+
+        @Override
+        public SmartLampSequence play(SmartLampFacade realLamp) {
+            synchronized (callables) {
+                LOG.debug("invoking {} callables in one step", callables.size());
+                callables.forEach(e -> e.invoke(realLamp));
+            }
+
+            return this;
+        }
+
     }
 }

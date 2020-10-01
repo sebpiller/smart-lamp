@@ -21,14 +21,16 @@ public class BluetoothHelper {
         DeviceManager man;
 
         try {
-            man = DeviceManager.getInstance();
-        } catch (IllegalStateException e) {
-            LOG.trace("caught: " + e.toString(), e);
-
             try {
-                man = DeviceManager.createInstance(false);
-            } catch (DBusException e1) {
-                throw new IllegalStateException(e1);
+                man = DeviceManager.getInstance();
+            } catch (IllegalStateException e) {
+                LOG.trace("caught: " + e.toString(), e);
+
+                try {
+                    man = DeviceManager.createInstance(false);
+                } catch (DBusException e1) {
+                    throw new IllegalStateException(e1);
+                }
             }
         } catch (UnsatisfiedLinkError ule) {
             // most likely a native dependency problem. either bluez not installed, or misconfigured
@@ -71,12 +73,15 @@ public class BluetoothHelper {
         LOG.info("========= END OF SCAN ================");
     }
 
-
     public static void reconnectIfNeeded(BluetoothGattCharacteristic charac) {
-        BluetoothDevice device = charac.getService().getDevice();
+        if(charac == null) {
+            LOG.info("can not reconnect a null object");
+        } else {
+            BluetoothDevice device = charac.getService().getDevice();
 
-        if (!device.isConnected() && !device.connect()) {
-            throw new IllegalStateException("!!! connection to the device was unsuccessful !!!");
+            if (!device.isConnected() && !device.connect()) {
+                throw new IllegalStateException("!!! connection to the device was unsuccessful !!!");
+            }
         }
     }
 

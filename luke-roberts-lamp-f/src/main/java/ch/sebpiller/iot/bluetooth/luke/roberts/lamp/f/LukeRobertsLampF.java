@@ -2,8 +2,8 @@ package ch.sebpiller.iot.bluetooth.luke.roberts.lamp.f;
 
 import ch.sebpiller.iot.bluetooth.BluetoothHelper;
 import ch.sebpiller.iot.bluetooth.luke.roberts.LukeRoberts;
-import ch.sebpiller.iot.lamp.AbstractLampBase;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
+import ch.sebpiller.iot.lamp.impl.AbstractLampBase;
 import com.github.hypfvieh.bluetooth.DeviceManager;
 import com.github.hypfvieh.bluetooth.DiscoveryFilter;
 import com.github.hypfvieh.bluetooth.DiscoveryTransport;
@@ -79,18 +79,26 @@ public class LukeRobertsLampF extends AbstractLampBase {
         }
 
         BluetoothDevice lampF = findDeviceOnAdapter(manager, config.getLocalBtAdapter(), config.getMac());
+        if (lampF == null) {
+            LOG.error("can not find Lamp F at {}", config.getMac());
+            return null;
+        }
 
         LukeRoberts.LampF.Config.CustomControlService ccSer = config.getCustomControlService();
-        BluetoothGattService customControlService = Objects.requireNonNull(
-                lampF.getGattServiceByUuid(ccSer.getUuid()), "unable to connect to the custom control service " + ccSer.getUuid() + ": maybe the lamp is out of range."
-        );
+        BluetoothGattService customControlService = lampF.getGattServiceByUuid(ccSer.getUuid());
+
+        if (customControlService == null) {
+            LOG.error("unable to connect to the custom control service {}: maybe the lamp is out of range.", ccSer.getUuid());
+            return null;
+        }
         LOG.info("found GATT custom control service {} at UUID {}", customControlService, ccSer.getUuid());
 
         String externalApiUuid = ccSer.getUserExternalApiEndpoint().getUuid();
-        BluetoothGattCharacteristic api = Objects.requireNonNull(
-                customControlService.getGattCharacteristicByUuid(externalApiUuid),
-                "unable to connect to the external api " + externalApiUuid
-        );
+        BluetoothGattCharacteristic api = customControlService.getGattCharacteristicByUuid(externalApiUuid);
+        if (api == null) {
+            LOG.error("unable to connect to the api {}: maybe the lamp is out of range.", externalApiUuid);
+            return null;
+        }
         LOG.info("external api {} found at characteristics UUID {}", api, externalApiUuid);
 
         if (LOG.isDebugEnabled()) {
@@ -201,22 +209,29 @@ public class LukeRobertsLampF extends AbstractLampBase {
     @Override
     public void close() {
         try {
-            BluetoothDevice device = getExternalApi().getService().getDevice();
+            BluetoothGattCharacteristic externalApi = getExternalApi();
 
-            if (LOG.isDebugEnabled() && !device.isConnected()) {
-                LOG.debug("the device was not connected");
-            }
+            if (externalApi != null) {
+                BluetoothDevice device = externalApi.getService().getDevice();
 
-            boolean b = device.disconnect();
+                if (LOG.isDebugEnabled() && !device.isConnected()) {
+                    LOG.debug("the device was not connected");
+                }
 
-            if (!b && LOG.isDebugEnabled()) {
-                LOG.debug("was unable to disconnect");
+                boolean b = device.disconnect();
+
+                if (!b && LOG.isDebugEnabled()) {
+                    LOG.debug("was unable to disconnect");
+                }
             }
         } finally {
             super.close();
         }
     }
 
+    /**
+     * @param hue Color.
+     */
     public void immediateLight(int duration, int sat, int hue, int temp, int mtemp, int mbrightness) {
         System.out.println(String.format("setting to duration %s, sat %s, hue %s, temp %s, mtemp %s, mbright %s",
                 duration, sat, hue, temp, mtemp, mbrightness

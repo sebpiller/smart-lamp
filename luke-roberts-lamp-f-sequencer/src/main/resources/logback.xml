@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="noop" class="ch.qos.logback.core.helpers.NOPAppender"/>
+
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        <file>luke-roberts-lamp-f-sequencer.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>ARCHIVE-luke-roberts-lamp-f-sequencer.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{dd.MM.yyyy. HH:mm:ss} %level [%thread] %logger{20} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <encoder>
+            <pattern>%-4r [%t] %-5p %c - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="DEBUG" additivity="false">
+        <!-- log nothing by default -->
+        <appender-ref ref="noop" />
+    </root>
+
+    <!-- enable log for ch.sebpiller -->
+    <logger name="ch.sebpiller" level="INFO" additivity="false">
+        <appender-ref ref="file" level="INFO" />
+        <appender-ref ref="console" level="WARN" />
+    </logger>
+</configuration>

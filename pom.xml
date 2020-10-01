@@ -7,7 +7,16 @@
     <version>0.1.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <url>https://github.com/sebpiller</url>
+    <developers>
+        <developer>
+            <id>sebpiller</id>
+            <name>Piller Sébastien</name>
+            <email>me@sebpiller.ch</email>
+            <organization>none</organization>
+            <timezone>GMT+1</timezone>
+            <url>https://github.com/sebpiller</url>
+        </developer>
+    </developers>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -40,6 +49,7 @@
         <module>luke-roberts-lamp-f</module>
         <module>smart-lamp-sequencer</module>
         <module>bluetooth</module>
+        <module>luke-roberts-lamp-f-sequencer</module>
     </modules>
 
     <build>
@@ -95,6 +105,11 @@
         <dependencies>
             <dependency>
                 <groupId>ch.sebpiller.iot</groupId>
+                <artifactId>bluetooth</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.sebpiller.iot</groupId>
                 <artifactId>smart-lamp-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -110,7 +125,7 @@
             </dependency>
             <dependency>
                 <groupId>ch.sebpiller.iot</groupId>
-                <artifactId>bluetooth</artifactId>
+                <artifactId>luke-roberts-lamp-f-sequencer</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -147,6 +162,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-collections4</artifactId>
                 <version>4.4</version>
+            </dependency>
+            <dependency>
+                <groupId>info.picocli</groupId>
+                <artifactId>picocli</artifactId>
+                <version>4.5.1</version>
             </dependency>
             <dependency>
                 <groupId>commons-cli</groupId>
@@ -204,6 +224,7 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
     </dependencies>
+
 
 
 </project>

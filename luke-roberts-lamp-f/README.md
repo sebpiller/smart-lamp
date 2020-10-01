@@ -1,16 +1,33 @@
 # luke-roberts-lamp-f
 
-## disclaimer
+See product page: https://www.luke-roberts.com/collections/pendant-lamps/products/smart-lamp-model-f-black?ls=fr
+
 I (the developer) am not affiliated in any way with the Firm "Luke Roberts" located in Austria. 
 
-The firm Luke Roberts owns the full copyrights of all its products.
+The firm Luke Roberts owns the full copyrights for all their products.
 
-Reverse engineering is forbidden. All the code provided here has been written with only the official Luke Roberts' 
-bluetooth API documentation, which you can find a copy in the ./doc folder.
+All the code provided here has been written with only the official Luke Roberts' bluetooth API documentation, 
+which you can find a copy in the ./doc folder. I didn't make use of any reverse-engineering technic or procedure. 
 
-## License
-This code is not protected by any kind of license. Just use it in any way you'd like, but if you do something cool 
-with it I'd be happy to know :-)
+## Disclaimer
+
+The code provided has been tested on my instance of a Lamp F. It has proven to run smoothly, and is very stable with 
+my type of usage, but since I don't have any feedback or validation from Luke Roberts, there is no guarantee that 
+everything is fine.
+
+**In the worst case, destruction of the device is possible (yet highly improbable).**
+
+By using the library, you agree that I (the developer) am not responsible for any damage resulting of the usage 
+of any part of the code.
+
+
+## Licensing
+
+This code is not protected by any kind of license. Just use it in any way you like: copy, modify, alter, 
+rename, remove any references to me, pretend you did everything yourself, etc. I don't mind :-)
+
+But if you do something cool with it I would be very happy to know what you have done :-)
+
 
 ## Introduction
 This project is a low level connector to drive Luke Roberts Lamp F from a Raspberry Pi's Bluetooth chipset. 
@@ -24,63 +41,20 @@ Actually, the library supports:
 - change the temperature of the main bulb
 - fade in/out the brightness or the temperature
  
-Runs nicely at least under Raspbian arm/32v7 and Ubuntu 20.04/amd64. Others linux based systems may work too, especially 
-Android (untested). 
+Runs nicely at least under Raspbian arm/32v7 and Ubuntu 20.04/amd64 (although Ubuntu can be a bit tricky to get 
+working). Others linux-based systems may work too, especially Android (untested). 
 
-But since it depends on native bluez package on Linux, it doesn't work on Windows systems.
-
-## Quickstart demo
-
-The binaries are not available on any public repository. You have to compile yourself. By chance, this process 
-is very simple:
-
-- checkout and compile the sources:
-```shell script
-sudo apt-get install bluetooth blueman bluez -y  # bluetooth needed to build
-sudo apt-get install git -y                      # git
-sudo apt-get install git openjdk-11-jdk maven -y # java compilation
-git clone https://github.com/sebpiller/luke-roberts-lamp-f.git
-cd luke-roberts-lamp-f
-git checkout tags/0.0.1-alpha1 # or any other tag you may want to build
-mvn clean package
-```
-- copy the file `./target/luke-roberts-lamp-f-0.0.1-SNAPSHOT-jar-with-dependencies.jar` to your raspberry.
-
-- (optional) create a file with your device information, for example my-lamp-f.yaml :
-```yaml
-local-bt-adapter: hci0 # your adapter here (optional, default is hci0)
-mac: C4:AC:05:42:73:A4 # your mac address here
-```
-
-Then, to show some capabilities, you may want to:
-- ... enter a very basic cli tool to pilot your lamp:
-```shell script
-java -Dconfig=my-lamp-f.yaml -jar luke-roberts-lamp-f-0.0.1-SNAPSHOT-jar-with-dependencies.jar
-# or 
-java -Dlamp.f.mac=XX:XX:XX:XX:XX:XX -jar luke-roberts-lamp-f-0.0.1-SNAPSHOT-jar-with-dependencies.jar
-```
-This tool allows you to play a bit with the lamp. Actually, you can change the scene, fade in/out the brightness or 
-the temperature, and start a blinking loop. This tool is made for geeks, and is in a 'work in progress' state.
-
-- ... launch a scripted demo of some command:
-```shell script
-java -Dconfig=luke-roberts-config.yaml -jar luke-roberts-lamp-f-0.0.1-SNAPSHOT-jar-with-dependencies.jar demo
-# or 
-java -Dlamp.f.mac=XX:XX:XX:XX:XX:XX -jar luke-roberts-lamp-f-0.0.1-SNAPSHOT-jar-with-dependencies.jar demo
-```
-This is just some lines of java code invocations, and shows different type of automation. 
+Since it depends on some native packages built for Linux [Bluez](http://www.bluez.org), it doesn't work on Windows systems.
 
 ## Java library
-(see class ch.sebpiller.iot.bluetooth.lamp.luke.roberts.lamp.f.Cli and all the units tests to see some usage 
-example of the API.)
 
 Add the dependency: 
 ```xml
-  <dependency>
-      <groupId>ch.sebpiller.iot</groupId>
-      <artifactId>luke-roberts-lamp-f</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-  </dependency>
+<dependency>
+  <groupId>ch.sebpiller.iot</groupId>
+  <artifactId>luke-roberts-lamp-f</artifactId>
+  <version>0.1.5</version>
+</dependency>
 ```
 
 Then 
@@ -89,8 +63,8 @@ public class Test {
         
     public static void main(String[] args) {
         LukeRoberts.LampF.Config config = LukeRoberts.LampF.Config.getDefaultConfig();
-        if (System.getProperty("smart-lamp/luke-roberts/src/main/resources/config") != null) {
-            config = LukeRoberts.LampF.Config.loadOverriddenConfigFromSysprop("smart-lamp/luke-roberts/src/main/resources/config");
+        if (System.getProperty("config") != null) {
+            config = LukeRoberts.LampF.Config.loadOverriddenConfigFromSysprop("config");
         }
         if (System.getProperty("lamp.f.mac") != null) {
             config.setMac(System.getProperty("lamp.f.mac"));
@@ -117,7 +91,10 @@ public class Test {
 }
 ```
 
+
 # Usefull commands and references
+(just a collection of commands I should not forget ^^)
+
 ## Connect to the Luke Roberts Lamp F from Linux Raspbian
 
 ### Install Raspbian required packages
@@ -125,13 +102,39 @@ public class Test {
 sudo apt update -y && sudo apt upgrade -y && sudo apt install -y bluetooth blueman bluez 
 `````
 
+### bluetoothctl
+Usefull to scan for the MAC address of the device, trust it, pair it, etc.: 
+````
+> bluetoothctl
+scan on
+info C4:AC:05:42:73:A4
+connect C4:AC:05:42:73:A4
+quit
+````
+
+### bluetooth traffic
+Monitor the packets on the bluetooth bus:
+````shell script
+sudo dbus-monitor --system "destination='org.bluez'" "sender='org.bluez'"
+````
+
+### busctl 
+Manually send data over the air to a device's service and characteristic:
+```shell script
+busctl call org.bluez /org/bluez/hci0/dev_C4_AC_05_42_73_A4 org.bluez.Device1 Connect
+# brigthness 100%
+busctl call org.bluez /org/bluez/hci0/dev_C4_AC_05_42_73_A4/service001d/char001e org.bluez.GattCharacteristic1 WriteValue aya{sv} 4 0xa0 0x01 0x03 0x7f 0
+# brigthness 0%
+busctl call org.bluez /org/bluez/hci0/dev_C4_AC_05_42_73_A4/service001d/char001e org.bluez.GattCharacteristic1 WriteValue aya{sv} 4 0xa0 0x01 0x03 0x00 0
+```
+
+## XXX
 ### Docker
 \[in progress]
 Build a docker image to run on raspberry pi 4 
 ````shell script
 docker buildx build --platform linux/arm/v7 -t sebpiller/luke-roberts-lamp-f-bt-rpi:latest .
 ````
-## Linux configuration and tooling
 
 ### Bash aliases
 To invoke some commands directly from bash, no java needed.
@@ -144,33 +147,7 @@ alias lk_low ='busctl call org.bluez /org/bluez/hci0/dev_C4_AC_05_42_73_A4 org.b
 ```
 (works at least on ubuntu & raspberry pi)
 
-### bluetoothctl
-Usefull to scan for the MAC address of the device, trust it, pair it, etc.: 
-````
-> bluetoothctl
-scan on
-connect C4:AC:05:42:73:A4
-quit
-````
-
-### busctl 
-To manually send data over the air to a device's service and characteristic:
-```shell script
-> busctl call org.bluez /org/bluez/hci0/dev_C4_AC_05_42_73_A4 org.bluez.Device1 Connect
-# brigthness 100%
-> busctl call org.bluez /org/bluez/hci0/dev_C4_AC_05_42_73_A4/service001d/char001e org.bluez.GattCharacteristic1 WriteValue aya{sv} 4 0xa0 0x01 0x03 0x7f 0
-
-# brigthness 0%
-> busctl call org.bluez /org/bluez/hci0/dev_C4_AC_05_42_73_A4/service001d/char001e org.bluez.GattCharacteristic1 WriteValue aya{sv} 4 0xa0 0x01 0x03 0x00 0
-```
-
-### debuging
-#### bluetooth traffic
-````shell script
-> sudo dbus-monitor --system "destination='org.bluez'" "sender='org.bluez'"
-````
-
-#### java remote debugging
+### java remote debugging
 `````shell script
 > java \
     -Xdebug \
@@ -183,8 +160,7 @@ To manually send data over the air to a device's service and characteristic:
 ## Disco mode
 ### bash loop
 A very basic "disco mode" sample is implemented in ./src/test/bash/disco.sh file and make the lamp blink as fast as 
-possible :
-
+possible.
 ```shell script
 #!/bin/bash
 discos=(0 127)

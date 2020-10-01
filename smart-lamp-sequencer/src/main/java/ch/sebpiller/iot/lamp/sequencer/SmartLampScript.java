@@ -6,6 +6,7 @@ import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -88,37 +89,39 @@ public class SmartLampScript {
         try {
             return fromInputStream(new FileInputStream(filename));
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("file not found: " + e, e);
+            throw new IllegalArgumentException("file not found: " + e, e);
         }
     }
 
-    public static SmartLampScript fromInputStream(InputStream is) {
+    public static SmartLampScript fromInputStream(InputStream inputStream) {
         Yaml yaml = new Yaml();
 
-        try {
+        try(InputStream is = inputStream) {
             return new SmartLampScript(yaml.loadAs(is, YamlScript.class));
-        } catch (YAMLException ye) {
-            throw new IllegalArgumentException("the document given is invalid: " + ye, ye);
+        } catch (YAMLException e) {
+            throw new IllegalArgumentException("the document given is invalid: " + e, e);
+        } catch (IOException e) {
+            throw new IllegalStateException("io error: " + e, e);
         }
     }
 
     public SmartLampSequence getBeforeSequence() {
         String before = yamlScript.getBefore();
         if (StringUtils.isBlank(before)) {
-            return new SmartLampSequence();
+            return SmartLampSequence.NOOP;
         }
 
-        SmartLampSequence record = parseStep(new PlayAllAtOneTimeSequence(), before);
+        SmartLampSequence record = parseStep(new SmartLampSequence.PlayAllAtOneTimeSequence(), before);
         return record;
     }
 
     public SmartLampSequence getAfterSequence() {
         String after = yamlScript.getAfter();
         if (StringUtils.isBlank(after)) {
-            return new SmartLampSequence();
+            return SmartLampSequence.NOOP;
         }
 
-        SmartLampSequence record = parseStep(new PlayAllAtOneTimeSequence(), after);
+        SmartLampSequence record = parseStep(new SmartLampSequence.PlayAllAtOneTimeSequence(), after);
         return record;
     }
 

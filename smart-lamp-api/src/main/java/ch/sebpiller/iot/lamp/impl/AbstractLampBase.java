@@ -1,5 +1,6 @@
-package ch.sebpiller.iot.lamp;
+package ch.sebpiller.iot.lamp.impl;
 
+import ch.sebpiller.iot.lamp.SmartLampFacade;
 import org.apache.commons.lang3.Validate;
 
 import java.util.concurrent.Callable;
@@ -17,14 +18,16 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable {
     /**
-     * Single threaded executor to run asynchronous behavior ({@link #fadeToBrightness(byte)})
+     * Single threaded executor to run asynchronous behavior ({@link #fadeBrightnessTo(byte, ch.sebpiller.iot.lamp.SmartLampFacade.FadeStyle)})
      */
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Lock tempLock = new ReentrantLock(), brightLock = new ReentrantLock();
 
-    // assumes defaults
-    private int _temperature = 4000;
-    private byte _brightness = 100;
+    // TODO load actual state of the lamp
+    /** local cache of the last temperature set */
+    private int temperature = 4000;
+    /** local cache of the last brightness set */
+    private byte brightness = 100;
 
     @Override
     public Future<SmartLampFacade> fadeBrightnessFromTo(byte from, byte to, SmartLampFacade.FadeStyle fadeStyle) {
@@ -44,13 +47,15 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
                     break;
             }
 
-
             brightLock.lockInterruptibly();
             try {
                 for (byte b = from; up ? b <= to : b >= to; b += inc) {
                     setBrightness(b);
-                    _brightness = b;
-                    sleep(sleep);
+                    this.brightness = b;
+
+                    if (sleep > 0) {
+                        sleep(sleep);
+                    }
                 }
             } finally {
                 brightLock.unlock();
@@ -62,13 +67,9 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
         return executor.submit(callable);
     }
 
-    public Future<SmartLampFacade> fadeToBrightness(byte percent) {
-        return fadeBrightnessTo(percent, SmartLampFacade.FadeStyle.NORMAL);
-    }
-
     @Override
     public Future<SmartLampFacade> fadeBrightnessTo(byte percent, SmartLampFacade.FadeStyle fadeStyle) {
-        return fadeBrightnessFromTo(_brightness, percent, fadeStyle);
+        return fadeBrightnessFromTo(brightness, percent, fadeStyle);
     }
 
     @Override
@@ -93,8 +94,11 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
             try {
                 for (int b = from; up ? b <= to : b >= to; b += inc) {
                     setTemperature(b);
-                    _temperature = b;
-                    sleep(sleep);
+                    this.temperature = b;
+
+                    if (sleep > 0) {
+                        sleep(sleep);
+                    }
                 }
             } finally {
                 tempLock.unlock();
@@ -108,14 +112,13 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
 
     @Override
     public Future<SmartLampFacade> fadeTemperatureTo(int kelvin, FadeStyle fadeStyle) {
-        return fadeTemperatureFromTo(_temperature, kelvin, fadeStyle);
+        return fadeTemperatureFromTo(temperature, kelvin, fadeStyle);
     }
 
     /**
      * {@inheritDoc}
-     * The auto-closable nature of a lamp is not to get powered off after use, but to release the bluetooth connection
-     * and all the inner resources that are used to pilot the lamnp from a jvm. Subclasses should add the needed behavior
-     * here.
+     *
+     * Stop the executor used to schedule fading effects.
      */
     @Override
     public void close() {

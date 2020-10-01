@@ -1,12 +1,21 @@
 package ch.sebpiller.iot.lamp;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Scanner;
+
 
 /**
- * A small command line interface to command a lamp.
+ * A small text interface to command a lamp.
  */
-public class SmartLampCli {
+public class SmartLampInteractive {
+    private static final Logger LOG = LoggerFactory.getLogger(SmartLampInteractive.class);
     private final SmartLampFacade facade;
     private Scanner scanner;
 
@@ -19,22 +28,24 @@ public class SmartLampCli {
             fadeTempStyle = SmartLampFacade.FadeStyle.NORMAL //
                     ;
 
-    public SmartLampCli(SmartLampFacade facade) {
+    public SmartLampInteractive(SmartLampFacade facade) {
         this.facade = Objects.requireNonNull(facade);
     }
 
     public void run(String... args) {
-        // no args = interactive mode
-        if (args == null || args.length == 0) {
-            scanner = new Scanner(System.in);
-            try {
-                while (showMenu()) ;
-            } finally {
-                scanner.close();
+        scanner = new Scanner(System.in);
+        try {
+            while (showMenu(args)) ;
+        } finally {
+            scanner.close();
+
+            if (facade instanceof Closeable) {
+                try {
+                    ((Closeable) facade).close();
+                } catch (IOException e) {
+                    LOG.debug("error during lamp closing: " + e, e);
+                }
             }
-        } else {
-            // TODO
-            throw new RuntimeException("non-interactive mode not implemented yet!");
         }
     }
 
@@ -45,10 +56,19 @@ public class SmartLampCli {
     }
 
     // return true when cli is done
-    private boolean showMenu() {
+    private boolean showMenu(String... args) {
         cls();
-        System.out.println("Smart Lamp - cli");
-        System.out.println("================");
+
+        // title
+        if (args != null && args.length > 0) {
+            System.out.println(args[0]);
+        }
+
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("Smart Lamp - interactive mode");
+        System.out.println("=============================");
         System.out.println();
         System.out.println("1. Change power status");
         System.out.println("2. Change scene");
@@ -58,7 +78,7 @@ public class SmartLampCli {
         System.out.println("6. Fade temperature (main bulb only)");
         System.out.println("7. Ping");
         System.out.println();
-        System.out.println("8. Immediate light");
+        //System.out.println("8. Immediate light");
         System.out.println("9. Blink this scene (" + blinkCount + " times, on " + blinkOnTime + "ms, off " + blinkOffTime + "ms)");
         System.out.println("b. Change blink params");
         System.out.println();
@@ -122,7 +142,7 @@ public class SmartLampCli {
                     case "3":
                         System.out.print("choose fade style (" + Arrays.toString(SmartLampFacade.FadeStyle.values()) + ") : ");
                         line = scanner.nextLine();
-                        fadeBrightStyle = SmartLampFacade.FadeStyle.valueOf(line);
+                        fadeBrightStyle = SmartLampFacade.FadeStyle.valueOf(line.toUpperCase());
                         break;
                     case "g":
                     case "go":
@@ -151,7 +171,7 @@ public class SmartLampCli {
                     case "3":
                         System.out.print("choose fade style (" + Arrays.toString(SmartLampFacade.FadeStyle.values()) + ") : ");
                         line = scanner.nextLine();
-                        fadeTempStyle = Optional.ofNullable(SmartLampFacade.FadeStyle.valueOf(line)).orElse(fadeTempStyle);
+                        fadeTempStyle = Optional.ofNullable(SmartLampFacade.FadeStyle.valueOf(line.toUpperCase())).orElse(fadeTempStyle);
                         break;
                     case "g":
                     case "go":
@@ -179,31 +199,31 @@ public class SmartLampCli {
 //                }
 
                 break;
-            case "8":
-                // FIXME crappy code
-                if (facade.getClass().getName().contains("LukeRobertsLampF")) {
-                    try {
-                        Random random = new Random();
-                        facade.getClass().getMethod("immediateLight",
-                                int.class, int.class, int.class, int.class, int.class, int.class
-                        ).invoke(facade,
-                                0,
-                                random.nextInt(255),
-                                random.nextInt(65500),
-                                random.nextInt(1300) + 2700,
-                                random.nextInt(1300) + 2700,
-                                0//random.nextInt(255)
-                        );
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    } catch (NoSuchMethodException e) {
-                        e.printStackTrace();
-                    }
-                }
-                scanner.nextLine();
-                break;
+//            case "8":
+//                // FIXME crappy code
+//                if (facade.getClass().getName().contains("LukeRobertsLampF")) {
+//                    try {
+//                        Random random = new Random();
+//                        facade.getClass().getMethod("immediateLight",
+//                                int.class, int.class, int.class, int.class, int.class, int.class
+//                        ).invoke(facade,
+//                                0,
+//                                random.nextInt(255),
+//                                random.nextInt(65535),
+//                                random.nextInt(1300) + 2700,
+//                                random.nextInt(1300) + 2700,
+//                                0//random.nextInt(255)
+//                        );
+//                    } catch (IllegalAccessException e) {
+//                        e.printStackTrace();
+//                    } catch (InvocationTargetException e) {
+//                        e.printStackTrace();
+//                    } catch (NoSuchMethodException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                scanner.nextLine();
+//                break;
             case "q":
                 return false;
             default:

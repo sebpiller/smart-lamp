@@ -11,7 +11,7 @@ public interface SmartLampFacade {
     /**
      * Utility method to facilitate the development of a timed sequence of actions.
      * <p>
-     * WARNING: this is a rather inaccurate (but simple) way to time a sequence, if you need professional rendering,
+     * WARNING: this is a rather inaccurate (but simple) way to time a sequence, if you need a more precise rendering,
      * then you need another type of sequencer.
      */
     default SmartLampFacade sleep(int millis) {
@@ -33,7 +33,7 @@ public interface SmartLampFacade {
     /**
      * Modify the brightness of the lamp.
      *
-     * @param percent Percentage of brighness
+     * @param percent Percentage of brightness
      * @return this facade for chaining.
      * @throws UnsupportedOperationException if the device do not support the modification of the brightness.
      */
@@ -55,8 +55,10 @@ public interface SmartLampFacade {
 
     /**
      * Change the temperature of the lamp, if supported.
+     *
+     * @throws UnsupportedOperationException in case this lamp does not support the concept of temperature.
      */
-    SmartLampFacade setTemperature(int kelvin);
+    SmartLampFacade setTemperature(int kelvin) throws UnsupportedOperationException;
 
     /**
      * Fade the temperature of the lamp from a point to another, if supported.
@@ -66,7 +68,7 @@ public interface SmartLampFacade {
     Future<? extends SmartLampFacade> fadeTemperatureFromTo(int from, int to, FadeStyle fadeStyle);
 
     /**
-     * Relative from where wh are, change the temperature of the lamp, if supported.
+     * Relative from where we are, change the temperature of the lamp, if supported.
      *
      * @return this future facade for chaining.
      */
@@ -80,7 +82,8 @@ public interface SmartLampFacade {
     SmartLampFacade setScene(byte scene) throws UnsupportedOperationException;
 
     /**
-     * Describes the different available styles to fade a value.
+     * Describes the different available styles to fade a value. Implementations are free to interpret the meaning of
+     * each value in any way they like.
      */
     enum FadeStyle {
         FAST,

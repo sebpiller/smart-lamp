@@ -1,4 +1,6 @@
-package ch.sebpiller.iot.lamp;
+package ch.sebpiller.iot.lamp.impl;
+
+import ch.sebpiller.iot.lamp.SmartLampFacade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,7 +56,7 @@ public final class CompositeLampFacade implements SmartLampFacade {
     }
 
     @Override
-    public CompositeLampFacade setTemperature(int kelvin) {
+    public CompositeLampFacade setTemperature(int kelvin) throws UnsupportedOperationException {
         composites.parallelStream().forEach(smartLampFacade -> smartLampFacade.setTemperature(kelvin));
         return this;
     }

@@ -1,7 +1,7 @@
 package ch.sebpiller.iot.lamp.sequencer;
 
-import ch.sebpiller.iot.lamp.LoggingLamp;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
+import ch.sebpiller.iot.lamp.impl.LoggingLamp;
 import ch.sebpiller.tictac.TicTac;
 import ch.sebpiller.tictac.TicTacBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
