@@ -7,6 +7,8 @@
         <version>0.1.5-SNAPSHOT</version>
     </parent>
     <artifactId>luke-roberts-lamp-f</artifactId>
+    <name>Smart Lamp - Luke Roberts' Lamp F</name>
+    <description>Implementation of the communication with a Lamp F.</description>
 
     <properties>
         <docker.image.prefix>sebpiller</docker.image.prefix>

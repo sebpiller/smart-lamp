@@ -8,6 +8,8 @@
     </parent>
 
     <artifactId>smart-lamp-api</artifactId>
+    <name>Smart Lamp - Api</name>
+    <description>Api of a Smart Lamp.</description>
 
     <dependencies>
         <dependency>

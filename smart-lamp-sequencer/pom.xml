@@ -9,6 +9,8 @@
         <version>0.1.5-SNAPSHOT</version>
     </parent>
     <artifactId>smart-lamp-sequencer</artifactId>
+    <name>Smart Lamp - Sequencer</name>
+    <description>Pilot a Smart Lamp using a succession of action to be executed in rhythm with a tempo.</description>
 
     <dependencies>
         <dependency>

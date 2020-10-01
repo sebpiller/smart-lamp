@@ -8,6 +8,8 @@
     </parent>
 
     <artifactId>bluetooth</artifactId>
+    <name>Smart Lamp - Bluetooth</name>
+    <description>Bluetooth helper classes.</description>
 
     <dependencies>
         <dependency>

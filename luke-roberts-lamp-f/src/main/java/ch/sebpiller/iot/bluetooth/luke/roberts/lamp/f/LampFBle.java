@@ -25,8 +25,8 @@ import static ch.sebpiller.iot.bluetooth.BluetoothHelper.findDeviceOnAdapter;
 /**
  * Implementation of a {@link SmartLampFacade} able to drive a "Luke Roberts' model Lamp F" with bluetooth BLE.
  */
-public class LukeRobertsLampF extends AbstractLampBase {
-    private static final Logger LOG = LoggerFactory.getLogger(LukeRobertsLampF.class);
+public class LampFBle extends AbstractLampBase {
+    private static final Logger LOG = LoggerFactory.getLogger(LampFBle.class);
 
     private final LukeRoberts.LampF.Config config;
     private Map<DiscoveryFilter, Object> filter;
@@ -36,11 +36,11 @@ public class LukeRobertsLampF extends AbstractLampBase {
      */
     private BluetoothGattCharacteristic externalApi;
 
-    public LukeRobertsLampF() {
+    public LampFBle() {
         this(LukeRoberts.LampF.Config.getDefaultConfig());
     }
 
-    public LukeRobertsLampF(LukeRoberts.LampF.Config config) {
+    public LampFBle(LukeRoberts.LampF.Config config) {
         this.config = Objects.requireNonNull(config);
 
         filter = new HashMap<>();
@@ -50,7 +50,7 @@ public class LukeRobertsLampF extends AbstractLampBase {
         });
     }
 
-    public LukeRobertsLampF(LukeRoberts.LampF.Config config, Map<DiscoveryFilter, Object> filter) {
+    public LampFBle(LukeRoberts.LampF.Config config, Map<DiscoveryFilter, Object> filter) {
         this(config);
         this.filter = Objects.requireNonNull(filter);
     }
@@ -163,7 +163,7 @@ public class LukeRobertsLampF extends AbstractLampBase {
     }
 
     @Override
-    public LukeRobertsLampF setScene(byte sceneId) {
+    public LampFBle setScene(byte sceneId) {
         selectScene(sceneId);
         return this;
     }
@@ -175,14 +175,14 @@ public class LukeRobertsLampF extends AbstractLampBase {
      * @return
      */
     @Override
-    public LukeRobertsLampF setBrightness(byte percent) {
+    public LampFBle setBrightness(byte percent) {
         Validate.inclusiveBetween(0, 100, percent, "percentage must be in range 0..100");
         sendCommandToExternalApi(LukeRoberts.LampF.Command.BRIGHTNESS, percent);
         return this;
     }
 
     @Override
-    public LukeRobertsLampF setTemperature(int kelvin) {
+    public LampFBle setTemperature(int kelvin) {
         // 2700K..4000K no exception on invalid value here
         int k = Math.max(2700, Math.min(4000, kelvin));
         sendCommandToExternalApi(LukeRoberts.LampF.Command.COLOR_TEMP, (byte) (k >> 8), (byte) (k));
@@ -190,10 +190,10 @@ public class LukeRobertsLampF extends AbstractLampBase {
     }
 
     @Override
-    public LukeRobertsLampF power(boolean on) {
+    public LampFBle power(boolean on) {
         selectScene(on ?
-                LukeRoberts.LampF.LukeRobertsScene.DEFAULT_SCENE :
-                LukeRoberts.LampF.LukeRobertsScene.SHUTDOWN_SCENE
+                LukeRoberts.LampF.Scene.DEFAULT_SCENE.getId() :
+                LukeRoberts.LampF.Scene.SHUTDOWN_SCENE.getId()
         );
 
         return this;
