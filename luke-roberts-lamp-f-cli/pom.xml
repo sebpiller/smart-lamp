@@ -10,7 +10,7 @@
         <version>0.1.5-SNAPSHOT</version>
     </parent>
 
-    <artifactId>luke-roberts-lamp-f-sequencer</artifactId>
+    <artifactId>luke-roberts-lamp-f-cli</artifactId>
     <name>Smart Lamp - Luke Roberts' Lamp F - CLI</name>
     <description>CLI to run a sequencer connected to a Luke Roberts' Lamp F.</description>
 
