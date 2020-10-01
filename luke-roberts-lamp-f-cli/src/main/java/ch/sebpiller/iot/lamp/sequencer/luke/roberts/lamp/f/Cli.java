@@ -36,7 +36,7 @@ import java.util.concurrent.Callable;
 import static java.lang.String.format;
 
 @Command(
-        name = "java -jar luke-roberts-lamp-f-sequencer.jar",
+        name = "java -jar luke-roberts-lamp-f-cli.jar",
         footer = "NO Copyright - 2020",
         description = "Automated manipulation of a @|bold,underline Luke Roberts' Lamp F|@.",
         sortOptions = false
