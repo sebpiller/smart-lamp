@@ -36,8 +36,8 @@ Device E6:B3:DC:6E:06:32 (random)
     RSSI: -42
     TxPower: 10
  */
-public class PhilipsHue extends AbstractLampBase {
-    private static final Logger LOG = LoggerFactory.getLogger(PhilipsHue.class);
+public class PhilipsHueBle extends AbstractLampBase {
+    private static final Logger LOG = LoggerFactory.getLogger(PhilipsHueBle.class);
 
     private static final String PHILIPS_UUID = "0000fe0f-0000-1000-8000-00805f9b34fb";
     private static final String PHILIPS_CHARAC_UUID = "0000fe0f-0000-1000-8000-00805f9b34fb";
@@ -47,7 +47,7 @@ public class PhilipsHue extends AbstractLampBase {
     private final String adapter, mac;
     private BluetoothGattCharacteristic externalApi;
 
-    public PhilipsHue(String adapter, String mac) {
+    public PhilipsHueBle(String adapter, String mac) {
         this.adapter = adapter;
         this.mac = mac;
 
@@ -56,29 +56,29 @@ public class PhilipsHue extends AbstractLampBase {
         filter.put(DiscoveryFilter.UUIDs, new String[]{PHILIPS_UUID});
     }
 
-    public PhilipsHue(String mac) {
+    public PhilipsHueBle(String mac) {
         this("hci0", mac);
     }
 
     @Override
-    public PhilipsHue power(boolean on) {
+    public PhilipsHueBle power(boolean on) {
         byte[] ba = new byte[]{};
         sendCommandToExternalApi(ba);
         return this;
     }
 
     @Override
-    public PhilipsHue setBrightness(byte percent) {
+    public PhilipsHueBle setBrightness(byte percent) {
         return this;
     }
 
     @Override
-    public PhilipsHue setTemperature(int kelvin) {
+    public PhilipsHueBle setTemperature(int kelvin) {
         return this;
     }
 
     @Override
-    public PhilipsHue setScene(byte scene) throws UnsupportedOperationException {
+    public PhilipsHueBle setScene(byte scene) throws UnsupportedOperationException {
         return this;
     }
 
