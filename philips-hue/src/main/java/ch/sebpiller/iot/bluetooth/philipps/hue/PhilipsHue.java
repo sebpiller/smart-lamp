@@ -1,5 +1,6 @@
 package ch.sebpiller.iot.bluetooth.philipps.hue;
 
+import ch.sebpiller.iot.bluetooth.BluetoothHelper;
 import ch.sebpiller.iot.lamp.impl.AbstractLampBase;
 import com.github.hypfvieh.bluetooth.DeviceManager;
 import com.github.hypfvieh.bluetooth.DiscoveryFilter;
@@ -7,14 +8,14 @@ import com.github.hypfvieh.bluetooth.DiscoveryTransport;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattCharacteristic;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattService;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import static ch.sebpiller.iot.bluetooth.BluetoothHelper.discoverDeviceManager;
 
 import static ch.sebpiller.iot.bluetooth.BluetoothHelper.discoverDeviceManager;
 import static ch.sebpiller.iot.bluetooth.BluetoothHelper.findDeviceOnAdapter;
@@ -38,7 +39,9 @@ Device E6:B3:DC:6E:06:32 (random)
 public class PhilipsHue extends AbstractLampBase {
     private static final Logger LOG = LoggerFactory.getLogger(PhilipsHue.class);
 
-    private String uuid = "0000fe0f-0000-1000-8000-00805f9b34fb";
+    private static final String PHILIPS_UUID = "0000fe0f-0000-1000-8000-00805f9b34fb";
+    private static final String PHILIPS_CHARAC_UUID = "0000fe0f-0000-1000-8000-00805f9b34fb";
+
     private Map<DiscoveryFilter, Object> filter;
 
     private final String adapter, mac;
@@ -50,14 +53,17 @@ public class PhilipsHue extends AbstractLampBase {
 
         Map<DiscoveryFilter, Object> filter = new HashMap<>();
         filter.put(DiscoveryFilter.Transport, DiscoveryTransport.LE);
-        filter.put(DiscoveryFilter.UUIDs, new String[]{"0000fe0f-0000-1000-8000-00805f9b34fb"});
+        filter.put(DiscoveryFilter.UUIDs, new String[]{PHILIPS_UUID});
     }
+
     public PhilipsHue(String mac) {
         this("hci0", mac);
     }
 
     @Override
     public PhilipsHue power(boolean on) {
+        byte[] ba = new byte[]{};
+        sendCommandToExternalApi(ba);
         return this;
     }
 
@@ -76,7 +82,7 @@ public class PhilipsHue extends AbstractLampBase {
         return this;
     }
 
-    private BluetoothGattCharacteristic getExternalApi() {
+    private BluetoothGattCharacteristic getPhilipsCommandApi() {
         if (externalApi == null) {
             externalApi = discoverExternalApiEndpoint(discoverDeviceManager(), filter);
         }
@@ -104,16 +110,44 @@ public class PhilipsHue extends AbstractLampBase {
             return null;
         }
 
-
-        BluetoothGattService customControlService = philipsHue.getGattServiceByUuid(uuid);
-
-        if (customControlService == null) {
-            LOG.error("unable to connect to the custom control service {}: maybe the lamp is out of range.", ccSer.getUuid());
+        BluetoothGattService philipsService = philipsHue.getGattServiceByUuid(PHILIPS_UUID);
+        if (philipsService == null) {
+            LOG.error("unable to connect to the custom control service {}: maybe the lamp is out of range.", PHILIPS_UUID);
             return null;
         }
-        LOG.info("found GATT custom control service {} at UUID {}", customControlService, ccSer.getUuid());
+        LOG.info("found GATT service {} at UUID {}", philipsService, PHILIPS_UUID);
 
+        BluetoothGattCharacteristic philipsCharac = philipsService.getGattCharacteristicByUuid(PHILIPS_CHARAC_UUID);
+        if (philipsCharac == null) {
+            LOG.error("unable to connect to the characteristic {}: maybe the lamp is out of range.", PHILIPS_CHARAC_UUID);
+            return null;
+        }
+        LOG.info("external api {} found at characteristics UUID {}", philipsCharac, PHILIPS_CHARAC_UUID);
 
-        return null;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("  > inner structure: {}", ReflectionToStringBuilder.reflectionToString(philipsCharac));
+        }
+
+        return philipsCharac;
+    }
+
+    private void sendCommandToExternalApi(byte[] o) {
+        try {
+            BluetoothGattCharacteristic api = getPhilipsCommandApi();
+            BluetoothHelper.reconnectIfNeeded(api);
+
+            if (LOG.isDebugEnabled()) {
+                BluetoothDevice device = api.getService().getDevice();
+                LOG.debug("sending command {} to Philips Hue '{}' ({})",
+                        o,
+                        device.getName(),
+                        device.getAddress()
+                );
+            }
+
+            api.writeValue(o, Collections.emptyMap());
+        } catch (DBusException e) {
+            throw new IllegalStateException("unable to invoke command on Philips Hue: " + e, e);
+        }
     }
 }
