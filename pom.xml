@@ -46,10 +46,10 @@
     </distributionManagement>
 
     <modules>
-        <module>smart-lamp-api</module>
-        <module>luke-roberts-lamp-f</module>
-        <module>smart-lamp-sequencer</module>
         <module>bluetooth</module>
+        <module>smart-lamp-api</module>
+        <module>smart-lamp-sequencer</module>
+        <module>luke-roberts-lamp-f</module>
         <module>luke-roberts-lamp-f-sequencer</module>
         <module>philips-hue</module>
     </modules>
