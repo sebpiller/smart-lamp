@@ -2,15 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <artifactId>smart-lamp-parent</artifactId>
         <groupId>ch.sebpiller.iot</groupId>
         <version>0.1.5-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>luke-roberts-lamp-f-sequencer</artifactId>
-    <description>CLI to run a sequencer connected to Luke Roberts' Lamp F.</description>
+    <name>Smart Lamp - Luke Roberts' Lamp F - CLI</name>
+    <description>CLI to run a sequencer connected to a Luke Roberts' Lamp F.</description>
 
     <dependencies>
         <dependency>

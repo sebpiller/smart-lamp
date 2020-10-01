@@ -6,6 +6,7 @@
     <artifactId>smart-lamp-parent</artifactId>
     <version>0.1.5-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <name>Smart Lamp - Parent</name>
 
     <developers>
         <developer>
@@ -231,7 +232,5 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
     </dependencies>
-
-
 
 </project>

@@ -1,7 +1,7 @@
 package ch.sebpiller.iot.lamp.sequencer.luke.roberts.lamp.f;
 
 import ch.sebpiller.iot.bluetooth.luke.roberts.LukeRoberts;
-import ch.sebpiller.iot.bluetooth.luke.roberts.lamp.f.LukeRobertsLampF;
+import ch.sebpiller.iot.bluetooth.luke.roberts.lamp.f.LampFBle;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
 import ch.sebpiller.iot.lamp.SmartLampInteractive;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampScript;
@@ -219,7 +219,7 @@ public class Cli implements Callable<Integer> {
         }
     }
 
-    private LukeRobertsLampF buildLukeRobertsLampFFacadeFromSettings() {
+    private LampFBle buildLukeRobertsLampFFacadeFromSettings() {
         LukeRoberts.LampF.Config lampFConfig = LukeRoberts.LampF.Config.getDefaultConfig();
 
         // load config overrides from file if defined
@@ -246,7 +246,7 @@ public class Cli implements Callable<Integer> {
         lampFConfig = lampFConfig.merge(c);
         // -----
 
-        return new LukeRobertsLampF(lampFConfig);
+        return new LampFBle(lampFConfig);
     }
 
     @Override
@@ -267,7 +267,7 @@ public class Cli implements Callable<Integer> {
             }
         }
 
-        LukeRobertsLampF lamp = buildLukeRobertsLampFFacadeFromSettings();
+        LampFBle lamp = buildLukeRobertsLampFFacadeFromSettings();
 
         try {
             boolean interactive = cliParamScript == null;

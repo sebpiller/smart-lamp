@@ -1,7 +1,7 @@
 package ch.sebpiller.iot.bluetooth.lamp.luke.roberts.lamp.f;
 
 import ch.sebpiller.iot.bluetooth.luke.roberts.LukeRoberts;
-import ch.sebpiller.iot.bluetooth.luke.roberts.lamp.f.LukeRobertsLampF;
+import ch.sebpiller.iot.bluetooth.luke.roberts.lamp.f.LampFBle;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
 import com.github.hypfvieh.bluetooth.DiscoveryFilter;
 import com.github.hypfvieh.bluetooth.DiscoveryTransport;
@@ -14,20 +14,20 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Ignore("ignored unless in real world testing with an adequate lamp running, and a human can verify it actually worked.")
-public class LukeRobertsLampFBrightnessIntegrationTest {
+public class LampFBleBrightnessIntegrationTest {
     private static LukeRoberts.LampF.Config lampConfigForTesting;
-    private static LukeRobertsLampF facade;
+    private static LampFBle facade;
 
     @BeforeClass
     public static void beforeClass() {
-        lampConfigForTesting = LukeRoberts.LampF.Config.loadFromStream(LukeRobertsLampFBrightnessIntegrationTest.class.
+        lampConfigForTesting = LukeRoberts.LampF.Config.loadFromStream(LampFBleBrightnessIntegrationTest.class.
                 getResourceAsStream("/luke-roberts-lamp-f-tests.yaml"));
 
         Map<DiscoveryFilter, Object> filter = new HashMap<>();
         filter.put(DiscoveryFilter.Transport, DiscoveryTransport.LE);
         filter.put(DiscoveryFilter.UUIDs, new String[]{lampConfigForTesting.getCustomControlService()
                 .getUserExternalApiEndpoint().getUuid()});
-        facade = new LukeRobertsLampF(lampConfigForTesting, filter);
+        facade = new LampFBle(lampConfigForTesting, filter);
     }
 
     @Test

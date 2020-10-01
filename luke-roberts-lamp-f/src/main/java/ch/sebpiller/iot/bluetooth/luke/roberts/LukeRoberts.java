@@ -23,9 +23,10 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  */
 public final class LukeRoberts {
     public static class LampF {
-        private static final byte GATT_COMMAND_PREFIX = (byte) 0xA0;
-        private static final byte GATT_VERSION_1 = 0x01;
-        private static final byte GATT_VERSION_2 = 0x02;
+        private static final byte COMMAND_PREFIX = (byte) 0xA0;
+        private static final byte VERSION_1 = 0x01;
+        private static final byte VERSION_2 = 0x02;
+
         /**
          * @deprecated as per Luke Roberts' documentation, this characteristics is now deprecated. It was used to change
          * the scene displayed.
@@ -34,16 +35,16 @@ public final class LukeRoberts {
         static String UUID_CHARACTERISTICS_SELECT_SCENE_SERVICE = "44092844-0567-11e6-b862-0002a5d5c51b";
 
         public enum Command {
-            PING_V1(GATT_COMMAND_PREFIX, GATT_VERSION_1, (byte) 0x00, bytes -> bytes.length == 0),
-            PING_V2(GATT_COMMAND_PREFIX, GATT_VERSION_2, (byte) 0x00, bytes -> bytes.length == 0),
-            QUERY_SCENE(GATT_COMMAND_PREFIX, GATT_VERSION_1, (byte) 0x01),
-            IMMEDIATE_LIGHT(GATT_COMMAND_PREFIX, GATT_VERSION_1, (byte) 0x02),
-            BRIGHTNESS(GATT_COMMAND_PREFIX, GATT_VERSION_1, (byte) 0x03, bytes -> bytes.length == 1),
-            COLOR_TEMP(GATT_COMMAND_PREFIX, GATT_VERSION_1, (byte) 0x04),
-            SELECT_SCENE(GATT_COMMAND_PREFIX, GATT_VERSION_2, (byte) 0x05),
-            NEXT_SCENE_BY_BRIGHTNESS(GATT_COMMAND_PREFIX, GATT_VERSION_2, (byte) 0x06),
-            ADJUST_COLOR_TEMP(GATT_COMMAND_PREFIX, GATT_VERSION_2, (byte) 0x07, bytes -> bytes.length == 2),
-            RELATIVE_BRIGHTNESS(GATT_COMMAND_PREFIX, GATT_VERSION_2, (byte) 0x08),
+            PING_V1(COMMAND_PREFIX, VERSION_1, (byte) 0x00, bytes -> bytes.length == 0),
+            PING_V2(COMMAND_PREFIX, VERSION_2, (byte) 0x00, bytes -> bytes.length == 0),
+            QUERY_SCENE(COMMAND_PREFIX, VERSION_1, (byte) 0x01),
+            IMMEDIATE_LIGHT(COMMAND_PREFIX, VERSION_1, (byte) 0x02),
+            BRIGHTNESS(COMMAND_PREFIX, VERSION_1, (byte) 0x03, bytes -> bytes.length == 1),
+            COLOR_TEMP(COMMAND_PREFIX, VERSION_1, (byte) 0x04),
+            SELECT_SCENE(COMMAND_PREFIX, VERSION_2, (byte) 0x05),
+            NEXT_SCENE_BY_BRIGHTNESS(COMMAND_PREFIX, VERSION_2, (byte) 0x06),
+            ADJUST_COLOR_TEMP(COMMAND_PREFIX, VERSION_2, (byte) 0x07, bytes -> bytes.length == 2),
+            RELATIVE_BRIGHTNESS(COMMAND_PREFIX, VERSION_2, (byte) 0x08),
             ;
 
             private static final Logger LOG = LoggerFactory.getLogger(Command.class);
@@ -85,25 +86,25 @@ public final class LukeRoberts {
              * Builds a byte array to represent the current command in binary form, respecting
              * the Luke Roberts protocol.
              *
-             * @param lsb Parameterized command can accept parameters, which are appended to the end of the command (LSB).
+             * @param args Parameterized commands can accept parameters, which are appended to the end of the command.
              *            This parameter can be null.
              * @return An array of bytes that correspond to the requested command, with the parameters at the end.
              */
-            public byte[] toByteArray(Byte... lsb) {
-                if (validateParams.isPresent() && !validateParams.get().test(lsb)) {
-                    throw new IllegalArgumentException("invalid arguments provided");
+            public byte[] toByteArray(Byte... args) {
+                if (validateParams.isPresent() && !validateParams.get().test(args)) {
+                    throw new IllegalArgumentException("invalid arguments provided for command " + this);
                 }
 
-                byte[] bytes = new byte[3 + (lsb == null ? 0 : lsb.length)];
+                byte[] bytes = new byte[3 + (args == null ? 0 : args.length)];
 
                 bytes[0] = prefix;
                 bytes[1] = version;
                 bytes[2] = opcode;
 
-                if (lsb != null) {
+                if (args != null) {
                     int idx = 0;
 
-                    for (byte b : lsb) {
+                    for (byte b : args) {
                         bytes[2 + (idx + 1)] = b;
                         idx++;
                     }
@@ -122,53 +123,69 @@ public final class LukeRoberts {
          * <p>
          * WARN: the user can override or delete the scenes available by default. Except for {@link #DEFAULT_SCENE}
          * and {@link #SHUTDOWN_SCENE} which are always available, there is no guarantee that a scene referenced
-         * here will be available in the connect hardware, neither that is hadn't been modified by the user in Luke
+         * here will be available in the connected hardware, neither that is hadn't been modified by the user in Luke
          * Roberts' app.
          */
-        public static class LukeRobertsScene {
+        public enum Scene {
             /**
              * Use this scene to power on the lamp to the default scene.
              */
-            public static final byte DEFAULT_SCENE = (byte) 0xFF;
+            DEFAULT_SCENE((byte) 0xFF),
+
             /**
              * Use this scene to power off the lamp.
              */
-            public static final byte SHUTDOWN_SCENE = 0x00;
+            SHUTDOWN_SCENE((byte) 0x00),
 
+            // TODO verify the IDs of the following scenes (does not match what is actually rendered by the app.)
             /**
              * Reading scene.
              */
-            public static final byte READING_SCENE = 0x01;
+            READING_SCENE((byte) 0x01),
 
             /**
              * Candle light scene.
              */
-            public static final byte CANDLE_LIGHT_SCENE = 0x02;
+            CANDLE_LIGHT_SCENE((byte) 0x02),
 
             /**
              * Shiny scene.
              */
-            public static final byte SHINY_SCENE = 0x03;
+            SHINY_SCENE((byte) 0x03),
 
             /**
              * Welcome scene.
              */
-            public static final byte WELCOME_SCENE = 0x04;
+            WELCOME_SCENE((byte) 0x04),
 
             /**
              * Indirect scene.
              */
-            public static final byte INDIRECT_SCENE = 0x05;
+            INDIRECT_SCENE((byte) 0x05),
 
             /**
              * Highlights scene.
              */
-            public static final byte HIGHLIGHTS_SCENE = 0x06;
+            HIGHLIGHTS_SCENE((byte) 0x06),
 
             /**
              * Bright scene.
              */
-            public static final byte BRIGHT_SCENE = 0x07;
+            BRIGHT_SCENE((byte) 0x07),
+
+            //
+            ;
+
+            private final byte id;
+
+            Scene(byte id) {
+                this.id = id;
+
+            }
+
+            public byte getId() {
+                return id;
+            }
         }
 
         /**
