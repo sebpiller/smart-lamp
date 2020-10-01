@@ -10,7 +10,6 @@ import ch.sebpiller.sound.beatdetect.BpmSourceAudioListener;
 import ch.sebpiller.tictac.BpmSource;
 import ch.sebpiller.tictac.TicTac;
 import ch.sebpiller.tictac.TicTacBuilder;
-import jnr.ffi.Struct;
 import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,25 +23,23 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import javax.validation.constraints.Null;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.PositiveOrZero;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.function.Consumer;
 
 import static java.lang.String.format;
 
 @Command(
         name = "java -jar luke-roberts-lamp-f-sequencer.jar",
-        footer = "NO Copyright 2020",
-        description = "Automated manipulation of a @|bold,underline Luke Roberts' Lamp F|@."
+        footer = "NO Copyright - 2020",
+        description = "Automated manipulation of a @|bold,underline Luke Roberts' Lamp F|@.",
+        sortOptions = false
 )
 public class Cli implements Callable<Integer> {
     /**
@@ -70,47 +67,74 @@ public class Cli implements Callable<Integer> {
             ;
     private static final String EMBEDDED_PREFIX = "embedded:";
     private static final Logger LOG = LoggerFactory.getLogger(Cli.class);
+
     @Option(
+            order = -1,
+            names = {"-h", "--help"},
+            description = "Print usage to the console and exit.",
+            arity = "0",
+            paramLabel = "<CONFIG_FILE>",
+            usageHelp = true,
+            type = Boolean.class
+    )
+    private Boolean cliParamHelp;
+
+    @Option(
+            order = 0,
             names = {"-c", "--config"},
             description = "A file containing bluetooth adapter to use and the lamp's MAC address.",
+            paramLabel = "<CONFIG_FILE>",
             type = String.class
     )
     private String cliParamConfig;
 
-    @Option(
+    @Option(order = 1,
             names = {"-a", "--adapter"},
             description = "The bluetooth adapter to use.",
+            defaultValue = "hci0",
+            paramLabel = "<ADAPTER>",
+            showDefaultValue = CommandLine.Help.Visibility.ALWAYS,
             type = String.class
     )
     private String cliParamAdapter;
 
     @Option(
+            order = 2,
             names = {"-m", "--mac"},
-            description = "The MAC address of the lamp to connect",
+            description = "The MAC address of the lamp to connect.",
+            paramLabel = "<MAC>",
+            //interactive = true,
+            defaultValue = "C4:AC:05:42:73:A4",
             type = String.class
     )
     @Pattern(regexp = "^(([0-9A-F]{2}:){5}[0-9A-F]{2})?$")
     private String cliParamMac;
 
     @Option(
+            order = 3,
             names = {"-s", "--script"},
-            description = "Script to run. Can be prefixed with 'embedded:' to reference an internal script by its name. Eg. '--script=" + EMBEDDED_PREFIX + "boom'.",
+            description = "Script to run. Can be prefixed with 'embedded:' to reference an internal script by its name. Eg. '--script " + EMBEDDED_PREFIX + "boom'.",
+            paramLabel = "<SCRIPT>",
             type = String.class
     )
     @Pattern(regexp = "^(([\\w]+\\\\.yaml)|(embedded:(boom|bim|temperature|brightness|alarm|scene)))?$")
     private String cliParamScript;
 
     @Option(
+            order = 4,
             names = {"-d", "--duration", "--timeout"},
-            description = "In scripted mode, set the duration to run the main loop before aborting (in seconds).",
+            description = "In scripted mode, set the duration to run the main loop before aborting (in seconds). 0=infinite",
+            paramLabel = "<SECONDS>",
             type = long.class
     )
     @PositiveOrZero
     private Long cliParamDuration;
 
     @Option(
+            order = 5,
             names = {"-t", "--tempo", "--rhythm"},
-            description = "In scripted mode, set the duration to run the main loop.",
+            description = "In scripted mode, set the frequency (in BPM) at which trigger tick events.",
+            paramLabel = "<BPM>",
             type = Integer.class
     )
     @Range(min = 20, max = 200)
