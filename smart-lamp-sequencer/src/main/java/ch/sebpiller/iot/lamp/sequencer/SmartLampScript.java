@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
+
+import static ch.sebpiller.iot.lamp.ColorHelper.parseColor;
 
 /**
  * A parser that produce {@link SmartLampSequence} reading instructions in a yaml formatted resource.
@@ -96,7 +99,7 @@ public class SmartLampScript {
     public static SmartLampScript fromInputStream(InputStream inputStream) {
         Yaml yaml = new Yaml();
 
-        try(InputStream is = inputStream) {
+        try (InputStream is = inputStream) {
             return new SmartLampScript(yaml.loadAs(is, YamlScript.class));
         } catch (YAMLException e) {
             throw new IllegalArgumentException("the document given is invalid: " + e, e);
@@ -179,6 +182,10 @@ public class SmartLampScript {
             }
 
             switch (key.toLowerCase()) {
+                case "": // empty string is implicitely a pause
+                case "pause":
+                    record = record.pause();
+                    break;
                 case "on":
                     record = record.power(true);
                     break;
@@ -199,6 +206,10 @@ public class SmartLampScript {
                     break;
                 case "scene":
                     record = record.setScene(Byte.parseByte(value));
+                    break;
+                case "color":
+                    int[] color = parseColor(value);
+                    record = record.setColor(color[0], color[1], color[2]);
                     break;
                 case "seq":
                     SmartLampSequence sequence = getSequence(value);

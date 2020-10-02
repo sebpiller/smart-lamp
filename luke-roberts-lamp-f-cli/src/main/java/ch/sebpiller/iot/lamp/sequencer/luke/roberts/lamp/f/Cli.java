@@ -117,7 +117,7 @@ public class Cli implements Callable<Integer> {
             paramLabel = "<SCRIPT>",
             type = String.class
     )
-    @Pattern(regexp = "^(([\\w]+\\\\.yaml)|(embedded:(boom|bim|temperature|brightness|alarm|scene)))?$")
+    @Pattern(regexp = "^(([\\w]+\\\\.yaml)|(embedded:(boom|bim|temperature|brightness|alarm|scene|dust)))?$")
     private String cliParamScript;
 
     @Option(

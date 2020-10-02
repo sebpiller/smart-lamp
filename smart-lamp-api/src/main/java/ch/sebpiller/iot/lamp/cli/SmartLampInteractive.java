@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 
+import static ch.sebpiller.iot.lamp.ColorHelper.parseColor;
+
 
 /**
  * A small text interface to command a lamp.
@@ -73,15 +75,12 @@ public class SmartLampInteractive {
         System.out.println();
         System.out.println("1. Change power status");
         System.out.println("2. Change scene");
-        System.out.println("3. Change brightness value");
-        System.out.println("4. Change temperature (main bulb only)");
-        System.out.println("5. Fade brightness");
-        System.out.println("6. Fade temperature (main bulb only)");
-        System.out.println("7. Ping");
-        System.out.println();
-        //System.out.println("8. Immediate light");
-        System.out.println("9. Blink this scene (" + blinkCount + " times, on " + blinkOnTime + "ms, off " + blinkOffTime + "ms)");
-        System.out.println("b. Change blink params");
+        System.out.println("3. Change color");
+        System.out.println("4. Change brightness value");
+        System.out.println("5. Change temperature (main bulb only)");
+        System.out.println("6. Fade brightness");
+        System.out.println("7. Fade temperature (main bulb only)");
+        System.out.println("8. Ping");
         System.out.println();
         System.out.println();
         System.out.println("q. Quit");
@@ -114,16 +113,22 @@ public class SmartLampInteractive {
                 facade.setScene(Byte.parseByte(line));
                 break;
             case "3":
-                System.out.print("Percentage: ");
+                System.out.print("Color ('white' or 'ffffff'): ");
+                line = scanner.nextLine();
+                int[] ints = parseColor(line);
+                facade.setColor(ints[0], ints[1], ints[2]);
+                break;
+            case "4":
+                System.out.print("Brightness percentage: ");
                 line = scanner.nextLine();
                 facade.setBrightness(Byte.parseByte(line));
                 break;
-            case "4":
+            case "5":
                 System.out.print("Temperature (2'700K - 4'000K): ");
                 line = scanner.nextLine();
                 facade.setTemperature(Integer.parseInt(line));
                 break;
-            case "5":
+            case "6":
                 System.out.println("Fade brightness : ");
                 System.out.println("  from 1. **" + fadeBrightFrom + "%** to 2. **" + fadeBrightTo + "%** in 3. **" + fadeBrightStyle + "**");
                 System.out.print("Run with g : ");
@@ -152,7 +157,7 @@ public class SmartLampInteractive {
                 }
 
                 break;
-            case "6":
+            case "7":
                 System.out.println("Fade temperature : ");
                 System.out.println("  >> from 1. **" + fadeTempFrom + "K** to 2. **" + fadeTempTo + "K** in 3. **" + fadeTempStyle + "**: ");
                 System.out.print("Run with g : ");
@@ -181,7 +186,7 @@ public class SmartLampInteractive {
                 }
 
                 break;
-            case "7":
+            case "8":
                 System.err.println("not implemented yet");
                 scanner.nextLine();
 //                System.out.print("Ping version (1/2) : ");
@@ -200,31 +205,6 @@ public class SmartLampInteractive {
 //                }
 
                 break;
-//            case "8":
-//                // FIXME crappy code
-//                if (facade.getClass().getName().contains("LukeRobertsLampF")) {
-//                    try {
-//                        Random random = new Random();
-//                        facade.getClass().getMethod("immediateLight",
-//                                int.class, int.class, int.class, int.class, int.class, int.class
-//                        ).invoke(facade,
-//                                0,
-//                                random.nextInt(255),
-//                                random.nextInt(65535),
-//                                random.nextInt(1300) + 2700,
-//                                random.nextInt(1300) + 2700,
-//                                0//random.nextInt(255)
-//                        );
-//                    } catch (IllegalAccessException e) {
-//                        e.printStackTrace();
-//                    } catch (InvocationTargetException e) {
-//                        e.printStackTrace();
-//                    } catch (NoSuchMethodException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                scanner.nextLine();
-//                break;
             case "q":
                 return false;
             default:

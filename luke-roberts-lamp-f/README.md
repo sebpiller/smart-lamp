@@ -1,5 +1,15 @@
 # luke-roberts-lamp-f
-See product page: https://www.luke-roberts.com/collections/pendant-lamps/products/smart-lamp-model-f-black?ls=fr
+
+![Luke Roberts Lamp F][lampf]
+
+Official product page: [productpage]
+ 
+[lampf]: https://cdn.shopify.com/s/files/1/0015/0811/4547/products/luke-roberts-model-f-black-middle_600x.png?v=1574342741 
+[productpage]: https://www.luke-roberts.com/collections/pendant-lamps/products/smart-lamp-model-f-black?ls=fr
+
+
+
+## Affiliation
 
 I (the developer) am not affiliated in any way with the Firm "Luke Roberts" located in Austria. 
 

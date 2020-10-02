@@ -1,0 +1,66 @@
+####
+# dust.yaml
+#
+# This script is synchronized with "Queen - Another one bite the dust" and play on a Lamp F.
+####
+
+sequences:
+  before:
+    - brightness=0;
+  after:
+    - off;
+  flash:
+    - brightness=20;brightness=0;
+  big-flash:
+    - brightness=100;brightness=0;
+
+before: seq=before
+after: seq=after
+
+### loop: define the main actions that will repeat as long as necessary
+loop:
+  - color=magenta;seq=flash;brightness=30
+  - pause
+  - pause
+  - pause
+  - color=red;seq=flash;brightness=30
+  - pause
+  - pause
+  - pause
+  - color=cyan;seq=flash;brightness=30
+  - pause
+  - pause
+  - pause
+  - color=yellow;seq=flash;brightness=30
+  - pause
+  - pause
+  - pause
+#  - color=cyan;seq=flash
+#  - seq=flash
+#  - seq=flash
+#  - seq=flash
+#  - seq=big-flash
+#  -
+#  - seq=big-flash
+#  -
+#  - color=cyan;brightness=100
+#  -
+#  - seq=flash;brightness=100
+#  -
+#  - color=cyan
+#  -
+#  - seq=flash;brightness=100
+#  - seq=flash
+#  - seq=big-flash
+#  -
+#  - color=red;brightness=100
+#  - color=green;brightness=100
+#  - color=blue;brightness=100
+#  - color=magenta;brightness=100
+#  - color=yellow;brightness=100
+#  - seq=flash
+#  - seq=flash
+#  - seq=big-flash
+
+
+
