@@ -87,7 +87,7 @@ public class BluetoothHelper {
                     throw new BluetoothException("!!! connection to the device was unsuccessful !!!");
                 }
             } catch (DBusExecutionException e) {
-                throw new BluetoothException("rrror during reconnection: " + e, e);
+                throw new BluetoothException("error during reconnection: " + e, e);
             }
         }
     }
