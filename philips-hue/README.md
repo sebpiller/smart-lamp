@@ -4,10 +4,9 @@ A facade to a Philips Hue Smart Bulb. Only supports direct bluetooth connection.
 
 __wifi bridge not supported!__. 
 
+## Warning 
 
-Warning: 
-
-at the moment, with a RPi4 bluetooth chipset, the connection to the bulb fails almost 90% of the time with a trace like this:
+At the moment, with a RPi4 bluetooth chipset, the connection to the bulb fails almost 90% of the time with a trace like this:
 ````
 Caused by: org.freedesktop.dbus.exceptions.DBusExecutionException: Software caused connection abort
         at jdk.internal.reflect.GeneratedConstructorAccessor10.newInstance(Unknown Source)
