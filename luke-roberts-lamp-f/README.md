@@ -5,15 +5,18 @@ I (the developer) am not affiliated in any way with the Firm "Luke Roberts" loca
 
 The firm Luke Roberts owns the full copyrights for all their products.
 
-All the code provided here has been written with only the official Luke Roberts' bluetooth API documentation, 
-which you can find a copy in the ./doc folder. I didn't make use of any reverse-engineering technic or procedure. 
+All the code provided here has been written with the official Luke Roberts' bluetooth API documentation, 
+which you can find a copy in the ./doc folder.  
 
 ## Disclaimer
 The code provided has been tested on my instance of a Lamp F. It has proven to run smoothly, and so far, is very stable 
-with my type of usage. But as I don't have any feedback or validation from Luke Roberts, I can not guarantee that 
+with my type of usage. As I didn't receive any kind of feedback or validation from Luke Roberts, I can't guarantee that 
 everything is fine.
 
-**In the worst case, destruction of the device should be considered as possible (yet highly improbable).**
+**In the worst case, the destruction of the device should be considered as possible (yet highly improbable).**
+ 
+This is because the hardware has probably not been designed to support the type of manipulation made possible by this 
+library (high frequency power variation and commutation, etc.).
 
 By using the library, you agree that I (the developer) am not responsible for any damage resulting of the usage 
 of any part of the code.
@@ -35,9 +38,9 @@ Actually, the library supports:
 - change the brightness
 - change the temperature of the main bulb
 - fade in/out the brightness or the temperature
-- use the "immediate light" command \[development in progress]
+- use the "immediate light" command to set a color \[development in progress]
  
-Runs nicely at least under Raspbian arm/32v7 and Ubuntu 20.04/amd64. Others linux-based systems may work too, 
+Runs nicely at least under Raspbian arm/32v7 and Ubuntu 20.04/amd64 (BMC chip). Others linux-based systems may work too, 
 especially Android (untested). 
 
 Since it depends on some native packages built for Linux [Bluez](http://www.bluez.org), it doesn't work on Windows systems.
@@ -69,8 +72,8 @@ public class Test {
 
         try {
             smartLamp
-                    .power(true).wait(2000)
-                    .setBrightness((byte) 50).wait(2000)
+                    .power(true).sleep(2000)
+                    .setBrightness((byte) 50).sleep(2000)
                     .fadeFromToBrightness((byte) 0, (byte) 100, SmartLampFacade.FadeStyle.FAST).get();
             
             // blink

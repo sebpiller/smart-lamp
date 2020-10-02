@@ -313,6 +313,13 @@ public class PhilipsHueBle extends AbstractBluetoothLamp {
         return this;
     }
 
+    @Override
+    public PhilipsHueBle setColor(int red, int green, int blue) {
+        // TODO implement
+        LOG.info("not supported invocation silently ignored: setColor");
+        return this;
+    }
+
     private BluetoothGattCharacteristic getPrimaryServiceCharacteristic(String characId) {
         // TODO maintain cache of characs ?
         Map<DiscoveryFilter, Object> filter = new HashMap<>();

@@ -72,4 +72,10 @@ public class LoggingLamp implements SmartLampFacade {
         LOG.info("setScene({})", scene);
         return this;
     }
+
+    @Override
+    public SmartLampFacade setColor(int red, int green, int blue) {
+        LOG.info("setColor({},{},{})", red, green, blue);
+        return this;
+    }
 }

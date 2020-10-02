@@ -27,12 +27,12 @@
 
     <root level="DEBUG" additivity="false">
         <!-- log nothing by default -->
-        <appender-ref ref="noop" />
+        <appender-ref ref="noop"/>
     </root>
 
     <!-- enable log for ch.sebpiller -->
     <logger name="ch.sebpiller" level="INFO" additivity="false">
-        <appender-ref ref="file" level="INFO" />
-        <appender-ref ref="console" level="WARN" />
+        <appender-ref ref="file" level="INFO"/>
+        <appender-ref ref="console" level="WARN"/>
     </logger>
 </configuration>

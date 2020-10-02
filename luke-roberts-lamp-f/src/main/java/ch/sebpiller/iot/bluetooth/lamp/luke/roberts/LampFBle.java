@@ -15,6 +15,8 @@ import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
+import java.util.List;
 import java.util.*;
 
 /**
@@ -24,7 +26,7 @@ public class LampFBle extends AbstractBluetoothLamp {
     private static final Logger LOG = LoggerFactory.getLogger(LampFBle.class);
 
     private final LukeRoberts.LampF.Config config;
-    private Map<DiscoveryFilter, Object> filter;
+    private final Map<DiscoveryFilter, Object> filter;
 
     /**
      * The Bluetooth endpoint to invoke to control the lamp.
@@ -43,11 +45,6 @@ public class LampFBle extends AbstractBluetoothLamp {
         filter.put(DiscoveryFilter.UUIDs, new String[]{
                 config.getCustomControlService().getUserExternalApiEndpoint().getUuid()
         });
-    }
-
-    public LampFBle(LukeRoberts.LampF.Config config, Map<DiscoveryFilter, Object> filter) {
-        this(config);
-        this.filter = Objects.requireNonNull(filter);
     }
 
     private void sendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte... parameters) {
@@ -103,20 +100,19 @@ public class LampFBle extends AbstractBluetoothLamp {
                     device.getAddress()
             );
 
-            byte[] data = api.readValue(options);
-            return data;
+            return api.readValue(options);
         } catch (DBusException e) {
             throw new IllegalStateException("unable to invoke command on Lamp F: " + e, e);
         }
     }
 
-    public void selectScene(byte sceneId) {
-        sendCommandToExternalApi(LukeRoberts.LampF.Command.SELECT_SCENE, sceneId);
+    public void selectScene(LukeRoberts.LampF.Scene scene) {
+        setScene(scene.getId());
     }
 
     @Override
     public LampFBle setScene(byte sceneId) {
-        selectScene(sceneId);
+        sendCommandToExternalApi(LukeRoberts.LampF.Command.SELECT_SCENE, sceneId);
         return this;
     }
 
@@ -138,10 +134,21 @@ public class LampFBle extends AbstractBluetoothLamp {
     @Override
     public LampFBle power(boolean on) {
         selectScene(on ?
-                LukeRoberts.LampF.Scene.DEFAULT_SCENE.getId() :
-                LukeRoberts.LampF.Scene.SHUTDOWN_SCENE.getId()
+                LukeRoberts.LampF.Scene.DEFAULT_SCENE :
+                LukeRoberts.LampF.Scene.SHUTDOWN_SCENE
         );
 
+        return this;
+    }
+
+    @Override
+    public LampFBle setColor(int red, int green, int blue) {
+        int r = Math.min(Math.max(0, red), 255);
+        int g = Math.min(Math.max(0, green), 255);
+        int b = Math.min(Math.max(0, blue), 255);
+
+        float[] hsb = Color.RGBtoHSB(r, g, b, null);
+        immediateLight(0, Math.round(hsb[1] * 255), Math.round(hsb[0] * 65_535f), 0, 0, 0);
         return this;
     }
 
@@ -157,10 +164,6 @@ public class LampFBle extends AbstractBluetoothLamp {
      * @param hue Color.
      */
     public void immediateLight(int duration, int sat, int hue, int temp, int mtemp, int mbrightness) {
-        // FIXME improve code
-        System.out.println(String.format("setting to duration %s, sat %s, hue %s, temp %s, mtemp %s, mbright %s",
-                duration, sat, hue, temp, mtemp, mbrightness
-        ));
         /* structure:
          * XX Flags that specify what content is present
          *
@@ -175,17 +178,16 @@ public class LampFBle extends AbstractBluetoothLamp {
         List<Byte> bytes = new ArrayList<>(12);
         byte xx = 0x00;
 
-        bytes.add((byte) (duration >> 8));
-        bytes.add((byte) (duration));
-
         ////////
         if (true) {
             xx |= 0x01;
-            int i = sat == 0 ? hue : temp;
+            bytes.add((byte) (duration >> 8));
+            bytes.add((byte) (duration));
+
+            int i = sat == 0 ? temp : hue;
             bytes.add((byte) sat);
             bytes.add((byte) (i >> 8));
             bytes.add((byte) (i));
-            bytes.add((byte) (mbrightness));
         }
 
         ////////
@@ -197,17 +199,7 @@ public class LampFBle extends AbstractBluetoothLamp {
         }
 
         bytes.add(0, xx);
-
-        sendCommandToExternalApi(LukeRoberts.LampF.Command.IMMEDIATE_LIGHT, bytes.toArray(new Byte[bytes.size()]));
-    }
-
-    @Override
-    public void close() {
-        try {
-            externalApi = null;
-        } finally {
-            super.close();
-        }
+        sendCommandToExternalApi(LukeRoberts.LampF.Command.IMMEDIATE_LIGHT, bytes.toArray(new Byte[0]));
     }
 }
 

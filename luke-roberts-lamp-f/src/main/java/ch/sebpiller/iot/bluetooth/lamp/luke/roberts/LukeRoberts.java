@@ -87,7 +87,7 @@ public final class LukeRoberts {
              * the Luke Roberts protocol.
              *
              * @param args Parameterized commands can accept parameters, which are appended to the end of the command.
-             *            This parameter can be null.
+             *             This parameter can be null.
              * @return An array of bytes that correspond to the requested command, with the parameters at the end.
              */
             public byte[] toByteArray(Byte... args) {
@@ -137,16 +137,15 @@ public final class LukeRoberts {
              */
             SHUTDOWN_SCENE((byte) 0x00),
 
-            // TODO verify the IDs of the following scenes (does not match what is actually rendered by the app.)
             /**
              * Reading scene.
              */
-            READING_SCENE((byte) 0x01),
+            READING_SCENE((byte) 0x06),
 
             /**
              * Candle light scene.
              */
-            CANDLE_LIGHT_SCENE((byte) 0x02),
+            CANDLE_LIGHT_SCENE((byte) 0x04),
 
             /**
              * Shiny scene.
@@ -156,7 +155,7 @@ public final class LukeRoberts {
             /**
              * Welcome scene.
              */
-            WELCOME_SCENE((byte) 0x04),
+            WELCOME_SCENE((byte) 0x01),
 
             /**
              * Indirect scene.
@@ -166,7 +165,7 @@ public final class LukeRoberts {
             /**
              * Highlights scene.
              */
-            HIGHLIGHTS_SCENE((byte) 0x06),
+            HIGHLIGHTS_SCENE((byte) 0x02),
 
             /**
              * Bright scene.

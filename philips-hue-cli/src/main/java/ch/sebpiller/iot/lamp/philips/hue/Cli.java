@@ -3,7 +3,7 @@ package ch.sebpiller.iot.lamp.philips.hue;
 import ch.sebpiller.iot.bluetooth.BluetoothHelper;
 import ch.sebpiller.iot.bluetooth.philipps.hue.PhilipsHueBle;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
-import ch.sebpiller.iot.lamp.SmartLampInteractive;
+import ch.sebpiller.iot.lamp.cli.SmartLampInteractive;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampScript;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampSequence;
 import ch.sebpiller.sound.beatdetect.BpmSourceAudioListener;
@@ -40,10 +40,6 @@ import static java.lang.String.format;
         sortOptions = false
 )
 public class Cli implements Callable<Integer> {
-    static {
-        BluetoothHelper.printBluetoothEnvironment();
-    }
-
     /**
      * Flashes the lamp 1 time at each beat, 4 times
      */
@@ -69,6 +65,10 @@ public class Cli implements Callable<Integer> {
             ;
     private static final String EMBEDDED_PREFIX = "embedded:";
     private static final Logger LOG = LoggerFactory.getLogger(Cli.class);
+
+    static {
+        BluetoothHelper.printBluetoothEnvironment();
+    }
 
     @Option(
             order = -1,

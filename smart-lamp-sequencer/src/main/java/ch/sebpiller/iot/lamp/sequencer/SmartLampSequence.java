@@ -137,6 +137,12 @@ public class SmartLampSequence implements SmartLampFacade {
         return this;
     }
 
+    @Override
+    public SmartLampSequence setColor(int red, int green, int blue) {
+        add(facade -> facade.setColor(red, green, blue));
+        return this;
+    }
+
     /**
      * Invoke start to begin the recording of several actions to play sequentially during the same frame (beat).
      */

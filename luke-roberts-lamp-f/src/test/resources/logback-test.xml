@@ -23,7 +23,7 @@
         <appender-ref ref="file"/>
     </root>
 
-    <logger name="ch.sebpiller" level="DEBUG"/>
+    <logger name="ch.sebpiller" level="INFO"/>
     <logger name="javax.bluetooth" level="INFO"/>
     <logger name="org.freedesktop.dbus" level="INFO"/>
     <logger name="com.github.hypfvieh" level="INFO"/>

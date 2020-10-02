@@ -82,6 +82,15 @@ public interface SmartLampFacade {
     SmartLampFacade setScene(byte scene) throws UnsupportedOperationException;
 
     /**
+     * Modify the color of the lamp (RGB).
+     *
+     * @param red   0..255
+     * @param green 0..255
+     * @param blue  0..255
+     */
+    SmartLampFacade setColor(int red, int green, int blue);
+
+    /**
      * Describes the different available styles to fade a value. Implementations are free to interpret the meaning of
      * each value in any way they like.
      */

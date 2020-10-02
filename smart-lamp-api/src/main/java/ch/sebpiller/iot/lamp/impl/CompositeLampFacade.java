@@ -23,12 +23,12 @@ public final class CompositeLampFacade implements SmartLampFacade {
 
     private final List<SmartLampFacade> composites = Collections.synchronizedList(new ArrayList<>());
 
-    public static CompositeLampFacade from(SmartLampFacade... composites) {
-        return new CompositeLampFacade(composites);
-    }
-
     public CompositeLampFacade(SmartLampFacade... composites) {
         this.composites.addAll(Arrays.asList(composites));
+    }
+
+    public static CompositeLampFacade from(SmartLampFacade... composites) {
+        return new CompositeLampFacade(composites);
     }
 
     @Override
@@ -76,6 +76,12 @@ public final class CompositeLampFacade implements SmartLampFacade {
     @Override
     public CompositeLampFacade setScene(byte scene) throws UnsupportedOperationException {
         composites.parallelStream().forEach(smartLampFacade -> smartLampFacade.setScene(scene));
+        return this;
+    }
+
+    @Override
+    public CompositeLampFacade setColor(int red, int green, int blue) {
+        composites.parallelStream().forEach(smartLampFacade -> smartLampFacade.setColor(red, green, blue));
         return this;
     }
 }

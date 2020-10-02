@@ -24,9 +24,13 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
     private final Lock tempLock = new ReentrantLock(), brightLock = new ReentrantLock();
 
     // TODO load actual state of the lamp
-    /** local cache of the last temperature set */
+    /**
+     * local cache of the last temperature set
+     */
     private int temperature = 4000;
-    /** local cache of the last brightness set */
+    /**
+     * local cache of the last brightness set
+     */
     private byte brightness = 100;
 
     @Override
@@ -117,7 +121,7 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Stop the executor used to schedule fading effects.
      */
     @Override
