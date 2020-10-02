@@ -81,12 +81,10 @@ public class BluetoothHelper {
             LOG.info("can not reconnect a null object");
         } else {
             try {
-                BluetoothDevice device = charac.getService().getDevice();
-
-                device.
+                BluetoothDevice device = charac.getService().getDevice();:q
 
                 if (!device.isConnected() && !device.connect()) {
-                    throw new BluetoothException(:"!!! connection to the device was unsuccessful !!!");
+                    throw new BluetoothException("!!! connection to the device was unsuccessful !!!");
                 }
             } catch (DBusExecutionException e) {
                 throw new BluetoothException("rrror during reconnection: " + e, e);
