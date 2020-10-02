@@ -1,5 +1,7 @@
-package ch.sebpiller.iot.bluetooth.luke.roberts.lamp.f;
+package ch.sebpiller.iot.bluetooth.luke.roberts;
 
+import ch.sebpiller.iot.bluetooth.BluetoothException;
+import ch.sebpiller.iot.bluetooth.BluetoothHelper;
 import ch.sebpiller.iot.bluetooth.lamp.AbstractBluetoothLamp;
 import ch.sebpiller.iot.bluetooth.luke.roberts.LukeRoberts;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
@@ -52,10 +54,10 @@ public class LampFBle extends AbstractBluetoothLamp {
     }
 
     private void sendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte... parameters) {
-        reconnectIfNeeded();
-
         try {
             BluetoothGattCharacteristic api = getExternalApi();
+            BluetoothHelper.reconnectIfNeeded(api);
+
             if (LOG.isDebugEnabled()) {
                 BluetoothDevice device = api.getService().getDevice();
                 LOG.debug("sending command {} to Lamp F '{}' ({})",
@@ -67,9 +69,9 @@ public class LampFBle extends AbstractBluetoothLamp {
 
             api.writeValue(command.toByteArray(parameters), Collections.emptyMap());
         } catch (DBusException e) {
-            throw new IllegalStateException("unable to invoke command " + command + " on Lamp F: " + e, e);
+            throw new BluetoothException("unable to invoke command " + command + " on Lamp F: " + e, e);
         } catch (DBusExecutionException e) {
-            throw new IllegalStateException("unable to invoke command " + command + " on Lamp F: " +
+            throw new BluetoothException("unable to invoke command " + command + " on Lamp F: " +
                     "error type is " + e.getType() + ": " + e, e);
         }
     }
@@ -89,8 +91,6 @@ public class LampFBle extends AbstractBluetoothLamp {
     }
 
     public byte[] readValueFromExternalApi(LukeRoberts.LampF.Command command, Byte... parameters) {
-        reconnectIfNeeded();
-
         try {
             Map<String, Object> options = new HashMap<>();
 

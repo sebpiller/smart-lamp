@@ -23,6 +23,23 @@ Caused by: org.freedesktop.dbus.exceptions.DBusExecutionException: Software caus
         ... 16 common frames omitted
 ````
 
-The same error occurs at the same frequency using bash ``bluetoothctl``.
+The same error occurs at the same frequency using bash ``bluetoothctl > connect XXXX``.
 
-When connecting to the bulb with an intel bluetooth chip on Ubuntu 20.04/amd64, the problem vanish.
+When connecting to the bulb with a BCM bluetooth chip on Ubuntu 20.04/amd64, the problem vanish.
+
+Setup that can connect to Philips Hue:
+```shell script
+dmesg | grep -i blue
+[    3.916966] Bluetooth: Core ver 2.22
+[    3.916984] Bluetooth: HCI device and connection manager initialized
+[    3.916990] Bluetooth: HCI socket layer initialized
+[    3.916992] Bluetooth: L2CAP socket layer initialized
+[    3.916994] Bluetooth: SCO socket layer initialized
+[    4.094691] Bluetooth: hci0: BCM: chip id 102
+[    4.095679] Bluetooth: hci0: BCM: features 0x2f
+[    4.111692] Bluetooth: hci0: spiller-desktop-ubu
+[    4.113710] Bluetooth: hci0: BCM20703A1 (001.001.005) build 0481
+```
+
+
+

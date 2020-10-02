@@ -1,6 +1,5 @@
 package ch.sebpiller.iot.bluetooth;
 
-import ch.sebpiller.iot.bluetooth.scan.ScanPropertiesChangedHandler;
 import com.github.hypfvieh.bluetooth.DeviceManager;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothAdapter;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice;
@@ -18,6 +17,12 @@ import java.util.Objects;
 public class BluetoothHelper {
     private static final Logger LOG = LoggerFactory.getLogger(BluetoothHelper.class);
 
+    private static final String RETRY_MESSAGE = "Software caused connection abort";
+    /**
+     * When a "Software caused connection abort" occurs, try to reconnect at most {@value #MAX_RETRY} times.
+     */
+    private static final int MAX_RETRY = 3;
+
     public static DeviceManager discoverDeviceManager() throws BluetoothException {
         DeviceManager man;
 
@@ -32,8 +37,9 @@ public class BluetoothHelper {
                 }
             }
         } catch (UnsatisfiedLinkError ule) {
-            // most likely a native dependency problem. either bluez not installed, or misconfigured
-            throw new BluetoothException("was unable to access native libraries. Please install the dependencies required (bluez): " + ule, ule);
+            // most likely a native dependency problem. either bluez not installed
+            throw new BluetoothException("a link error occurred during bluetooth initialization. The reason is either " +
+                    "that bluez is not installed, or you are running this code on an unsupported platform.: " + ule, ule);
         }
 
         return Objects.requireNonNull(man, "no device manager can be acquired");
@@ -77,45 +83,61 @@ public class BluetoothHelper {
     }
 
     public static void reconnectIfNeeded(BluetoothGattCharacteristic charac) {
-        if (charac == null) {
-            LOG.info("can not reconnect a null object");
-        } else {
-            try {
-                BluetoothDevice device = charac.getService().getDevice();
+        if (charac != null) {
+            boolean quit = false;
+            int tryIndex = 0;
+            RuntimeException lastError = null;
 
-                if (!device.isConnected() && !device.connect()) {
-                    throw new BluetoothException("!!! connection to the device was unsuccessful !!!");
+            while (!quit) {
+                tryIndex++;
+
+                try {
+                    BluetoothDevice device = charac.getService().getDevice();
+                    if (!device.isConnected() && !device.connect()) {
+                        throw new BluetoothException("!!! connection to the device was unsuccessful !!!");
+                    }
+
+                    quit = true;
+                } catch (RuntimeException e) {
+                    lastError = e;
+                    quit = true;
+
+                    if (e.getMessage().contains(RETRY_MESSAGE)) {
+                        quit = tryIndex < MAX_RETRY;
+                    }
                 }
-            } catch (DBusExecutionException e) {
-                throw new BluetoothException("error during reconnection: " + e, e);
+            }
+
+            if (lastError != null) {
+                LOG.error("unable to reconnect to the device after {} attempts: " + lastError, lastError);
             }
         }
     }
 
     public static BluetoothDevice findDeviceOnAdapter(DeviceManager manager, String localBtAdapter, String remoteDeviceMac) throws BluetoothException {
         // TODO implement a cache of devices ?
-        try {
-            LOG.info("searching for device {} on {}", localBtAdapter, remoteDeviceMac);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("  > dbus connection status: {}", manager.getDbusConnection().isConnected() ? "connected" : "disconnected");
-            }
-            manager.registerPropertyHandler(new ScanPropertiesChangedHandler(manager, localBtAdapter));
-
-            BluetoothAdapter adapter = manager.getAdapters().stream()
-                    .filter(a -> Objects.equals(a.getDeviceName(), localBtAdapter))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalStateException("bluetooth adapter " + localBtAdapter + " can not be found"));
-            if (!adapter.isPowered()) {
-                adapter.setPowered(true);
-                LOG.debug("  > switched {} on", localBtAdapter);
-            }
-
-            return manager.getDevices(true).stream()
-                    .filter(e -> Objects.equals(e.getAddress(), remoteDeviceMac))
-                    .findFirst()
-                    .orElseThrow(() -> new BluetoothException("device " + remoteDeviceMac + " is not registered. Please use 'bluetoothctl' in bash to trust/connect this device."));
-        } catch (DBusException | DBusExecutionException e) {
-            throw new BluetoothException("unable to find device " + remoteDeviceMac + "@" + localBtAdapter + ": " + e, e);
+        LOG.info("searching for device {} on {}", localBtAdapter, remoteDeviceMac);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("  > dbus connection status: {}", manager.getDbusConnection().isConnected() ? "connected" : "disconnected");
         }
+
+        // TODO implement optional properties changed handler
+        //manager.registerPropertyHandler(new ScanPropertiesChangedHandler(manager, localBtAdapter));
+
+        // Power on the adapter if needed, fails if not found
+        BluetoothAdapter adapter = manager.getAdapters().stream()
+                .filter(a -> Objects.equals(a.getDeviceName(), localBtAdapter))
+                .findFirst()
+                .orElseThrow(() -> new BluetoothException("bluetooth adapter " + localBtAdapter + " can not be found"));
+        if (!adapter.isPowered()) {
+            adapter.setPowered(true);
+            LOG.debug("  > switched {} on", localBtAdapter);
+        }
+
+        // search for a connected device
+        return manager.getDevices(true).stream()
+                .filter(e -> Objects.equals(e.getAddress(), remoteDeviceMac))
+                .findFirst()
+                .orElseThrow(() -> new BluetoothException("device " + remoteDeviceMac + " is not registered. Please use 'bluetoothctl' to trust/connect this device."));
     }
 }

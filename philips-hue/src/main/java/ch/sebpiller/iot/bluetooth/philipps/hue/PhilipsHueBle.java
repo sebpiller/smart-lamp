@@ -1,6 +1,7 @@
 package ch.sebpiller.iot.bluetooth.philipps.hue;
 
 import ch.sebpiller.iot.bluetooth.BluetoothException;
+import ch.sebpiller.iot.bluetooth.BluetoothHelper;
 import ch.sebpiller.iot.bluetooth.lamp.AbstractBluetoothLamp;
 import com.github.hypfvieh.bluetooth.DiscoveryFilter;
 import com.github.hypfvieh.bluetooth.DiscoveryTransport;
@@ -221,8 +222,8 @@ public class PhilipsHueBle extends AbstractBluetoothLamp {
     private static final String PHILIPS_PRIMARY_SERVICE_UUID = "932c32bd-0000-47a2-835a-a8d455b859dd";
     private static final String PHILIPS_POWER_CHARAC_UUID = "932c32bd-0002-47a2-835a-a8d455b859dd";
     private static final String PHILIPS_BRIGHTNESS_CHARAC_UUID = "932c32bd-0003-47a2-835a-a8d455b859dd";
-    private static final String PHILIPS_TEMPERATURE_CHARAC_UUID = "932c32bd-0004-47a2-835a-a8d455b859dd";
-    private static final String PHILIPS_COLOR_CHARAC_UUID = "932c32bd-0005-47a2-835a-a8d455b859dd";
+    private static final String PHILIPS_COLOR_CHARAC_UUID = "932c32bd-0004-47a2-835a-a8d455b859dd";
+    //private static final String PHILIPS_COLOR_CHARAC_UUID = "932c32bd-0005-47a2-835a-a8d455b859dd";
 
     private static final String PHILIPS_DEVCONF_INFO_SERVICE_UUID = "0000fe0f-0000-1000-8000-00805f9b34fb";
     private static final String PHILIPS_USER_DEVNAME_CHARAC_UUID = "97fe6561-0003-4f62-86e9-b71ee2da3d22";
@@ -252,13 +253,10 @@ public class PhilipsHueBle extends AbstractBluetoothLamp {
                 );
             }
 
-            byte b = on ? (byte) 0x01 : (byte) 0x00;
+            byte b = on ? (byte) 1 : (byte) 0;
             api.writeValue(new byte[]{b}, Collections.emptyMap());
-        } catch (DBusException | DBusExecutionException e) {
+        } catch (DBusException e) {
             throw new BluetoothException("unable to invoke command on Philips Hue: " + e, e);
-        } finally {
-            // TODO do not close after each call ?
-            close();
         }
 
         return this;
@@ -279,11 +277,8 @@ public class PhilipsHueBle extends AbstractBluetoothLamp {
             }
 
             api.writeValue(new byte[]{percent}, Collections.emptyMap());
-        } catch (DBusException | DBusExecutionException e) {
+        } catch (DBusException e) {
             throw new BluetoothException("unable to invoke command on Philips Hue: " + e, e);
-        } finally {
-            // TODO do not close after each call ?
-            close();
         }
 
         return this;
@@ -291,25 +286,23 @@ public class PhilipsHueBle extends AbstractBluetoothLamp {
 
     @Override
     public PhilipsHueBle setTemperature(int kelvin) {
-        try {
-            BluetoothGattCharacteristic api = getPrimaryServiceCharacteristic(PHILIPS_TEMPERATURE_CHARAC_UUID);
-
-            if (LOG.isDebugEnabled()) {
-                BluetoothDevice device = api.getService().getDevice();
-                LOG.debug("sending command {} to Philips Hue '{}' ({})",
-                        "setTemperature(" + kelvin + ")",
-                        device.getName(),
-                        device.getAddress()
-                );
-            }
-
-            api.writeValue(new byte[]{(byte) (kelvin >> 8), (byte) kelvin}, Collections.emptyMap());
-        } catch (DBusException | DBusExecutionException e) {
-            throw new BluetoothException("unable to invoke command on Philips Hue: " + e, e);
-        } finally {
-            // TODO do not close after each call ?
-            close();
-        }
+        // TODO fixme
+//        try {
+//            BluetoothGattCharacteristic api = getPrimaryServiceCharacteristic(PHILIPS_TEMPERATURE_CHARAC_UUID);
+//
+//            if (LOG.isDebugEnabled()) {
+//                BluetoothDevice device = api.getService().getDevice();
+//                LOG.debug("sending command {} to Philips Hue '{}' ({})",
+//                        "setTemperature(" + kelvin + ")",
+//                        device.getName(),
+//                        device.getAddress()
+//                );
+//            }
+//
+//            api.writeValue(new byte[]{(byte) (kelvin >> 8), (byte) kelvin}, Collections.emptyMap());
+//        } catch (DBusException e) {
+//            throw new BluetoothException("unable to invoke command on Philips Hue: " + e, e);
+//        }
 
         return this;
     }
@@ -317,14 +310,14 @@ public class PhilipsHueBle extends AbstractBluetoothLamp {
     @Override
     public PhilipsHueBle setScene(byte scene) throws UnsupportedOperationException {
         // TODO implement
-        LOG.debug("not supported invocation silently ignored: setScene");
+        LOG.info("not supported invocation silently ignored: setScene");
         return this;
     }
 
     private BluetoothGattCharacteristic getPrimaryServiceCharacteristic(String characId) {
         // TODO maintain cache of characs ?
         Map<DiscoveryFilter, Object> filter = new HashMap<>();
-        filter.put(DiscoveryFilter.Transport, DiscoveryTransport.AUTO);
+        filter.put(DiscoveryFilter.Transport, DiscoveryTransport.LE);
         filter.put(DiscoveryFilter.UUIDs, new String[]{PHILIPS_PRIMARY_SERVICE_UUID});
 
         BluetoothGattCharacteristic characteristic = retrieveCharacteristic(
@@ -334,6 +327,7 @@ public class PhilipsHueBle extends AbstractBluetoothLamp {
                 characId,
                 filter);
 
+        BluetoothHelper.reconnectIfNeeded(characteristic);
         return characteristic;
     }
 }

@@ -25,20 +25,7 @@ import static ch.sebpiller.iot.bluetooth.BluetoothHelper.findDeviceOnAdapter;
 public abstract class AbstractBluetoothLamp extends AbstractLampBase {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractBluetoothLamp.class);
 
-    private BluetoothGattCharacteristic lastBluetoothCharacteristic;
-
-    protected final void reconnectIfNeeded() {
-        BluetoothHelper.reconnectIfNeeded(lastBluetoothCharacteristic);
-    }
-
-    protected final BluetoothGattCharacteristic retrieveCharacteristic(String adapter, String mac, String serviceId, String characId, Map<DiscoveryFilter, Object> filter) throws BluetoothException {
-        //close();
-        this.lastBluetoothCharacteristic = tryRetrieveCharacteristic(adapter, mac, serviceId, characId, filter);
-        BluetoothHelper.reconnectIfNeeded(lastBluetoothCharacteristic);
-        return this.lastBluetoothCharacteristic;
-    }
-
-    private BluetoothGattCharacteristic tryRetrieveCharacteristic(String adapter, String mac, String serviceUuid, String characUuid, Map<DiscoveryFilter, Object> filter) throws BluetoothException {
+    protected final BluetoothGattCharacteristic retrieveCharacteristic(String adapter, String mac, String serviceUuid, String characUuid, Map<DiscoveryFilter, Object> filter) throws BluetoothException {
         try {
             DeviceManager manager = discoverDeviceManager();
             // TODO find out if the filter is really useful here
@@ -49,23 +36,20 @@ public abstract class AbstractBluetoothLamp extends AbstractLampBase {
             // *****************
             BluetoothDevice device = findDeviceOnAdapter(manager, adapter, mac);
             if (device == null) {
-                LOG.error("can not find device {}@{}", mac, adapter);
-                return null;
+                throw new BluetoothException("can not find device " + mac + "@" + adapter);
             }
 
             // *****************
             BluetoothGattService service = device.getGattServiceByUuid(serviceUuid);
             if (service == null) {
-                LOG.error("unable to connect to service {}: maybe the device is out of range, or has not been connected?", serviceUuid);
-                return null;
+                throw new BluetoothException("unable to connect to service " + serviceUuid + ": maybe the device is out of range, or has not been connected?");
             }
             LOG.info("found service {} at UUID {}", service, serviceUuid);
 
             // *****************
             BluetoothGattCharacteristic charac = service.getGattCharacteristicByUuid(characUuid);
             if (charac == null) {
-                LOG.error("unable to connect to characteristic {}: maybe the device is out of range, or has not been connected?", characUuid);
-                return null;
+                throw new BluetoothException("unable to connect to characteristic " + characUuid + ": maybe the device is out of range, or has not been connected?");
             }
 
             LOG.info("found characteristic {} at UUID {}/{}", charac, characUuid, serviceUuid);
@@ -75,31 +59,15 @@ public abstract class AbstractBluetoothLamp extends AbstractLampBase {
 
             return charac;
         } catch (DBusException | DBusExecutionException e) {
-            throw new BluetoothException("unable to retrieve characteristic " + serviceUuid + "/" + characUuid + " on device " + mac + "@" + adapter + ": " + e, e);
+            throw new BluetoothException("dbus error trying to retrieve characteristic " + serviceUuid + "/" + characUuid + " on device " + mac + "@" + adapter + ": " + e, e);
         }
     }
 
     @Override
     public void close() {
         try {
-            if (lastBluetoothCharacteristic != null) {
-                LOG.debug("closing last found characteristic");
-                BluetoothDevice device = lastBluetoothCharacteristic.getService().getDevice();
-
-                if (LOG.isDebugEnabled() && !device.isConnected()) {
-                    LOG.debug("the device was not connected");
-                }
-
-                boolean b = device.disconnect();
-
-                if (!b && LOG.isDebugEnabled()) {
-                    LOG.debug("was unable to disconnect");
-                }
-            }
-
             BluetoothHelper.discoverDeviceManager().closeConnection();
         } finally {
-            lastBluetoothCharacteristic = null;
             super.close();
         }
     }
