@@ -106,7 +106,7 @@ public class Cli implements Callable<Integer> {
             description = "The MAC address of the lamp to connect.",
             paramLabel = "<MAC>",
             //interactive = true,
-            defaultValue = "E6:B3:DC:6E:06:32",
+            defaultValue = "D7:0E:87:C6:D2:58",
             type = String.class
     )
     @Pattern(regexp = "^(([0-9A-F]{2}:){5}[0-9A-F]{2})?$")
@@ -222,8 +222,6 @@ public class Cli implements Callable<Integer> {
     }
 
     private PhilipsHueBle buildPhilipsHueLampFromSettings() {
-
-
         // load config overrides from file if defined
 //        if (cliParamConfig != null) {
 //            LukeRoberts.LampF.Config c;
@@ -248,7 +246,7 @@ public class Cli implements Callable<Integer> {
 //        lampFConfig = lampFConfig.merge(c);
         // -----
 
-        return new PhilipsHueBle("");
+        return new PhilipsHueBle(cliParamAdapter, cliParamMac);
     }
 
     @Override

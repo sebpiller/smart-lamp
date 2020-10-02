@@ -72,7 +72,7 @@ public class BluetoothHelper {
 
             LOG.info("========= END OF SCAN ================");
         } catch (DBusExecutionException e) {
-            throw new BluetoothException("Error during scan:" + e, e);
+            throw new BluetoothException("Error during scan: " + e, e);
         }
     }
 
@@ -83,11 +83,13 @@ public class BluetoothHelper {
             try {
                 BluetoothDevice device = charac.getService().getDevice();
 
+                device.
+
                 if (!device.isConnected() && !device.connect()) {
-                    throw new BluetoothException("!!! connection to the device was unsuccessful !!!");
+                    throw new BluetoothException(:"!!! connection to the device was unsuccessful !!!");
                 }
             } catch (DBusExecutionException e) {
-                throw new BluetoothException("Error during scan:" + e, e);
+                throw new BluetoothException("rrror during reconnection: " + e, e);
             }
         }
     }

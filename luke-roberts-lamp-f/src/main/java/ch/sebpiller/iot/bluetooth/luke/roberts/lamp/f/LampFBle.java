@@ -76,8 +76,7 @@ public class LampFBle extends AbstractBluetoothLamp {
 
     private BluetoothGattCharacteristic getExternalApi() {
         if (externalApi == null) {
-            externalApi = discoverBluetoothCharacteristic(
-                    discoverDeviceManager(),
+            externalApi = retrieveCharacteristic(
                     config.getLocalBtAdapter(),
                     config.getMac(),
                     config.getCustomControlService().getUuid(),

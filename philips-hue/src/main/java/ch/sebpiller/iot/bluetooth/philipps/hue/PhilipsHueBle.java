@@ -16,8 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static ch.sebpiller.iot.bluetooth.BluetoothHelper.discoverDeviceManager;
-
 /*
 
 > bluetoothctl
@@ -326,11 +324,10 @@ public class PhilipsHueBle extends AbstractBluetoothLamp {
     private BluetoothGattCharacteristic getPrimaryServiceCharacteristic(String characId) {
         // TODO maintain cache of characs ?
         Map<DiscoveryFilter, Object> filter = new HashMap<>();
-        filter.put(DiscoveryFilter.Transport, DiscoveryTransport.LE);
+        filter.put(DiscoveryFilter.Transport, DiscoveryTransport.AUTO);
         filter.put(DiscoveryFilter.UUIDs, new String[]{PHILIPS_PRIMARY_SERVICE_UUID});
 
-        BluetoothGattCharacteristic characteristic = discoverBluetoothCharacteristic(
-                discoverDeviceManager(),
+        BluetoothGattCharacteristic characteristic = retrieveCharacteristic(
                 adapter,
                 mac,
                 PHILIPS_PRIMARY_SERVICE_UUID,

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
+import static ch.sebpiller.iot.bluetooth.BluetoothHelper.discoverDeviceManager;
 import static ch.sebpiller.iot.bluetooth.BluetoothHelper.findDeviceOnAdapter;
 
 /**
@@ -30,14 +31,16 @@ public abstract class AbstractBluetoothLamp extends AbstractLampBase {
         BluetoothHelper.reconnectIfNeeded(lastBluetoothCharacteristic);
     }
 
-    protected final BluetoothGattCharacteristic discoverBluetoothCharacteristic(DeviceManager manager, String adapter, String mac, String serviceId, String characId, Map<DiscoveryFilter, Object> filter) throws BluetoothException {
-        close();
-        this.lastBluetoothCharacteristic = tryDiscoverExternalApiEndpoint(manager, adapter, mac, serviceId, characId, filter);
+    protected final BluetoothGattCharacteristic retrieveCharacteristic(String adapter, String mac, String serviceId, String characId, Map<DiscoveryFilter, Object> filter) throws BluetoothException {
+        //close();
+        this.lastBluetoothCharacteristic = tryRetrieveCharacteristic(adapter, mac, serviceId, characId, filter);
+        BluetoothHelper.reconnectIfNeeded(lastBluetoothCharacteristic);
         return this.lastBluetoothCharacteristic;
     }
 
-    protected final BluetoothGattCharacteristic tryDiscoverExternalApiEndpoint(DeviceManager manager, String adapter, String mac, String serviceUuid, String characUuid, Map<DiscoveryFilter, Object> filter) throws BluetoothException {
+    private BluetoothGattCharacteristic tryRetrieveCharacteristic(String adapter, String mac, String serviceUuid, String characUuid, Map<DiscoveryFilter, Object> filter) throws BluetoothException {
         try {
+            DeviceManager manager = discoverDeviceManager();
             // TODO find out if the filter is really useful here
             if (filter != null && !filter.isEmpty()) {
                 manager.setScanFilter(filter);
@@ -56,7 +59,7 @@ public abstract class AbstractBluetoothLamp extends AbstractLampBase {
                 LOG.error("unable to connect to service {}: maybe the device is out of range, or has not been connected?", serviceUuid);
                 return null;
             }
-            LOG.info("found GATT service {} at UUID {}", service, serviceUuid);
+            LOG.info("found service {} at UUID {}", service, serviceUuid);
 
             // *****************
             BluetoothGattCharacteristic charac = service.getGattCharacteristicByUuid(characUuid);
@@ -65,7 +68,7 @@ public abstract class AbstractBluetoothLamp extends AbstractLampBase {
                 return null;
             }
 
-            LOG.info("found characteristic {} found at service {}", characUuid, serviceUuid);
+            LOG.info("found characteristic {} at UUID {}/{}", charac, characUuid, serviceUuid);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("  > inner structure: {}", ReflectionToStringBuilder.reflectionToString(charac));
             }
