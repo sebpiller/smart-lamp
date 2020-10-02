@@ -3,7 +3,6 @@ package ch.sebpiller.iot.bluetooth.luke.roberts;
 import ch.sebpiller.iot.bluetooth.BluetoothException;
 import ch.sebpiller.iot.bluetooth.BluetoothHelper;
 import ch.sebpiller.iot.bluetooth.lamp.AbstractBluetoothLamp;
-import ch.sebpiller.iot.bluetooth.luke.roberts.LukeRoberts;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
 import com.github.hypfvieh.bluetooth.DiscoveryFilter;
 import com.github.hypfvieh.bluetooth.DiscoveryTransport;
@@ -17,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-
-import static ch.sebpiller.iot.bluetooth.BluetoothHelper.discoverDeviceManager;
 
 /**
  * Implementation of a {@link SmartLampFacade} able to drive a "Luke Roberts' model Lamp F" with bluetooth BLE.
