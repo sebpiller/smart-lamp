@@ -72,7 +72,7 @@ public abstract class AbstractBluetoothLamp extends AbstractLampBase {
 
             return charac;
         } catch (DBusException | DBusExecutionException e) {
-            throw new BluetoothException("unable to retrieve characteristic " + serviceUuid + "/" + characUuid + " on " + mac + "@" + adapter + ": " + e, e);
+            throw new BluetoothException("unable to retrieve characteristic " + serviceUuid + "/" + characUuid + " on device " + mac + "@" + adapter + ": " + e, e);
         }
     }
 
@@ -80,6 +80,7 @@ public abstract class AbstractBluetoothLamp extends AbstractLampBase {
     public void close() {
         try {
             if (lastBluetoothCharacteristic != null) {
+                LOG.debug("closing last found characteristic");
                 BluetoothDevice device = lastBluetoothCharacteristic.getService().getDevice();
 
                 if (LOG.isDebugEnabled() && !device.isConnected()) {
@@ -92,6 +93,8 @@ public abstract class AbstractBluetoothLamp extends AbstractLampBase {
                     LOG.debug("was unable to disconnect");
                 }
             }
+
+            BluetoothHelper.discoverDeviceManager().closeConnection();
         } finally {
             lastBluetoothCharacteristic = null;
             super.close();

@@ -13,29 +13,27 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 
 /**
- * Helper class to centralize common tasks releated to bluetooth management.
+ * Helper class to centralize common tasks related to bluetooth management.
  */
 public class BluetoothHelper {
     private static final Logger LOG = LoggerFactory.getLogger(BluetoothHelper.class);
 
-    public static DeviceManager discoverDeviceManager() {
+    public static DeviceManager discoverDeviceManager() throws BluetoothException {
         DeviceManager man;
 
         try {
             try {
                 man = DeviceManager.getInstance();
             } catch (IllegalStateException e) {
-                LOG.trace("caught: " + e.toString(), e);
-
                 try {
                     man = DeviceManager.createInstance(false);
-                } catch (DBusException e1) {
-                    throw new IllegalStateException(e1);
+                } catch (DBusException | DBusExecutionException e1) {
+                    throw new BluetoothException("could not create bluetooth device manager: " + e1, e1);
                 }
             }
         } catch (UnsatisfiedLinkError ule) {
             // most likely a native dependency problem. either bluez not installed, or misconfigured
-            throw new IllegalStateException("was unable to access native libraries. Please install the dependencies required (bluez): " + ule, ule);
+            throw new BluetoothException("was unable to access native libraries. Please install the dependencies required (bluez): " + ule, ule);
         }
 
         return Objects.requireNonNull(man, "no device manager can be acquired");
@@ -44,49 +42,58 @@ public class BluetoothHelper {
     /**
      * Print all gathered bluetooth information to info level, and detailed infos to debug in a slf4j implementation.
      */
-    public static void printBluetoothEnvironment() {
-        LOG.info("========= BT BLE environment =========");
+    public static void printBluetoothEnvironment() throws BluetoothException {
+        try {
+            LOG.info("========= BT BLE environment =========");
 
-        DeviceManager manager = discoverDeviceManager();
-        LOG.info("dbus connection status: {}", manager.getDbusConnection().isConnected() ? "connected" : "disconnected");
+            DeviceManager manager = discoverDeviceManager();
+            LOG.info("dbus connection status: {}", manager.getDbusConnection().isConnected() ? "connected" : "disconnected");
 
-        LOG.info("looking for installed BT adapters... ");
-        manager.getAdapters().stream().forEach(a -> LOG.info("  > found adapter {} - {}", a.getDeviceName(), a));
+            LOG.info("looking for installed BT adapters... ");
+            manager.getAdapters().stream().forEach(a -> LOG.info("  > found adapter {} - {}", a.getDeviceName(), a));
 
-        LOG.info("looking for available devices, services and characteristics... ");
-        manager.scanForBluetoothDevices(3_000).stream().forEach(btd -> {
-            LOG.info("found device at address {} - {}", btd.getAddress(), btd);
+            LOG.info("looking for available devices, services and characteristics... ");
+            manager.scanForBluetoothDevices(3_000).stream().forEach(btd -> {
+                LOG.info("found device at address {} - {}", btd.getAddress(), btd);
 
-            btd.getGattServices().stream().forEach(s -> {
-                LOG.info("  > has a service {}", s.getDbusPath());
-                LOG.debug("    ... with delegation to {}{}", s.getService().isRemote() ? "remote " : "", s.getService().getObjectPath());
+                btd.getGattServices().stream().forEach(s -> {
+                    LOG.info("  > has a service {}", s.getDbusPath());
+                    LOG.debug("    ... with delegation to {}{}", s.getService().isRemote() ? "remote " : "", s.getService().getObjectPath());
 
-                s.getGattCharacteristics().stream().forEach(c -> {
-                    LOG.info("    > charac {} with flags {}", c, c.getFlags());
+                    s.getGattCharacteristics().stream().forEach(c -> {
+                        LOG.info("    > charac {} with flags {}", c, c.getFlags());
 
-                    c.getGattDescriptors().stream().forEach(gd -> {
-                        LOG.debug("      > gatt descriptor {} with flags {}", gd, gd.getFlags());
+                        c.getGattDescriptors().stream().forEach(gd -> {
+                            LOG.debug("      > gatt descriptor {} with flags {}", gd, gd.getFlags());
+                        });
                     });
                 });
             });
-        });
 
-        LOG.info("========= END OF SCAN ================");
+            LOG.info("========= END OF SCAN ================");
+        } catch (DBusExecutionException e) {
+            throw new BluetoothException("Error during scan:" + e, e);
+        }
     }
 
     public static void reconnectIfNeeded(BluetoothGattCharacteristic charac) {
         if (charac == null) {
             LOG.info("can not reconnect a null object");
         } else {
-            BluetoothDevice device = charac.getService().getDevice();
+            try {
+                BluetoothDevice device = charac.getService().getDevice();
 
-            if (!device.isConnected() && !device.connect()) {
-                throw new IllegalStateException("!!! connection to the device was unsuccessful !!!");
+                if (!device.isConnected() && !device.connect()) {
+                    throw new BluetoothException("!!! connection to the device was unsuccessful !!!");
+                }
+            } catch (DBusExecutionException e) {
+                throw new BluetoothException("Error during scan:" + e, e);
             }
         }
     }
 
     public static BluetoothDevice findDeviceOnAdapter(DeviceManager manager, String localBtAdapter, String remoteDeviceMac) throws BluetoothException {
+        // TODO implement a cache of devices ?
         try {
             LOG.info("searching for device {} on {}", localBtAdapter, remoteDeviceMac);
             if (LOG.isDebugEnabled()) {
@@ -100,7 +107,7 @@ public class BluetoothHelper {
                     .orElseThrow(() -> new IllegalStateException("bluetooth adapter " + localBtAdapter + " can not be found"));
             if (!adapter.isPowered()) {
                 adapter.setPowered(true);
-                LOG.debug("  > switched on {}", localBtAdapter);
+                LOG.debug("  > switched {} on", localBtAdapter);
             }
 
             return manager.getDevices(true).stream()
