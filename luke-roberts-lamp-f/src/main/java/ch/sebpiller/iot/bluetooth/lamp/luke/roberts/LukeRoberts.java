@@ -1,4 +1,4 @@
-package ch.sebpiller.iot.bluetooth.luke.roberts;
+package ch.sebpiller.iot.bluetooth.lamp.luke.roberts;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;

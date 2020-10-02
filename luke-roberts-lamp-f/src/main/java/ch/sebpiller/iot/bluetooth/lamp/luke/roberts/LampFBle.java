@@ -1,4 +1,4 @@
-package ch.sebpiller.iot.bluetooth.luke.roberts;
+package ch.sebpiller.iot.bluetooth.lamp.luke.roberts;
 
 import ch.sebpiller.iot.bluetooth.BluetoothException;
 import ch.sebpiller.iot.bluetooth.BluetoothHelper;

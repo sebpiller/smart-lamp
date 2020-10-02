@@ -1,7 +1,5 @@
-package ch.sebpiller.iot.bluetooth.lamp.luke.roberts.lamp.f;
+package ch.sebpiller.iot.bluetooth.lamp.luke.roberts;
 
-import ch.sebpiller.iot.bluetooth.luke.roberts.LampFBle;
-import ch.sebpiller.iot.bluetooth.luke.roberts.LukeRoberts;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
 import com.github.hypfvieh.bluetooth.DiscoveryFilter;
 import com.github.hypfvieh.bluetooth.DiscoveryTransport;

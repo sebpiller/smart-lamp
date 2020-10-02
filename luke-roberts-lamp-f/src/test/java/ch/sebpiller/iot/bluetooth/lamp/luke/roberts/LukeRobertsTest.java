@@ -1,7 +1,5 @@
 package ch.sebpiller.iot.bluetooth.lamp.luke.roberts;
 
-
-import ch.sebpiller.iot.bluetooth.luke.roberts.LukeRoberts;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.slf4j.Logger;
