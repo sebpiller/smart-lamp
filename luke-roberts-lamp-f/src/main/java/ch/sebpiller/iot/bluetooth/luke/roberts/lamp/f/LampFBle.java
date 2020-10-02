@@ -39,7 +39,7 @@ public class LampFBle extends AbstractBluetoothLamp {
         this.config = Objects.requireNonNull(config);
 
         filter = new HashMap<>();
-        filter.put(DiscoveryFilter.Transport, DiscoveryTransport.AUTO);
+        filter.put(DiscoveryFilter.Transport, DiscoveryTransport.LE);
         filter.put(DiscoveryFilter.UUIDs, new String[]{
                 config.getCustomControlService().getUserExternalApiEndpoint().getUuid()
         });
@@ -129,7 +129,7 @@ public class LampFBle extends AbstractBluetoothLamp {
 
     @Override
     public LampFBle setTemperature(int kelvin) {
-        // 2700K..4000K no exception on invalid value here
+        // valid value are 2700K..4000K
         int k = Math.max(2700, Math.min(4000, kelvin));
         sendCommandToExternalApi(LukeRoberts.LampF.Command.COLOR_TEMP, (byte) (k >> 8), (byte) (k));
         return this;
