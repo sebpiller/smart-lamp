@@ -109,14 +109,14 @@ public class BluetoothHelper {
             }
 
             if (lastError != null) {
-                LOG.error("unable to reconnect to the device after {} attempts: " + lastError, lastError);
+                throw lastError;
             }
         }
     }
 
     public static BluetoothDevice findDeviceOnAdapter(DeviceManager manager, String localBtAdapter, String remoteDeviceMac) throws BluetoothException {
         // TODO implement a cache of devices ?
-        LOG.info("searching for device {} on {}", localBtAdapter, remoteDeviceMac);
+        LOG.info("searching for device {} on {}", remoteDeviceMac, localBtAdapter);
         if (LOG.isDebugEnabled()) {
             LOG.debug("  > dbus connection status: {}", manager.getDbusConnection().isConnected() ? "connected" : "disconnected");
         }
