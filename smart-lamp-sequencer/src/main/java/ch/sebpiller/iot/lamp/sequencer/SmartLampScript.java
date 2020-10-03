@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringTokenizer;
-import java.util.regex.Pattern;
 
 import static ch.sebpiller.iot.lamp.ColorHelper.parseColor;
 
@@ -164,62 +163,61 @@ public class SmartLampScript {
     }
 
     private SmartLampSequence parseStep(SmartLampSequence record, String step) {
-        if (StringUtils.isBlank(step)) {
-            return record;
-        }
+        if (step == null) {
+            // empty line means a pause
+            record = record.pause();
+        } else {
+            record = record.start();
+            String token;
 
-        StringTokenizer tokenizer = new StringTokenizer(step, ";");
-        String token;
+            StringTokenizer tokenizer = new StringTokenizer(step, ";");
+            while (tokenizer.hasMoreElements() && (token = tokenizer.nextToken()) != null) {
+                StringTokenizer instructionTokenizer = new StringTokenizer(token, "=");
+                String key = instructionTokenizer.nextToken();
+                String value = null;
+                if (instructionTokenizer.hasMoreElements()) {
+                    value = instructionTokenizer.nextToken();
+                }
 
-        record = record.start();
-
-        while (tokenizer.hasMoreElements() && (token = tokenizer.nextToken()) != null) {
-            StringTokenizer instructionTokenizer = new StringTokenizer(token, "=");
-            String key = instructionTokenizer.nextToken();
-            String value = null;
-            if (instructionTokenizer.hasMoreElements()) {
-                value = instructionTokenizer.nextToken();
-            }
-
-            switch (key.toLowerCase()) {
-                case "": // empty string is implicitely a pause
-                case "pause":
-                    record = record.pause();
-                    break;
-                case "on":
-                    record = record.power(true);
-                    break;
-                case "off":
-                    record = record.power(false);
-                    break;
-                case "power":
-                    record = record.power("1".equals(value) || "on".equals(value));
-                    break;
-                case "brightness":
-                    record = record.setBrightness(Byte.parseByte(value));
-                    break;
-                case "temperature":
-                    record = record.setTemperature(Integer.parseInt(value));
-                    break;
-                case "sleep":
-                    record = record.sleep(Integer.parseInt(value));
-                    break;
-                case "scene":
-                    record = record.setScene(Byte.parseByte(value));
-                    break;
-                case "color":
-                    int[] color = parseColor(value);
-                    record = record.setColor(color[0], color[1], color[2]);
-                    break;
-                case "seq":
-                    SmartLampSequence sequence = getSequence(value);
-                    if (sequence == null) {
-                        throw new IllegalArgumentException("the sequence '" + value + "' is not defined in the sequences section");
-                    }
-                    record = record.then(sequence);
-                    break;
-                default:
-                    throw new IllegalArgumentException("script parse error: could not understand " + key);
+                switch (key.toLowerCase()) {
+                    case "pause":
+                        record = record.pause();
+                        break;
+                    case "on":
+                        record = record.power(true);
+                        break;
+                    case "off":
+                        record = record.power(false);
+                        break;
+                    case "power":
+                        record = record.power("1".equals(value) || "on".equals(value));
+                        break;
+                    case "brightness":
+                        record = record.setBrightness(Byte.parseByte(value));
+                        break;
+                    case "temperature":
+                        record = record.setTemperature(Integer.parseInt(value));
+                        break;
+                    case "sleep":
+                        record = record.sleep(Integer.parseInt(value));
+                        break;
+                    case "scene":
+                        record = record.setScene(Byte.parseByte(value));
+                        break;
+                    case "color":
+                        int[] color = parseColor(value);
+                        record = record.setColor(color[0], color[1], color[2]);
+                        break;
+                    case "seq":
+                        SmartLampSequence sequence = getSequence(value);
+                        if (sequence == null) {
+                            throw new IllegalArgumentException("the sequence '" + value + "' is not defined in the sequences section");
+                        }
+                        record = record.then(sequence);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("script parse error: could not understand " + key);
+                }
             }
         }
 
