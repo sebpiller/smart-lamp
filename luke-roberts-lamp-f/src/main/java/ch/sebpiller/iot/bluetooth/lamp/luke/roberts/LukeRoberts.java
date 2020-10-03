@@ -252,7 +252,7 @@ public final class LukeRoberts {
             public Config merge(Config subconfig) {
                 // TODO refactor, crappy code
 
-                // create an overriden version of the given config
+                // create an overridden version of the given config
                 Config newConfig = new Config();
                 newConfig.setLocalBtAdapter(getLocalBtAdapter());
                 newConfig.setMac(getMac());

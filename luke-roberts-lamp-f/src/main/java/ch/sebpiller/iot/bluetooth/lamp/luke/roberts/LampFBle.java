@@ -130,7 +130,7 @@ public class LampFBle extends AbstractBluetoothLamp {
     @Override
     public LampFBle setTemperature(int kelvin) {
         // valid value are 2700K..4000K
-        int k = max(2700, min(4000, kelvin));
+        int k = min(max(2700, kelvin), 4000);
         sendCommandToExternalApi(LukeRoberts.LampF.Command.COLOR_TEMP, (byte) (k >> 8), (byte) (k));
         return this;
     }
