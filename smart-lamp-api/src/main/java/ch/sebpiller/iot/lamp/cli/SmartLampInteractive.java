@@ -76,14 +76,13 @@ public class SmartLampInteractive {
         System.out.println();
         System.out.println("1. Change power status");
         System.out.println("2. Change scene");
-        System.out.println("3. Fade color");
+        System.out.println("3. Change color");
         System.out.println("4. Change brightness");
-        System.out.println("5. Change temperature (main bulb only)");
+        System.out.println("5. Change temperature");
         System.out.println();
         System.out.println("6. Fade brightness");
-        System.out.println("7. Fade temperature (main bulb only)");
-        System.out.println();
-        System.out.println("8. Ping");
+        System.out.println("7. Fade temperature");
+        System.out.println("8. Fade color");
         System.out.println();
         System.out.println("q. Quit");
         System.out.println();
@@ -117,11 +116,8 @@ public class SmartLampInteractive {
             case "3":
                 System.out.print("Target color (eg. 'white' or 'ffffff'): ");
                 line = scanner.nextLine();
-                try {
-                    facade.fadeColorTo(parseColor(line), SmartLampFacade.FadeStyle.SLOW).get();
-                } catch (ExecutionException | InterruptedException e) {
-                    LOG.warn("exception: " + e, e);
-                }
+                int[] ints = parseColor(line);
+                facade.setColor(ints[0], ints[1], ints[2]);
                 break;
             case "4":
                 System.out.print("Brightness percentage: ");
@@ -192,23 +188,13 @@ public class SmartLampInteractive {
 
                 break;
             case "8":
-                System.err.println("not implemented yet");
-                scanner.nextLine();
-//                System.out.print("Ping version (1/2) : ");
-//                line = scanner.nextLine();
-//                switch (line) {
-//                    case "1":
-//                        facade.pingV1();
-//                        System.out.println("Ping v1 sent");
-//                        scanner.nextLine();
-//                        break;
-//                    case "2":
-//                        facade.pingV2();
-//                        System.out.println("Ping v2 sent");
-//                        scanner.nextLine();
-//                        break;
-//                }
-
+                System.out.print("Target color (eg. 'white' or 'ffffff'): ");
+                line = scanner.nextLine();
+                try {
+                    facade.fadeColorTo(parseColor(line), SmartLampFacade.FadeStyle.SLOW).get();
+                } catch (ExecutionException | InterruptedException e) {
+                    LOG.warn("exception: " + e, e);
+                }
                 break;
             case "q":
                 return false;
