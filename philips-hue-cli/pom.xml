@@ -23,6 +23,10 @@
         </dependency>
         <dependency>
             <groupId>ch.sebpiller.iot</groupId>
+            <artifactId>beatdetect-bpmsource</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.sebpiller.iot</groupId>
             <artifactId>philips-hue</artifactId>
         </dependency>
         <dependency>

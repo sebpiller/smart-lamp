@@ -7,7 +7,7 @@
 before: scene=0;
 after: off;
 
-### loop: define the main actions that will repeat as long as necessary
+### loop: define the actions that will repeat as long as necessary (at least for --duration value)
 loop:
   - scene=1;
   - scene=2;

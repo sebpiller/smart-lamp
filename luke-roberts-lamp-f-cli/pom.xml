@@ -28,6 +28,10 @@
             <artifactId>luke-roberts-lamp-f</artifactId>
         </dependency>
         <dependency>
+            <groupId>ch.sebpiller.iot</groupId>
+            <artifactId>beatdetect-bpmsource</artifactId>
+        </dependency>
+        <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
         </dependency>

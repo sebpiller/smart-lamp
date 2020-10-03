@@ -4,7 +4,7 @@
 # This script only blink the lamp one time at each beat to 20%, and one time at 100% at each 8th beat.
 ####
 
-### define sequences to be used in the main loop
+### define reusable sequences to be referenced later
 sequences:
   before:
     - on;brightness=0;
@@ -19,7 +19,7 @@ sequences:
 ### initialization action
 before: seq=before
 
-### loop: define the main actions that will repeat as long as necessary
+### loop: define the actions that will repeat as long as necessary (at least for --duration value)
 loop:
   - seq=flash
   - seq=flash

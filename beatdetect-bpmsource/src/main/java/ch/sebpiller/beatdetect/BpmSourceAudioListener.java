@@ -1,4 +1,4 @@
-package ch.sebpiller.sound.beatdetect;
+package ch.sebpiller.beatdetect;
 
 import ch.sebpiller.tictac.BpmSource;
 import ddf.minim.AudioInput;

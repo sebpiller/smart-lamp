@@ -17,14 +17,14 @@ sequences:
   after:
     - off;
   flash:
-    - brightness=50;brightness=0;
+    - brightness=80;brightness=50;
   big-flash:
-    - brightness=100;brightness=0;
+    - brightness=100;brightness=50;
 
 before: seq=before
 after: seq=after
 
-### loop: define the main actions that will repeat as long as necessary
+### loop: define the actions that will repeat as long as necessary (at least for --duration value)
 loop:
   - color=magenta;seq=flash;    # bar 1 beat 1
   -

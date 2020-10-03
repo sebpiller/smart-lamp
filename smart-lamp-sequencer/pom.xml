@@ -14,16 +14,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.compartmental.code</groupId>
-            <artifactId>minim</artifactId>
-        </dependency>
-        <dependency>
             <groupId>ch.sebpiller</groupId>
             <artifactId>metronom</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>ch.sebpiller.iot</groupId>

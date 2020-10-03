@@ -1,6 +1,8 @@
 # Smart Lamp Sequencer
 
-A tool to programmatically pilot a smart lamp, in rythm with a metronom. 
+A tool to programmatically record a list of manipulations to do on a smart lamp.
+ 
+That in rhythm with a metronom that dispatch the . 
 
 ## Write your own scripted sequence of changes
 
