@@ -62,169 +62,169 @@ loop:
   - seq=flash                  # bar 10 beat 1
   - seq=big-flash                  # Let's go!
   - seq=flash
-  - 
+  -
   - color=yellow;              # bar 11 beat 1      (~ +22s), Freddy starts to sing
-  - 
-  - 
-  - 
+  -
+  -
+  -
   - color=red;                 # bar 12 beat 1
-  - 
-  - 
-  - 
+  -
+  -
+  -
   - color=yellow;              # bar 13 beat 1
-  - 
-  - 
-  - 
+  -
+  -
+  -
   - color=red;                 # bar 14 beat 1
-  - 
-  - 
-  - 
+  -
+  -
+  -
   - color=yellow;              # bar 15 beat 1
-  - 
-  - 
-  - 
+  -
+  -
+  -
   - color=red;                 # bar 16 beat 1
-  - 
-  - 
-  - 
+  -
+  -
+  -
   - color=yellow;              # bar 17 beat 1
-  - 
-  - 
-  - 
+  -
+  -
+  -
   - color=magenta;             # bar 18 beat 1
-  - 
-  - seq=flash
-  - seq=big-flash
+  -
+  - seq=flash;
+  - seq=big-flash;
   - color=blue;                # bar 19 beat 1: refrain starts *******************************
-  - 
-  - 
+  -
+  - seq=flash;
   -
   - color=green;               # bar 20 beat 1
   -
-  -
+  - seq=flash;
   -
   - color=blue;                # bar 21 beat 1
   -
-  -
+  - seq=flash;
   -
   - color=green;               # bar 22 beat 1
   -
-  -
+  - seq=flash;
   -
   - color=blue;                # bar 23 beat 1
   -
-  -
+  - seq=flash;
   -
   - color=green;               # bar 24 beat 1
   -
-  -
+  - seq=flash;
   -
   - color=blue;                # bar 25 beat 1
   -
-  -
+  - seq=flash;
   -
   - color=green;               # bar 26 beat 1
   -
-  -
-  -                            # END OF REFRAIN (~ 57s)
-  - color=red;               # bar 27 beat 1
+  - seq=flash;
+  - # END OF REFRAIN (~ 57s)
+  - color=red;                 # bar 27 beat 1
   -
   - seq=flash;
-  - 
+  -
   - color=green;               # bar 28 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=green;               # bar 29 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=green;               # bar 30 beat 1
-  - 
+  -
   - seq=flash;
   - seq=big-flash;
   - color=red;                 # bar 31 beat 1 : Freddy starts to sing quite fast ***********
-  - 
-  - 
-  - 
+  -
+  - seq=flash;
+  -
   - color=red;                 # bar 32 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=red;                 # bar 33 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=red;                 # bar 34 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=red;                 # bar 35 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=red;                 # bar 36 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=red;                 # bar 37 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=red;                 # bar 38 beat 1
-  - 
+  -
   - seq=flash;
-  -                            # Freddy don't sing anymore
+  - # Freddy don't sing anymore
   - color=blue;                # bar 39 beat 1 REFRAIN STARTS
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=red;                 # bar 40 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=red;                 # bar 41 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=red;                 # bar 42 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=red;                 # bar 43 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=red;                 # bar 44 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=red;                 # bar 45 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=red;                 # bar 46 beat 1
-  - 
+  -
   - seq=flash;
-  -                            # END OF REFRAIN
+  - # END OF REFRAIN
   - color=yellow;              # bar 47 beat 1 : 18 measures with almost beat/clap only
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=yellow;              # bar 48 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=yellow;              # bar 49 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=yellow;              # bar 50 beat 1
-  - 
+  -
   - seq=flash;
-  - 
+  -
   - color=red;                 # bar 51 beat 1
-  - 
+  -
   - seq=flash;
   -
   - color=red;                 # bar 52 beat 1
@@ -342,7 +342,7 @@ loop:
   - color=red;                 # bar 80 beat 1
   -
   - seq=flash;
-  -                            # Freddy don't sing anymore
+  - # Freddy don't sing anymore
   - color=blue;                # bar 81 beat 1 REFRAIN STARTS
   -
   - seq=flash;
@@ -374,29 +374,28 @@ loop:
   - color=red;                 # bar 88 beat 1
   -
   - seq=flash;
-  -                            # END OF REFRAIN
+  - # END OF REFRAIN
   - color=yellow;              # bar 89 beat 1 : last 4 measures of music
   -
   - seq=flash;
-  - 
+  -
   - color=yellow;              # bar 90 beat 1
   -
   - seq=flash;
-  - 
+  -
   - color=yellow;              # bar 91 beat 1
   -
   - seq=flash;
-  - 
+  -
   - color=yellow;              # bar 92 beat 1
   -
   - seq=flash;
-  - 
-  - brightness=0;              # bar 93 beat 1 : the last 2 measures are almost silenced out
-  - 
-  - 
-  - 
-  -                            # bar 94 beat 1
-  - 
-  - 
-  - 
-  - pause;                     # END OF SONG
+  -
+  - brightness=80;             # bar 93 beat 1 : the last 2 measures are almost silenced out
+  -
+  -
+  -
+  - brightness=50;             # bar 94 beat 1
+  -
+  - brightness=10;
+  -                            # END OF SONG
