@@ -3,12 +3,19 @@ package ch.sebpiller.iot.bluetooth.lamp.luke.roberts;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+
+import static ch.sebpiller.iot.lamp.ColorHelper.parseColor;
 
 //@Ignore("ignored unless in real world testing with an adequate lamp running, and a human can verify " +
 //        "it actually worked.")
 public class LampFBleIntegrationTest {
+    private static final Logger LOG = LoggerFactory.getLogger(LampFBleIntegrationTest.class);
+
     private static LampFBle facade;
 
     @BeforeClass
@@ -111,10 +118,15 @@ public class LampFBleIntegrationTest {
         facade.selectScene(LukeRoberts.LampF.Scene.INDIRECT_SCENE);
     }
 
+    @Test
+    public void testSelectScene2() {
+        facade.selectScene(LukeRoberts.LampF.Scene.INDIRECT_SCENE);
+    }
+
 
     @Test
     public void testChangeTemperatureWithImmediateLight() {
-        // for tests of color changes, the best is to use an indirect scene.
+        // to test color changes, the best is to use an indirect scene.
         facade.selectScene(LukeRoberts.LampF.Scene.INDIRECT_SCENE);
 
         System.out.println("TESTING TEMPERATURE...");
@@ -122,19 +134,17 @@ public class LampFBleIntegrationTest {
             System.out.println("TEMP IS " + j);
             facade.immediateLight(0, 0, 0, j, 0, 0);
         }
-        facade.sleep(2500);
     }
 
     @Test
     public void testChangeColorWithImmediateLight() {
-        // for tests of color changes, the best is to use an indirect scene.
+        // to test color changes, the best is to use an indirect scene.
         facade.selectScene(LukeRoberts.LampF.Scene.INDIRECT_SCENE);
 
         // playing with saturation & hue of immediate light (changes the color of the light)
-        System.out.println("TESTING SATURATION AND HUE...");
         for (int i = 255; i > 0; i -= 5) {
-            for (int j = 0; j < 65535; j += 1000) {
-                System.out.println("SATURATION IS " + i + ", HUE IS " + j);
+            for (int j = 0; j < 65_535; j += 1_000) {
+                LOG.info("SATURATION IS " + i + ", HUE IS " + j);
                 facade.immediateLight(0, i, j, 0, 0, 0);
             }
         }
@@ -142,17 +152,47 @@ public class LampFBleIntegrationTest {
 
     @Test
     public void testSetColor() {
-        // for tests of color changes, the best is to use an indirect scene.
+        // to test color changes, the best is to use an indirect scene.
         facade.selectScene(LukeRoberts.LampF.Scene.INDIRECT_SCENE);
         facade.sleep(2000);
 
         for (int i = 0; i < 10; i++) {
             facade
-                    .setColor(0xFF, 0x00,  0x00).sleep(2000)
-                    .setColor( 0x00,  0xFF,  0x00).sleep(2000)
+                    .setColor(0xFF, 0x00, 0x00).sleep(2000)
+                    .setColor(0x00, 0xFF, 0x00).sleep(2000)
                     .setColor(0x00, 0x00, 0xFF).sleep(2000)
             ;
         }
+    }
+
+    @Test
+    public void testFadeColor() throws ExecutionException, InterruptedException {
+        // to test color changes, the best is to use an indirect scene.
+        facade.selectScene(LukeRoberts.LampF.Scene.INDIRECT_SCENE);
+        facade.sleep(2000);
+
+        int[] white = parseColor("white");
+        int[] black = parseColor("black");
+
+        int[] red = parseColor("red");
+        int[] green = parseColor("green");
+        int[] blue = parseColor("blue");
+
+        SmartLampFacade.FadeStyle style = SmartLampFacade.FadeStyle.FAST;
+
+        facade
+                .fadeColorFromTo(white, black, style).get()
+                .fadeColorFromTo(black, white, style).get()
+        ;
+
+        for (int i = 0; i < 5; i++) {
+            facade
+                    .fadeColorTo(red, style).get()
+                    .fadeColorTo(green, style).get()
+                    .fadeColorTo(blue, style).get()
+            ;
+        }
+
     }
 
 

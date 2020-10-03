@@ -75,6 +75,19 @@ public interface SmartLampFacade {
     Future<? extends SmartLampFacade> fadeTemperatureTo(int kelvin, FadeStyle fadeStyle);
 
     /**
+     * Fade the color of the lamp from a value to another. The precise meaning of "fade a color" is implementation
+     * dependant, and can make use of different color scheme (RGB, HSB, HSV, etc.)
+     *
+     * @param from      3 ints in range 0..255 containing an RGB color.
+     * @param to        3 ints in range 0..255 containing an RGB color.
+     * @param fadeStyle Style of fading.
+     * @return this future facade for chaining.
+     */
+    Future<? extends SmartLampFacade> fadeColorFromTo(int[] from, int[] to, SmartLampFacade.FadeStyle fadeStyle);
+
+    Future<? extends SmartLampFacade> fadeColorTo(int[] to, SmartLampFacade.FadeStyle fadeStyle);
+
+    /**
      * For lamp supporting it, modify the scene actually in use.
      *
      * @throws UnsupportedOperationException in case this lamp does not support the concept of scene.

@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 
 import static ch.sebpiller.iot.lamp.ColorHelper.parseColor;
 
@@ -58,7 +59,7 @@ public class SmartLampInteractive {
         }
     }
 
-    // return true when cli is done
+    // return true when quit
     private boolean showMenu(String... args) {
         cls();
 
@@ -75,13 +76,14 @@ public class SmartLampInteractive {
         System.out.println();
         System.out.println("1. Change power status");
         System.out.println("2. Change scene");
-        System.out.println("3. Change color");
-        System.out.println("4. Change brightness value");
+        System.out.println("3. Fade color");
+        System.out.println("4. Change brightness");
         System.out.println("5. Change temperature (main bulb only)");
+        System.out.println();
         System.out.println("6. Fade brightness");
         System.out.println("7. Fade temperature (main bulb only)");
-        System.out.println("8. Ping");
         System.out.println();
+        System.out.println("8. Ping");
         System.out.println();
         System.out.println("q. Quit");
         System.out.println();
@@ -113,10 +115,13 @@ public class SmartLampInteractive {
                 facade.setScene(Byte.parseByte(line));
                 break;
             case "3":
-                System.out.print("Color ('white' or 'ffffff'): ");
+                System.out.print("Target color (eg. 'white' or 'ffffff'): ");
                 line = scanner.nextLine();
-                int[] ints = parseColor(line);
-                facade.setColor(ints[0], ints[1], ints[2]);
+                try {
+                    facade.fadeColorTo(parseColor(line), SmartLampFacade.FadeStyle.SLOW).get();
+                } catch (ExecutionException | InterruptedException e) {
+                    LOG.warn("exception: " + e, e);
+                }
                 break;
             case "4":
                 System.out.print("Brightness percentage: ");

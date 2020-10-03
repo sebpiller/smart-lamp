@@ -132,6 +132,18 @@ public class SmartLampSequence implements SmartLampFacade {
     }
 
     @Override
+    public Future<? extends SmartLampFacade> fadeColorFromTo(int[] from, int[] to, FadeStyle fadeStyle) {
+        add(facade -> facade.fadeColorFromTo(from, to, fadeStyle));
+        return present();
+    }
+
+    @Override
+    public Future<? extends SmartLampFacade> fadeColorTo(int[] to, FadeStyle fadeStyle) {
+        add(facade -> facade.fadeColorTo(to, fadeStyle));
+        return present();
+    }
+
+    @Override
     public SmartLampSequence setScene(byte scene) {
         add(facade -> facade.setScene(scene));
         return this;
@@ -189,7 +201,9 @@ public class SmartLampSequence implements SmartLampFacade {
         return start;
     }
 
-    /** Add an arbitrary execution of code to the current sequence. */
+    /**
+     * Add an arbitrary execution of code to the current sequence.
+     */
     public SmartLampSequence run(Runnable r) {
         add(new InvokeOnSmartLamp() {
             private int errorCount = 0;

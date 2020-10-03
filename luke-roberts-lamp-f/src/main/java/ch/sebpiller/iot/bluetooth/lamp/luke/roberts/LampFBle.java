@@ -19,6 +19,10 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.String.format;
+
 /**
  * Implementation of a {@link SmartLampFacade} able to drive a "Luke Roberts' model Lamp F" with bluetooth BLE.
  */
@@ -52,9 +56,9 @@ public class LampFBle extends AbstractBluetoothLamp {
             BluetoothGattCharacteristic api = getExternalApi();
             BluetoothHelper.reconnectIfNeeded(api);
 
-            if (LOG.isDebugEnabled()) {
+            if (LOG.isTraceEnabled()) {
                 BluetoothDevice device = api.getService().getDevice();
-                LOG.debug("sending command {} to Lamp F '{}' ({})",
+                LOG.trace("sending command {} to Lamp F '{}' ({})",
                         command,
                         device.getName(),
                         device.getAddress()
@@ -126,7 +130,7 @@ public class LampFBle extends AbstractBluetoothLamp {
     @Override
     public LampFBle setTemperature(int kelvin) {
         // valid value are 2700K..4000K
-        int k = Math.max(2700, Math.min(4000, kelvin));
+        int k = max(2700, min(4000, kelvin));
         sendCommandToExternalApi(LukeRoberts.LampF.Command.COLOR_TEMP, (byte) (k >> 8), (byte) (k));
         return this;
     }
@@ -143,12 +147,15 @@ public class LampFBle extends AbstractBluetoothLamp {
 
     @Override
     public LampFBle setColor(int red, int green, int blue) {
-        int r = Math.min(Math.max(0, red), 255);
-        int g = Math.min(Math.max(0, green), 255);
-        int b = Math.min(Math.max(0, blue), 255);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setting lamp f color to #{}{}{}", format("%02X", red), format("%02X", green), format("%02X", blue));
+        }
+        int r = min(max(0x00, red), 0xFF);
+        int g = min(max(0x00, green), 0xFF);
+        int b = min(max(0x00, blue), 0xFF);
 
         float[] hsb = Color.RGBtoHSB(r, g, b, null);
-        immediateLight(0, Math.round(hsb[1] * 255), Math.round(hsb[0] * 65_535f), 0, 0, 0);
+        immediateLight(0, Math.round(hsb[1] * 255f), Math.round(hsb[0] * 65_535f), 0, 0, 0);
         return this;
     }
 

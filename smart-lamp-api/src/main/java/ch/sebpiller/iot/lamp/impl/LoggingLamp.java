@@ -68,6 +68,18 @@ public class LoggingLamp implements SmartLampFacade {
     }
 
     @Override
+    public Future<LoggingLamp> fadeColorFromTo(int[] from, int[] to, FadeStyle fadeStyle) {
+        LOG.info("fadeColorFromTo({}, {}, {})", from, to, fadeStyle);
+        return now;
+    }
+
+    @Override
+    public Future<LoggingLamp> fadeColorTo(int[] to, FadeStyle fadeStyle) {
+        LOG.info("fadeColorTo({}, {})", to, fadeStyle);
+        return now;
+    }
+
+    @Override
     public LoggingLamp setScene(byte scene) {
         LOG.info("setScene({})", scene);
         return this;

@@ -74,6 +74,18 @@ public final class CompositeLampFacade implements SmartLampFacade {
     }
 
     @Override
+    public Future<? extends SmartLampFacade> fadeColorFromTo(int[] from, int[] to, FadeStyle fadeStyle) {
+        composites.parallelStream().forEach(smartLampFacade -> smartLampFacade.fadeColorFromTo(from, to, fadeStyle));
+        return futureMe;
+    }
+
+    @Override
+    public Future<? extends SmartLampFacade> fadeColorTo(int[] to, FadeStyle fadeStyle) {
+        composites.parallelStream().forEach(smartLampFacade -> smartLampFacade.fadeColorTo(to, fadeStyle));
+        return futureMe;
+    }
+
+    @Override
     public CompositeLampFacade setScene(byte scene) throws UnsupportedOperationException {
         composites.parallelStream().forEach(smartLampFacade -> smartLampFacade.setScene(scene));
         return this;
@@ -84,4 +96,6 @@ public final class CompositeLampFacade implements SmartLampFacade {
         composites.parallelStream().forEach(smartLampFacade -> smartLampFacade.setColor(red, green, blue));
         return this;
     }
+
+
 }
