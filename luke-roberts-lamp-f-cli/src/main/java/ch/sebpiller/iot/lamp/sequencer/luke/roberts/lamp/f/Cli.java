@@ -38,7 +38,7 @@ import static java.lang.String.format;
 @Command(
         name = "java -jar luke-roberts-lamp-f-cli.jar",
         footer = "NO Copyright - 2020",
-        description = "Automated manipulation of a@|bold,underline Luke Roberts' Lamp F|@.",
+        description = "Automated manipulation of a @|bold,underline Luke Roberts' Lamp F|@.",
         sortOptions = false
 )
 public class Cli implements Callable<Integer> {
@@ -73,7 +73,6 @@ public class Cli implements Callable<Integer> {
             names = {"-h", "--help"},
             description = "Print usage to the console and exit.",
             arity = "0",
-            paramLabel = "<CONFIG_FILE>",
             usageHelp = true,
             type = Boolean.class
     )
