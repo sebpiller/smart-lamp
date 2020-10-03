@@ -6,11 +6,14 @@
 # Should run at 109.934 BPM (version from album "Bohemian Rhapsody - The Original Soundtrack" released in 2018)
 #
 # !!! WORK IN PROGRESS !!!
+#
+# --script embedded:dust --duration 215 --tempo 110
 ####
 
 sequences:
   before:
-    - off;
+    - scene=5; # scene INDIRECT
+    - sleep=2000;
   after:
     - off;
   flash:
@@ -23,79 +26,79 @@ after: seq=after
 
 ### loop: define the main actions that will repeat as long as necessary
 loop:
-  - color=magenta;seq=flash    # bar 1 beat 1
-  -
-  - seq=flash
-  -
-  - seq=flash                  # bar 2 beat 1
-  -
-  - seq=flash
-  -
-  - seq=flash                  # bar 3 beat 1
-  -
-  - seq=flash
-  -
-  - seq=flash                  # bar 4 beat 1
-  -
-  - seq=flash
-  -
-  - color=red;seq=flash        # bar 5 beat 1
-  -
-  - seq=flash
-  -
-  - seq=flash                  # bar 6 beat 1
-  -
-  - seq=flash
-  -
-  - seq=flash                  # bar 7 beat 1
-  -
-  - seq=flash
-  -
-  - seq=flash                  # bar 8 beat 1
-  -
-  - seq=flash
-  -
-  - seq=flash                  # bar 9 beat 1
-  -
-  - seq=flash
-  -
-  - seq=flash                  # bar 10 beat 1
-  - seq=big-flash                  # Let's go!
-  - seq=flash
-  -
-  - color=yellow;              # bar 11 beat 1      (~ +22s), Freddy starts to sing
-  -
-  -
-  -
-  - color=red;                 # bar 12 beat 1
-  -
-  -
-  -
-  - color=yellow;              # bar 13 beat 1
-  -
-  -
-  -
-  - color=red;                 # bar 14 beat 1
-  -
-  -
-  -
-  - color=yellow;              # bar 15 beat 1
-  -
-  -
-  -
-  - color=red;                 # bar 16 beat 1
-  -
-  -
-  -
-  - color=yellow;              # bar 17 beat 1
-  -
-  -
-  -
-  - color=magenta;             # bar 18 beat 1
+  - color=magenta;seq=flash;    # bar 1 beat 1
   -
   - seq=flash;
+  -
+  - seq=flash;                  # bar 2 beat 1
+  -
+  - seq=flash;
+  -
+  - seq=flash;                  # bar 3 beat 1
+  -
+  - seq=flash;
+  -
+  - seq=flash;                  # bar 4 beat 1
+  -
+  - seq=flash;
+  -
+  - color=red;seq=flash;        # bar 5 beat 1
+  -
+  - seq=flash;
+  -
+  - seq=flash;                  # bar 6 beat 1
+  -
+  - seq=flash;
+  -
+  - seq=flash;                  # bar 7 beat 1
+  -
+  - seq=flash;
+  -
+  - seq=flash;                  # bar 8 beat 1
+  -
+  - seq=flash;
+  -
+  - seq=flash;                  # bar 9 beat 1
+  -
+  - seq=flash;
+  -
+  - seq=flash;                  # bar 10 beat 1
+  - seq=big-flash                  # Let's go!
+  - seq=flash;
+  -
+  - color=yellow;seq=flash;    # bar 11 beat 1      (~ +22s), Freddy starts to sing
+  - seq=flash;
+  - seq=flash;
+  - seq=flash;
+  - color=red;seq=flash;       # bar 12 beat 1
+  - seq=flash;
+  - seq=flash;
+  - seq=flash;
+  - color=yellow;seq=flash;    # bar 13 beat 1
+  - seq=flash;
+  - seq=flash;
+  - seq=flash;
+  - color=red;seq=flash;       # bar 14 beat 1
+  - seq=flash;
+  - seq=flash;
+  - seq=flash;
+  - color=yellow;seq=flash;    # bar 15 beat 1
+  - seq=flash;
+  - seq=flash;
+  - seq=flash;
+  - color=red;seq=flash;       # bar 16 beat 1
+  - seq=flash;
+  - seq=flash;
+  - seq=flash;
+  - color=yellow;seq=flash;    # bar 17 beat 1
+  - seq=flash;
+  - seq=flash;
+  - seq=flash;
+  - color=magenta;seq=flash;   # bar 18 beat 1
+  - seq=flash;
+  - seq=flash;
   - seq=big-flash;
-  - color=blue;                # bar 19 beat 1: refrain starts *******************************
+  - color=blue;seq=flash;      # bar 19 beat 1: refrain starts *******************************
   -
   - seq=flash;
   -
@@ -125,8 +128,7 @@ loop:
   -
   - color=green;               # bar 26 beat 1
   -
-  - seq=flash;
-  - # END OF REFRAIN (~ 57s)
+  - seq=flash;                 # END OF REFRAIN (~ 57s)
   - color=red;                 # bar 27 beat 1
   -
   - seq=flash;
@@ -173,8 +175,7 @@ loop:
   -
   - color=red;                 # bar 38 beat 1
   -
-  - seq=flash;
-  - # Freddy don't sing anymore
+  - seq=flash;                 # Freddy don't sing anymore
   - color=blue;                # bar 39 beat 1 REFRAIN STARTS
   -
   - seq=flash;
@@ -205,8 +206,7 @@ loop:
   -
   - color=red;                 # bar 46 beat 1
   -
-  - seq=flash;
-  - # END OF REFRAIN
+  - seq=flash;                 # END OF REFRAIN
   - color=yellow;              # bar 47 beat 1 : 18 measures with almost beat/clap only
   -
   - seq=flash;
@@ -341,8 +341,7 @@ loop:
   -
   - color=red;                 # bar 80 beat 1
   -
-  - seq=flash;
-  - # Freddy don't sing anymore
+  - seq=flash;                 # Freddy don't sing anymore
   - color=blue;                # bar 81 beat 1 REFRAIN STARTS
   -
   - seq=flash;
@@ -373,8 +372,7 @@ loop:
   -
   - color=red;                 # bar 88 beat 1
   -
-  - seq=flash;
-  - # END OF REFRAIN
+  - seq=flash;                 # END OF REFRAIN
   - color=yellow;              # bar 89 beat 1 : last 4 measures of music
   -
   - seq=flash;
@@ -393,9 +391,14 @@ loop:
   -
   - brightness=80;             # bar 93 beat 1 : the last 2 measures are almost silenced out
   -
+  - brightness=60;
   -
-  -
-  - brightness=50;             # bar 94 beat 1
+  - brightness=40;             # bar 94 beat 1
   -
   - brightness=10;
-  -                            # END OF SONG
+  - off;                       # END OF SONG
+  -
+  -
+  -
+  -
+  -

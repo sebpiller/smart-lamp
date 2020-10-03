@@ -19,14 +19,17 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.ParseResult;
 import picocli.CommandLine.PicocliException;
 
+import javax.sound.sampled.*;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.PositiveOrZero;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.Scanner;
@@ -198,9 +201,25 @@ public class Cli implements Callable<Integer> {
                     source = () -> finalTempo;
                 }
 
+                final AudioFilePlayer player = new AudioFilePlayer("/home/spiller/Bureau/Queen - Bohemian Rhapsody- The Original Soundtrack - 12 - Another One Bites the Dust.wav");
+
                 try (TicTac ticTac = new TicTacBuilder()
                         .connectedToBpm(source)
-                        .withListener((ticOrTac, b) -> loop.play(lamp))
+                        .withListener(new TicTac.TicTacListener() {
+                            int i = 0;
+
+                            @Override
+                            public void beat(boolean ticOrTac, float bpm) {
+                                // Start queen playing
+                                if (i == 0) {
+                                    player.start();
+                                }
+
+                                LOG.warn("beat {} (measure {})", i, (i / 4) + 1);
+                                loop.play(lamp);
+                                i++;
+                            }
+                        })
                         .build()) {
                     if (cliParamDuration > 0) {
                         try {
@@ -334,5 +353,57 @@ public class Cli implements Callable<Integer> {
                 ", cliParamDuration=" + cliParamDuration +
                 ", cliParamTempo=" + cliParamTempo +
                 '}';
+    }
+
+
+    static class AudioFilePlayer extends Thread {
+        private final String file;
+
+        AudioFilePlayer(String file) {
+            this.file = file;
+        }
+
+        @Override
+        public void run() {
+            play(file);
+        }
+
+        public void play(String filePath) {
+            final File file = new File(filePath);
+
+            try {
+                final AudioInputStream in = AudioSystem.getAudioInputStream(file);
+
+                final AudioFormat outFormat = getOutFormat(in.getFormat());
+                final DataLine.Info info = new DataLine.Info(SourceDataLine.class, outFormat);
+
+                final SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
+
+                if (line != null) {
+                    line.open(outFormat);
+                    line.start();
+                    stream(AudioSystem.getAudioInputStream(outFormat, in), line);
+                    line.drain();
+                    line.stop();
+                }
+
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        private AudioFormat getOutFormat(AudioFormat inFormat) {
+            final int ch = inFormat.getChannels();
+            final float rate = inFormat.getSampleRate();
+            return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, rate, 16, ch, ch * 2, rate, false);
+        }
+
+        private void stream(AudioInputStream in, SourceDataLine line)
+                throws IOException {
+            final byte[] buffer = new byte[65536];
+            for (int n = 0; n != -1; n = in.read(buffer, 0, buffer.length)) {
+                line.write(buffer, 0, n);
+            }
+        }
     }
 }
