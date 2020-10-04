@@ -88,7 +88,7 @@ public class Test {
             
             // blink
             for (int i = 0; i < 25; i++) {
-                smartLamp.power(true).wait(50).power(false).wait(150);
+                smartLamp.power(true).sleep(50).power(false).sleep(150);
             }
             
             smartLamp.power(true);
