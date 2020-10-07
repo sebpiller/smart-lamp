@@ -27,6 +27,7 @@ public class BpmSourceAudioListener implements BpmSource, AudioListener {
     private final Queue<Float> mostRecentDetectedBpms = new CircularFifoQueue<>(20);
     private BeatDetect beatDetect;
     private long lastBeatNanoTime = 0;
+    private float average;
 
     /**
      * use the system line in to catch sound.
@@ -82,6 +83,10 @@ public class BpmSourceAudioListener implements BpmSource, AudioListener {
                         if (LOG.isTraceEnabled()) {
                             LOG.trace("  > bpms are: {}", Arrays.toString(mostRecentDetectedBpms.toArray()));
                         }
+                        average = (float) mostRecentDetectedBpms.stream()
+                                .mapToDouble((x) -> x).summaryStatistics()
+                                .getAverage()
+                        ;
                     }
                 }
             }
@@ -92,9 +97,6 @@ public class BpmSourceAudioListener implements BpmSource, AudioListener {
 
     @Override
     public float getBpm() {
-        synchronized (mostRecentDetectedBpms) {
-            float average = (float) mostRecentDetectedBpms.stream().mapToDouble((x) -> x).summaryStatistics().getAverage();
-            return average;
-        }
+        return average;
     }
 }

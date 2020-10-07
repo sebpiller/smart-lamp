@@ -30,7 +30,6 @@ public class LampFBle extends AbstractBluetoothLamp {
     private static final Logger LOG = LoggerFactory.getLogger(LampFBle.class);
 
     private final LukeRoberts.LampF.Config config;
-    private final Map<DiscoveryFilter, Object> filter;
 
     /**
      * The Bluetooth endpoint to invoke to control the lamp.
@@ -43,12 +42,6 @@ public class LampFBle extends AbstractBluetoothLamp {
 
     public LampFBle(LukeRoberts.LampF.Config config) {
         this.config = Objects.requireNonNull(config);
-
-        filter = new HashMap<>();
-        filter.put(DiscoveryFilter.Transport, DiscoveryTransport.LE);
-        filter.put(DiscoveryFilter.UUIDs, new String[]{
-                config.getCustomControlService().getUserExternalApiEndpoint().getUuid()
-        });
     }
 
     private void sendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte... parameters) {
@@ -76,6 +69,12 @@ public class LampFBle extends AbstractBluetoothLamp {
 
     private BluetoothGattCharacteristic getExternalApi() {
         if (externalApi == null) {
+            Map<DiscoveryFilter, Object> filter = new HashMap<>();
+            filter.put(DiscoveryFilter.Transport, DiscoveryTransport.LE);
+            filter.put(DiscoveryFilter.UUIDs, new String[]{
+                    config.getCustomControlService().getUserExternalApiEndpoint().getUuid()
+            });
+
             externalApi = retrieveCharacteristic(
                     config.getLocalBtAdapter(),
                     config.getMac(),
@@ -90,6 +89,7 @@ public class LampFBle extends AbstractBluetoothLamp {
 
     public byte[] readValueFromExternalApi(LukeRoberts.LampF.Command command, Byte... parameters) {
         try {
+            // FIXME not working yet
             Map<String, Object> options = new HashMap<>();
 
             byte[] reversed = command.toByteArray(parameters);
@@ -141,7 +141,6 @@ public class LampFBle extends AbstractBluetoothLamp {
                 LukeRoberts.LampF.Scene.DEFAULT_SCENE :
                 LukeRoberts.LampF.Scene.SHUTDOWN_SCENE
         );
-
         return this;
     }
 

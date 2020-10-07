@@ -5,14 +5,14 @@ public class ColorHelper {
     /**
      * Parses a color either from its name (in english or french) or rgb bytes in hex.
      *
-     * @param value for example "WHITE" or "FFFFFF".
+     * @param v for example "WHITE" or "FFFFFF".
      * @return an array of length 3, containing a color in RGB. Never null (fallback to white).
      */
-    public static int[] parseColor(String value) {
-        if (value != null) {
-            String s = value.toLowerCase();
+    public static int[] parseColor(String v) {
+        if (v != null) {
+            String lower = v.toLowerCase();
 
-            switch (s) {
+            switch (lower) {
                 case "white":
                 case "blanc":
                     return new int[]{0xff, 0xff, 0xff};
@@ -59,11 +59,11 @@ public class ColorHelper {
                 // TODO recognize more color names
             }
 
-            if (s.matches("[0-9a-f]{6}")) {
+            if (lower.matches("[0-9a-f]{6}")) {
                 return new int[]{
-                        Integer.parseInt(value.substring(0, 2), 16),
-                        Integer.parseInt(value.substring(2, 4), 16),
-                        Integer.parseInt(value.substring(4, 6), 16),
+                        Integer.parseInt(v.substring(0, 2), 16),
+                        Integer.parseInt(v.substring(2, 4), 16),
+                        Integer.parseInt(v.substring(4, 6), 16),
                 };
             }
         }

@@ -18,6 +18,8 @@ sequences:
     - off;
   flash:
     - brightness=80;brightness=50;
+  double-flash:
+    - brightness=80;brightness=50;brightness=80;brightness=50;
   big-flash:
     - brightness=100;brightness=50;
 
@@ -65,7 +67,7 @@ loop:
   - seq=flash;                  # bar 10 beat 1
   - seq=big-flash                  # Let's go!
   - seq=flash;
-  -
+  - seq=double-flash;seq=big-flash;
   - color=yellow;seq=flash;    # bar 11 beat 1      (~ +22s), Freddy starts to sing
   - seq=flash;
   - seq=flash;
@@ -99,13 +101,13 @@ loop:
   - seq=flash;
   - seq=big-flash;
   - color=blue;seq=flash;      # bar 19 beat 1: refrain starts *******************************
-  -
+  - seq=flash
   - seq=flash;
-  -
+  - seq=flash
   - color=green;               # bar 20 beat 1
-  -
+  - seq=flash
   - seq=flash;
-  -
+  - seq=double-flash
   - color=blue;                # bar 21 beat 1
   -
   - seq=flash;
@@ -127,8 +129,8 @@ loop:
   - seq=flash;
   -
   - color=green;               # bar 26 beat 1
-  -
-  - seq=flash;                 # END OF REFRAIN (~ 57s)
+  - seq=double-flash;seq=double-flash;
+  - seq=flash;seq=double-flash;   # END OF REFRAIN (~ 57s)
   - color=red;                 # bar 27 beat 1
   -
   - seq=flash;

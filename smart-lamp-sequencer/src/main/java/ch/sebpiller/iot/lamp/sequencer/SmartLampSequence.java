@@ -27,6 +27,7 @@ public class SmartLampSequence implements SmartLampFacade {
             throw new UnsupportedOperationException("unable to populate a NOOP implementation");
         }
     };
+
     private static final Logger LOG = LoggerFactory.getLogger(SmartLampSequence.class);
     protected final List<InvokeOnSmartLamp> callables = Collections.synchronizedList(new ArrayList<>());
     private int playIndex = 0;
@@ -50,20 +51,34 @@ public class SmartLampSequence implements SmartLampFacade {
         return this;
     }
 
+    /**
+     * Skip #count steps (beats) of the sequence currently playing.
+     * <p>
+     * Useful if the thread currently running this sequence has not been able to beat at the appropriate instant.
+     *
+     * @see {@link ch.sebpiller.tictac.TicTac.TicTacListener#missedBeats(int, float)})
+     */
+    public void skip(int count) {
+        synchronized (callables) {
+            for (int i = 0; i < count; i++) {
+                nextCallable();
+            }
+        }
+    }
+
+    /**
+     * Plays the next step defined in the current sequence. If no such step is defined, the loop starts again
+     * from the beginning.
+     *
+     * @param realLamp The lamp to pilot.
+     * @return This sequencer for chaining.
+     */
     public SmartLampSequence play(SmartLampFacade realLamp) {
         synchronized (callables) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("invoking callable #{} of {}", playIndex, callables.size());
             }
-            InvokeOnSmartLamp invoke = null;
-
-            if (!callables.isEmpty()) {
-                invoke = callables.get(playIndex++);
-
-                if (playIndex >= callables.size()) {
-                    playIndex = 0;
-                }
-            }
+            InvokeOnSmartLamp invoke = nextCallable();
 
             if (invoke != null) {
                 invoke.invoke(realLamp);
@@ -71,6 +86,27 @@ public class SmartLampSequence implements SmartLampFacade {
         }
 
         return this;
+    }
+
+    /**
+     * Get the next step defined in this sequence as an instance of {@link InvokeOnSmartLamp}. Restart
+     * at the beginning if the end is reached. Returns {@code null} if and only if this sequence is currently
+     * empty (0 step defined).
+     */
+    private InvokeOnSmartLamp nextCallable() {
+        InvokeOnSmartLamp invoke = null;
+
+        synchronized (callables) {
+            if (!callables.isEmpty()) {
+                invoke = callables.get(playIndex++);
+
+                if (playIndex >= callables.size()) {
+                    playIndex = 0;
+                }
+            }
+        }
+
+        return invoke;
     }
 
     void add(InvokeOnSmartLamp c) {
@@ -202,7 +238,7 @@ public class SmartLampSequence implements SmartLampFacade {
     }
 
     /**
-     * Add an arbitrary execution of code to the current sequence.
+     * Adds an arbitrary execution of code to the current sequence.
      */
     public SmartLampSequence run(Runnable r) {
         add(new InvokeOnSmartLamp() {
@@ -245,8 +281,7 @@ public class SmartLampSequence implements SmartLampFacade {
     }
 
     /**
-     * A sequence that plays all the given callbacks at the same frame ({@link #play(SmartLampFacade)}
-     * will loop through all the content and play it sequentially).
+     * A sequence that plays all the given callbacks at the same frame ({@link #play(SmartLampFacade)}.
      */
     static class PlayAllAtOneTimeSequence extends SmartLampSequence {
         private static final Logger LOG = LoggerFactory.getLogger(PlayAllAtOneTimeSequence.class);

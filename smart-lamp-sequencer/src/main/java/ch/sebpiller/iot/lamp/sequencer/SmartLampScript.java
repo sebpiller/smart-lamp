@@ -89,7 +89,9 @@ public class SmartLampScript {
 
     public static SmartLampScript fromFile(String filename) {
         try {
-            return fromInputStream(new FileInputStream(filename));
+            SmartLampScript smartLampScript = fromInputStream(new FileInputStream(filename));
+            smartLampScript.setName(filename);
+            return smartLampScript;
         } catch (FileNotFoundException e) {
             throw new IllegalArgumentException("file not found: " + e, e);
         }
@@ -165,73 +167,64 @@ public class SmartLampScript {
     private SmartLampSequence parseStep(SmartLampSequence record, String s) {
         String step = s;
 
-        if (step == null) {
+        if (StringUtils.isBlank(step)) {
             // empty line means a pause
             record = record.pause();
         } else {
-            // strip comment
-            if (step.indexOf('#') >= 0) {
-                step = step.substring(0, step.indexOf('#') - 1).trim();
-            }
+            record = record.start();
+            String token;
 
-            if (StringUtils.isBlank(step)) {
-                // line with comment only means a pause
-                record = record.pause();
-            } else {
-                record = record.start();
-                String token;
+            StringTokenizer tokenizer = new StringTokenizer(step, ";");
+            while (tokenizer.hasMoreElements() && (token = tokenizer.nextToken()) != null) {
+                StringTokenizer instructionTokenizer = new StringTokenizer(token, "=");
+                String key = instructionTokenizer.nextToken();
+                String value = null;
+                if (instructionTokenizer.hasMoreElements()) {
+                    value = instructionTokenizer.nextToken();
+                }
 
-                StringTokenizer tokenizer = new StringTokenizer(step, ";");
-                while (tokenizer.hasMoreElements() && (token = tokenizer.nextToken()) != null) {
-                    StringTokenizer instructionTokenizer = new StringTokenizer(token, "=");
-                    String key = instructionTokenizer.nextToken();
-                    String value = null;
-                    if (instructionTokenizer.hasMoreElements()) {
-                        value = instructionTokenizer.nextToken();
-                    }
-
-                    switch (key.toLowerCase()) {
-                        case "pause":
-                            record = record.pause();
-                            break;
-                        case "on":
-                            record = record.power(true);
-                            break;
-                        case "off":
-                            record = record.power(false);
-                            break;
-                        case "power":
-                            record = record.power("1".equals(value) || "on".equals(value));
-                            break;
-                        case "brightness":
-                            record = record.setBrightness(Byte.parseByte(value));
-                            break;
-                        case "temperature":
-                            record = record.setTemperature(Integer.parseInt(value));
-                            break;
-                        case "sleep":
-                            record = record.sleep(Integer.parseInt(value));
-                            break;
-                        case "scene":
-                            record = record.setScene(Byte.parseByte(value));
-                            break;
-                        case "color":
-                            int[] color = parseColor(value);
-                            record = record.setColor(color[0], color[1], color[2]);
-                            break;
-                        case "seq":
-                            SmartLampSequence sequence = getSequence(value);
-                            if (sequence == null) {
-                                throw new IllegalArgumentException("the sequence '" + value + "' is not defined in the sequences section");
-                            }
-                            record = record.then(sequence);
-                            break;
-                        default:
-                            throw new IllegalArgumentException("script parse error: could not understand " + key);
-                    }
+                switch (key.toLowerCase()) {
+                    case "pause":
+                        record = record.pause();
+                        break;
+                    case "on":
+                        record = record.power(true);
+                        break;
+                    case "off":
+                        record = record.power(false);
+                        break;
+                    case "power":
+                        record = record.power("1".equals(value) || "on".equals(value) || "true".equals(value));
+                        break;
+                    case "brightness":
+                        record = record.setBrightness(Byte.parseByte(value));
+                        break;
+                    case "temperature":
+                        record = record.setTemperature(Integer.parseInt(value));
+                        break;
+                    case "sleep":
+                        record = record.sleep(Integer.parseInt(value));
+                        break;
+                    case "scene":
+                        record = record.setScene(Byte.parseByte(value));
+                        break;
+                    case "color":
+                        int[] color = parseColor(value);
+                        record = record.setColor(color[0], color[1], color[2]);
+                        break;
+                    case "seq":
+                        SmartLampSequence sequence = getSequence(value);
+                        if (sequence == null) {
+                            throw new IllegalArgumentException("the sequence '" + value + "' is not defined in the sequences section");
+                        }
+                        record = record.then(sequence);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("script parse error: could not understand " + key);
                 }
             }
         }
+
 
         record = record.end();
         return record;

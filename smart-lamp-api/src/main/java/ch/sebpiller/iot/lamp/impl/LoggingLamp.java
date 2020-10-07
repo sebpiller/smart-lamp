@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 /**
- * A fake lamp that only log the calls.
+ * A fake lamp that only logs the calls.
  */
 public class LoggingLamp implements SmartLampFacade {
     private static final Logger LOG = LoggerFactory.getLogger(LoggingLamp.class);
@@ -27,7 +27,7 @@ public class LoggingLamp implements SmartLampFacade {
 
     @Override
     public LoggingLamp sleep(int millis) {
-        LOG.info("sleeping({})", millis);
+        LOG.info("sleep({})", millis);
         return this;
     }
 
@@ -39,7 +39,7 @@ public class LoggingLamp implements SmartLampFacade {
 
     @Override
     public Future<LoggingLamp> fadeBrightnessFromTo(byte b, byte b1, FadeStyle fadeStyle) {
-        LOG.info("fadeToBrightness({}, {}, {})", b, b1, fadeStyle);
+        LOG.info("fadeBrightnessFromTo({}, {}, {})", b, b1, fadeStyle);
         return now;
     }
 

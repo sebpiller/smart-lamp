@@ -7,7 +7,6 @@ import ch.sebpiller.iot.lamp.SmartLampFacade;
 import ch.sebpiller.iot.lamp.cli.SmartLampInteractive;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampScript;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampSequence;
-
 import ch.sebpiller.tictac.BpmSource;
 import ch.sebpiller.tictac.TicTac;
 import ch.sebpiller.tictac.TicTacBuilder;
@@ -138,10 +137,10 @@ public class Cli implements Callable<Integer> {
             names = {"-t", "--tempo", "--rhythm"},
             description = "In scripted mode, set the frequency (in BPM) at which trigger tick events.",
             paramLabel = "<BPM>",
-            type = Integer.class
+            type = Float.class
     )
     @Range(min = 20, max = 200)
-    private Integer cliParamTempo;
+    private Float cliParamTempo;
 
     private Cli() {
     }
@@ -198,7 +197,7 @@ public class Cli implements Callable<Integer> {
                 if (cliParamTempo == null || cliParamTempo <= 0) {
                     source = BpmSourceAudioListener.getBpmFromLineIn();
                 } else {
-                    int finalTempo = cliParamTempo;
+                    float finalTempo = cliParamTempo;
                     source = () -> finalTempo;
                 }
 
@@ -207,7 +206,14 @@ public class Cli implements Callable<Integer> {
                 try (TicTac ticTac = new TicTacBuilder()
                         .connectedToBpm(source)
                         .withListener(new TicTac.TicTacListener() {
-                            int i = 0;
+                            private int i = 0;
+
+                            @Override
+                            public void missedBeats(int count, float bpm) {
+                                i += count;
+                                LOG.warn("missed beat {} (measure {})", i, (i / 4) + 1);
+                                loop.skip(count);
+                            }
 
                             @Override
                             public void beat(boolean ticOrTac, float bpm) {
@@ -216,7 +222,10 @@ public class Cli implements Callable<Integer> {
                                     player.start();
                                 }
 
-                                LOG.warn("beat {} (measure {})", i, (i / 4) + 1);
+                                if (LOG.isDebugEnabled()) {
+                                    LOG.debug("beat {} (measure {})", i, (i / 4) + 1);
+                                }
+
                                 loop.play(lamp);
                                 i++;
                             }
@@ -401,7 +410,7 @@ public class Cli implements Callable<Integer> {
 
         private void stream(AudioInputStream in, SourceDataLine line)
                 throws IOException {
-            final byte[] buffer = new byte[65536];
+            final byte[] buffer = new byte[65_536];
             for (int n = 0; n != -1; n = in.read(buffer, 0, buffer.length)) {
                 line.write(buffer, 0, n);
             }

@@ -1,0 +1,19 @@
+####
+
+sequences:
+  flash:
+    - brightness=80;brightness=50;
+
+loop:
+  - seq=flash    # bar 1 beat 1
+  -
+  - seq=flash
+  -
+  - seq=flash;    # bar 2 beat 1
+  -
+  - seq=flash;
+  -
+  - seq=flash;    # bar 3 beat 1
+  -
+  - seq=flash;
+  -

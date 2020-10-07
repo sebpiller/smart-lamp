@@ -35,7 +35,7 @@ public interface SmartLampFacade {
      *
      * @param percent Percentage of brightness
      * @return this facade for chaining.
-     * @throws UnsupportedOperationException if the device do not support the modification of the brightness.
+     * @throws UnsupportedOperationException if the device does not support the modification of the brightness.
      */
     SmartLampFacade setBrightness(byte percent) throws UnsupportedOperationException;
 

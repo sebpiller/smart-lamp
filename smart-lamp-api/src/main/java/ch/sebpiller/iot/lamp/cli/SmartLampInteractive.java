@@ -23,7 +23,6 @@ public class SmartLampInteractive {
     private final SmartLampFacade facade;
     private Scanner scanner;
 
-    private int blinkOnTime = 100, blinkOffTime = 250, blinkCount = 20;
     private byte fadeBrightFrom = 0, fadeBrightTo = 100;
     private int fadeTempFrom = 2700, fadeTempTo = 4000;
 
@@ -89,24 +88,28 @@ public class SmartLampInteractive {
         System.out.println();
         System.out.print("Choose an action: ");
 
-        String line = scanner.nextLine();
+        String line = scanner.nextLine().toLowerCase();
         switch (line) {
             case "1":
                 System.out.print("On/off: ");
-                line = scanner.nextLine();
+                line = scanner.nextLine().toLowerCase();
                 switch (line) {
                     case "0":
                     case "off":
                     case "false":
                         facade.power(false);
+                        System.out.print("Done! ");
                         break;
                     case "1":
                     case "on":
                     case "true":
                         facade.power(true);
+                        System.out.print("Done! ");
                         break;
+                    default:
+                        System.out.print("Not recognized: " + line + " ");
                 }
-
+                scanner.nextLine();
                 break;
             case "2":
                 System.out.print("Scene ID (0=power off): ");
@@ -134,7 +137,7 @@ public class SmartLampInteractive {
                 System.out.println("  from 1. **" + fadeBrightFrom + "%** to 2. **" + fadeBrightTo + "%** in 3. **" + fadeBrightStyle + "**");
                 System.out.print("Run with g : ");
 
-                line = scanner.nextLine();
+                line = scanner.nextLine().toLowerCase();
                 switch (line) {
                     case "1":
                         System.out.print("choose fade from : ");
@@ -200,7 +203,7 @@ public class SmartLampInteractive {
                 return false;
             default:
                 System.out.println();
-                System.out.println("invalid option: " + line);
+                System.out.print("invalid option: " + line + " ");
                 scanner.nextLine();
         }
 
