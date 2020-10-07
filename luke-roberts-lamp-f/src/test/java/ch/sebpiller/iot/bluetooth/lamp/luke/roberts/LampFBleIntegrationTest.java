@@ -2,6 +2,7 @@ package ch.sebpiller.iot.bluetooth.lamp.luke.roberts;
 
 import ch.sebpiller.iot.lamp.SmartLampFacade;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 
 import static ch.sebpiller.iot.lamp.ColorHelper.parseColor;
 
-//@Ignore("ignored unless in real world testing with an adequate lamp running, and a human can verify " +
-//        "it actually worked.")
+@Ignore("ignored unless in real world testing with an adequate lamp running, and a human can verify " +
+        "it actually worked.")
 public class LampFBleIntegrationTest {
     private static final Logger LOG = LoggerFactory.getLogger(LampFBleIntegrationTest.class);
 
