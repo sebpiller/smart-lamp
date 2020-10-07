@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ch.sebpiller.iot</groupId>
     <artifactId>smart-lamp-parent</artifactId>
-    <version>0.1.5-SNAPSHOT</version>
+    <version>0.1.5</version>
     <packaging>pom</packaging>
     <name>Smart Lamp - Parent</name>
 
@@ -32,7 +31,7 @@
         <url>scm:git:http://spidybox.home:3001/spiller/smart-lamp.git</url>
         <connection>scm:git:http://spidybox.home:3001/spiller/smart-lamp.git</connection>
         <developerConnection>scm:git:http://spidybox.home:3001/spiller/smart-lamp.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>smart-lamp-parent-0.1.5</tag>
     </scm>
 
     <distributionManagement>
