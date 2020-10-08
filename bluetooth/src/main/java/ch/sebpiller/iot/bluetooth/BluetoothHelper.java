@@ -56,22 +56,20 @@ public class BluetoothHelper {
             LOG.info("dbus connection status: {}", manager.getDbusConnection().isConnected() ? "connected" : "disconnected");
 
             LOG.info("looking for installed BT adapters... ");
-            manager.getAdapters().stream().forEach(a -> LOG.info("  > found adapter {} - {}", a.getDeviceName(), a));
+            manager.getAdapters().forEach(a -> LOG.info("  > found adapter {} - {}", a.getDeviceName(), a));
 
             LOG.info("looking for available devices, services and characteristics... ");
-            manager.scanForBluetoothDevices(3_000).stream().forEach(btd -> {
+            manager.scanForBluetoothDevices(3_000).forEach(btd -> {
                 LOG.info("found device at address {} - {}", btd.getAddress(), btd);
 
-                btd.getGattServices().stream().forEach(s -> {
+                btd.getGattServices().forEach(s -> {
                     LOG.info("  > has a service {}", s.getDbusPath());
                     LOG.debug("    ... with delegation to {}{}", s.getService().isRemote() ? "remote " : "", s.getService().getObjectPath());
 
-                    s.getGattCharacteristics().stream().forEach(c -> {
+                    s.getGattCharacteristics().forEach(c -> {
                         LOG.info("    > charac {} with flags {}", c, c.getFlags());
 
-                        c.getGattDescriptors().stream().forEach(gd -> {
-                            LOG.debug("      > gatt descriptor {} with flags {}", gd, gd.getFlags());
-                        });
+                        c.getGattDescriptors().forEach(gd -> LOG.debug("      > gatt descriptor {} with flags {}", gd, gd.getFlags()));
                     });
                 });
             });

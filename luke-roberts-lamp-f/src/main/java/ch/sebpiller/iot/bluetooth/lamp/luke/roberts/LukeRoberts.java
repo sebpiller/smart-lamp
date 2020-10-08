@@ -8,15 +8,11 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * Implements Bluetooth format from Luke Roberts'.
@@ -53,7 +49,7 @@ public final class LukeRoberts {
             private final byte prefix;
             private final byte version;
             private final byte opcode;
-            private final Optional<Predicate<Object[]>> validateParams;
+            private final Predicate<Object[]> validateParams;
 
             Command(byte prefix, byte version, byte opcode) {
                 this(prefix, version, opcode, null);
@@ -63,7 +59,7 @@ public final class LukeRoberts {
                 this.prefix = prefix;
                 this.version = version;
                 this.opcode = opcode;
-                this.validateParams = Optional.ofNullable(validateParams);
+                this.validateParams = validateParams;
             }
 
             private String bytesToHex(byte[] bytes) {
@@ -78,10 +74,6 @@ public final class LukeRoberts {
                 return new String(hexChars);
             }
 
-            public byte[] toByteArray() {
-                return toByteArray((Byte[]) null);
-            }
-
             /**
              * Builds a byte array to represent the current command in binary form, respecting
              * the Luke Roberts protocol.
@@ -91,7 +83,7 @@ public final class LukeRoberts {
              * @return An array of bytes that correspond to the requested command, with the parameters at the end.
              */
             public byte[] toByteArray(Byte... args) {
-                if (validateParams.isPresent() && !validateParams.get().test(args)) {
+                if (validateParams != null && !validateParams.test(args)) {
                     throw new IllegalArgumentException("invalid arguments provided for command " + this);
                 }
 
@@ -105,8 +97,7 @@ public final class LukeRoberts {
                     int idx = 0;
 
                     for (byte b : args) {
-                        bytes[2 + (idx + 1)] = b;
-                        idx++;
+                        bytes[3 + idx++] = b;
                     }
                 }
 
@@ -179,7 +170,6 @@ public final class LukeRoberts {
 
             Scene(byte id) {
                 this.id = id;
-
             }
 
             public byte getId() {
@@ -193,7 +183,6 @@ public final class LukeRoberts {
          */
         public static final class Config {
             private static final String LUKE_ROBERTS_DEFAULTS = "/config/luke-roberts-defaults.yaml";
-            private static final Logger LOG = LoggerFactory.getLogger(Config.class);
 
             private String mac, localBtAdapter;
             private CustomControlService customControlService;
@@ -206,22 +195,6 @@ public final class LukeRoberts {
                 }
             }
 
-            public static Config loadOverriddenConfigFromFile(String file) {
-                LukeRoberts.LampF.Config config = getDefaultConfig();
-
-                if (isNotBlank(file)) {
-                    try (InputStream fsConfig = new FileInputStream(file)) {
-                        LukeRoberts.LampF.Config subConfig = LukeRoberts.LampF.Config.loadFromStream(fsConfig);
-                        config = config.merge(subConfig);
-                    } catch (IOException e) {
-                        throw new IllegalStateException("could not load file " + file, e);
-                    }
-                }
-
-                return config;
-            }
-
-
             /**
              * WARN : the stream is closed automatically !
              */
@@ -231,8 +204,8 @@ public final class LukeRoberts {
                     // convert dash-separator to camel-case
                     c.setPropertyUtils(new PropertyUtils() {
                         @Override
-                        public Property getProperty(Class<? extends Object> type, String name) {
-                            String transformed = Arrays.stream(name.split("\\-"))
+                        public Property getProperty(Class<?> type, String name) {
+                            String transformed = Arrays.stream(name.split("-"))
                                     .map(s -> Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase())
                                     .collect(Collectors.joining());
                             transformed = Character.toLowerCase(transformed.charAt(0)) + transformed.substring(1);
@@ -244,14 +217,11 @@ public final class LukeRoberts {
                     Yaml yaml = new Yaml(c);
                     return yaml.loadAs(is, LukeRoberts.LampF.Config.class);
                 } catch (IOException e) {
-                    LOG.warn("exception during close: " + e, e);
-                    return null;
+                    throw new IllegalStateException("exception during parse of resource: " + e, e);
                 }
             }
 
             public Config merge(Config subconfig) {
-                // TODO refactor, crappy code
-
                 // create an overridden version of the given config
                 Config newConfig = new Config();
                 newConfig.setLocalBtAdapter(getLocalBtAdapter());

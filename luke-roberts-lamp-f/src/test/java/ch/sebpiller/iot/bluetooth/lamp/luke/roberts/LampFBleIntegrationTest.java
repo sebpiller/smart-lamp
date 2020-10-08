@@ -193,8 +193,5 @@ public class LampFBleIntegrationTest {
                     .fadeColorTo(blue, style).get()
             ;
         }
-
     }
-
-
 }

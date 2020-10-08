@@ -184,6 +184,7 @@ public class LampFBle extends AbstractBluetoothLamp {
         List<Byte> bytes = new ArrayList<>(12);
         byte xx = 0x00;
 
+        // TODO make correct use of immediate light body
         ////////
         if (true) {
             xx |= 0x01;

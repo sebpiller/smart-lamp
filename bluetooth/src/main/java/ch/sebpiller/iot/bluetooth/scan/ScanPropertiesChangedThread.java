@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
@@ -65,9 +64,7 @@ public final class ScanPropertiesChangedThread extends Thread {
                     LOG.debug("  > found entry: {}={}", entry.getKey(), ReflectionToStringBuilder.reflectionToString(entry.getValue()));
                 }
 
-                Iterator<Map.Entry<String, Variant<?>>> it = map.entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry<String, Variant<?>> entry = it.next();
+                for (Map.Entry<String, Variant<?>> entry : map.entrySet()) {
                     String key = entry.getKey();
                     Variant<?> value = entry.getValue();
 

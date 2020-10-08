@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.ParseResult;
 import picocli.CommandLine.PicocliException;
 
 import javax.sound.sampled.*;
@@ -72,7 +71,6 @@ public class Cli implements Callable<Integer> {
     private static final Logger LOG = LoggerFactory.getLogger(Cli.class);
 
     @Option(
-            order = -1,
             names = {"-h", "--help"},
             description = "Print usage to the console and exit.",
             arity = "0",
@@ -151,7 +149,7 @@ public class Cli implements Callable<Integer> {
         CommandLine commandLine = new CommandLine(new Cli());
 
         try {
-            ParseResult pr = commandLine.parseArgs(args);
+            commandLine.parseArgs(args);
         } catch (PicocliException pce) {
             commandLine.usage(System.out);
             exitCode = -1;
@@ -295,9 +293,7 @@ public class Cli implements Callable<Integer> {
             }
         }
 
-        LampFBle lamp = buildLukeRobertsLampFFacadeFromSettings();
-
-        try {
+        try (LampFBle lamp = buildLukeRobertsLampFFacadeFromSettings()) {
             boolean interactive = cliParamScript == null;
             if (interactive) {
                 new SmartLampInteractive(lamp).run(asciiLampF);
@@ -326,8 +322,6 @@ public class Cli implements Callable<Integer> {
         } catch (Exception e) {
             LOG.error("error: " + e, e);
             return 1;
-        } finally {
-            lamp.close();
         }
     }
 
@@ -336,7 +330,6 @@ public class Cli implements Callable<Integer> {
         Validator validator = factory.getValidator();
 
         Set<ConstraintViolation<Cli>> violations = validator.validate(this);
-
         if (!violations.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             violations.forEach(cliConstraintViolation -> sb

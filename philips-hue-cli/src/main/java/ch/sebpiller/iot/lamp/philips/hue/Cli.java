@@ -7,7 +7,6 @@ import ch.sebpiller.iot.lamp.SmartLampFacade;
 import ch.sebpiller.iot.lamp.cli.SmartLampInteractive;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampScript;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampSequence;
-
 import ch.sebpiller.tictac.BpmSource;
 import ch.sebpiller.tictac.TicTac;
 import ch.sebpiller.tictac.TicTacBuilder;
@@ -17,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.ParseResult;
 import picocli.CommandLine.PicocliException;
 
 import javax.validation.ConstraintViolation;
@@ -72,7 +70,6 @@ public class Cli implements Callable<Integer> {
     }
 
     @Option(
-            order = -1,
             names = {"-h", "--help"},
             description = "Print usage to the console and exit.",
             arity = "0",
@@ -152,7 +149,7 @@ public class Cli implements Callable<Integer> {
         CommandLine commandLine = new CommandLine(new Cli());
 
         try {
-            ParseResult pr = commandLine.parseArgs(args);
+            commandLine.parseArgs(args);
         } catch (PicocliException pce) {
             commandLine.usage(System.out);
             exitCode = -1;
@@ -268,9 +265,7 @@ public class Cli implements Callable<Integer> {
             }
         }
 
-        PhilipsHueBle lamp = buildPhilipsHueLampFromSettings();
-
-        try {
+        try (PhilipsHueBle lamp = buildPhilipsHueLampFromSettings()) {
             boolean interactive = cliParamScript == null;
             if (interactive) {
                 new SmartLampInteractive(lamp).run(asciiHue);
@@ -299,8 +294,6 @@ public class Cli implements Callable<Integer> {
         } catch (Exception e) {
             LOG.error("error: " + e, e);
             return 1;
-        } finally {
-            lamp.close();
         }
     }
 

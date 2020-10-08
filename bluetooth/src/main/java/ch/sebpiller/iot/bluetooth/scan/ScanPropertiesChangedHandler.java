@@ -18,15 +18,13 @@ public class ScanPropertiesChangedHandler extends AbstractPropertiesChangedHandl
     private final String prefix;
 
     private final BlockingQueue<ScanPropertiesChangedData> queue = new LinkedBlockingQueue<>();
-    private final Thread scanPropertiesChangedThread;
-
-    private final ScanHandler scanHandler = new LogScanHandler();
 
     public ScanPropertiesChangedHandler(DeviceManager deviceManager, String bluetoothAdapter) {
         this.bluetoothAdapter = bluetoothAdapter;
         prefix = "/org/bluez/" + bluetoothAdapter + "/dev_";
 
-        scanPropertiesChangedThread = new ScanPropertiesChangedThread(deviceManager, bluetoothAdapter, queue, scanHandler);
+        ScanHandler scanHandler = new LogScanHandler();
+        Thread scanPropertiesChangedThread = new ScanPropertiesChangedThread(deviceManager, bluetoothAdapter, queue, scanHandler);
         scanPropertiesChangedThread.setDaemon(true);
         scanPropertiesChangedThread.start();
     }

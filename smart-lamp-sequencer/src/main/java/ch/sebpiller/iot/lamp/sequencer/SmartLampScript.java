@@ -58,12 +58,12 @@ public class SmartLampScript {
             this.loop = loop;
         }
 
-        public Map<String, String[]> getSequences() {
-            return sequences;
-        }
-
         public void setSequences(Map<String, String[]> sequences) {
             this.sequences = sequences;
+        }
+
+        public Map<String, String[]> getSequences() {
+            return sequences;
         }
 
         public String getAfter() {
@@ -74,7 +74,6 @@ public class SmartLampScript {
             this.after = after;
         }
     }
-
 
     public static SmartLampScript embeddedScript(String scriptName) {
         InputStream is = SmartLampScript.class.getResourceAsStream("/embedded-scripts/" + scriptName + ".yaml");
@@ -115,8 +114,7 @@ public class SmartLampScript {
             return SmartLampSequence.NOOP;
         }
 
-        SmartLampSequence record = parseStep(new SmartLampSequence.PlayAllAtOneTimeSequence(), before);
-        return record;
+        return parseStep(new SmartLampSequence.PlayAllAtOneTimeSequence(), before);
     }
 
     public SmartLampSequence getAfterSequence() {
@@ -125,8 +123,7 @@ public class SmartLampScript {
             return SmartLampSequence.NOOP;
         }
 
-        SmartLampSequence record = parseStep(new SmartLampSequence.PlayAllAtOneTimeSequence(), after);
-        return record;
+        return parseStep(new SmartLampSequence.PlayAllAtOneTimeSequence(), after);
     }
 
     public Map<String, SmartLampSequence> getSequences() {
@@ -165,16 +162,14 @@ public class SmartLampScript {
     }
 
     private SmartLampSequence parseStep(SmartLampSequence record, String s) {
-        String step = s;
-
-        if (StringUtils.isBlank(step)) {
+        if (StringUtils.isBlank(s)) {
             // empty line means a pause
             record = record.pause();
         } else {
             record = record.start();
             String token;
 
-            StringTokenizer tokenizer = new StringTokenizer(step, ";");
+            StringTokenizer tokenizer = new StringTokenizer(s, ";");
             while (tokenizer.hasMoreElements() && (token = tokenizer.nextToken()) != null) {
                 StringTokenizer instructionTokenizer = new StringTokenizer(token, "=");
                 String key = instructionTokenizer.nextToken();
@@ -197,16 +192,24 @@ public class SmartLampScript {
                         record = record.power("1".equals(value) || "on".equals(value) || "true".equals(value));
                         break;
                     case "brightness":
-                        record = record.setBrightness(Byte.parseByte(value));
+                        if (value != null) {
+                            record = record.setBrightness(Byte.parseByte(value));
+                        }
                         break;
                     case "temperature":
-                        record = record.setTemperature(Integer.parseInt(value));
+                        if (value != null) {
+                            record = record.setTemperature(Integer.parseInt(value));
+                        }
                         break;
                     case "sleep":
-                        record = record.sleep(Integer.parseInt(value));
+                        if (value != null) {
+                            record = record.sleep(Integer.parseInt(value));
+                        }
                         break;
                     case "scene":
-                        record = record.setScene(Byte.parseByte(value));
+                        if (value != null) {
+                            record = record.setScene(Byte.parseByte(value));
+                        }
                         break;
                     case "color":
                         int[] color = parseColor(value);
@@ -224,7 +227,6 @@ public class SmartLampScript {
                 }
             }
         }
-
 
         record = record.end();
         return record;

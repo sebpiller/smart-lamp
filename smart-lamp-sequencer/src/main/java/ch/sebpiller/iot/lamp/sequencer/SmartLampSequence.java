@@ -31,7 +31,7 @@ public class SmartLampSequence implements SmartLampFacade {
     private static final Logger LOG = LoggerFactory.getLogger(SmartLampSequence.class);
     protected final List<InvokeOnSmartLamp> callables = Collections.synchronizedList(new ArrayList<>());
     private int playIndex = 0;
-    private SmartLampSequence parent;
+    private final SmartLampSequence parent;
 
     public SmartLampSequence() {
         this(null);
@@ -55,8 +55,6 @@ public class SmartLampSequence implements SmartLampFacade {
      * Skip #count steps (beats) of the sequence currently playing.
      * <p>
      * Useful if the thread currently running this sequence has not been able to beat at the appropriate instant.
-     *
-     * @see {@link ch.sebpiller.tictac.TicTac.TicTacListener#missedBeats(int, float)})
      */
     public void skip(int count) {
         synchronized (callables) {
@@ -201,7 +199,7 @@ public class SmartLampSequence implements SmartLampFacade {
         }
 
         final SmartLampSequence inner = new PlayAllAtOneTimeSequence(this);
-        add(facade -> inner.play(facade));
+        add(inner::play);
         return inner;
     }
 
@@ -245,7 +243,7 @@ public class SmartLampSequence implements SmartLampFacade {
             private int errorCount = 0;
 
             @Override
-            public Object invoke(SmartLampFacade facade) {
+            public void invoke(SmartLampFacade facade) {
                 try {
                     r.run();
                 } catch (Exception e) {
@@ -257,8 +255,6 @@ public class SmartLampSequence implements SmartLampFacade {
                         LOG.error("no more errors will be reported for this function.");
                     }
                 }
-
-                return SmartLampSequence.this;
             }
         });
 
@@ -277,7 +273,7 @@ public class SmartLampSequence implements SmartLampFacade {
 
     @FunctionalInterface
     interface InvokeOnSmartLamp {
-        Object invoke(SmartLampFacade facade);
+        void invoke(SmartLampFacade facade);
     }
 
     /**

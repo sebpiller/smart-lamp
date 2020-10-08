@@ -38,7 +38,9 @@ public class SmartLampInteractive {
     public void run(String... args) {
         scanner = new Scanner(System.in);
         try {
-            while (showMenu(args)) ;
+            while (showMenu(args)) {
+                // noop
+            }
         } finally {
             scanner.close();
 
