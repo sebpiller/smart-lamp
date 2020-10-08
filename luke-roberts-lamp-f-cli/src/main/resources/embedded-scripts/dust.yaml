@@ -7,21 +7,21 @@
 #
 # !!! WORK IN PROGRESS !!!
 #
-# --script embedded:dust --duration 215 --tempo 110
+# --script embedded:dust --duration 215 --tempo 109.934
 ####
 
 sequences:
   before:
-    - scene=5; # scene INDIRECT
+    - scene=5;    # scene INDIRECT
     - sleep=2000;
   after:
     - off;
   flash:
-    - brightness=80;brightness=50;
+    - brightness=80;brightness=0;
   double-flash:
-    - brightness=80;brightness=50;brightness=80;brightness=50;
+    - brightness=80;brightness=0;brightness=80;brightness=0;
   big-flash:
-    - brightness=100;brightness=50;
+    - brightness=100;brightness=0;
 
 before: seq=before
 after: seq=after
@@ -32,15 +32,15 @@ loop:
   -
   - seq=flash;
   -
-  - seq=flash;                  # bar 2 beat 1
+  - seq=double-flash;           # bar 2 beat 1
   -
   - seq=flash;
   -
-  - seq=flash;                  # bar 3 beat 1
+  - seq=double-flash;           # bar 3 beat 1
   -
   - seq=flash;
   -
-  - seq=flash;                  # bar 4 beat 1
+  - seq=double-flash;           # bar 4 beat 1
   -
   - seq=flash;
   -
