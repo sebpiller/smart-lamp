@@ -71,9 +71,7 @@ public class Test {
         
     public static void main(String[] args) {
         LukeRoberts.LampF.Config config = LukeRoberts.LampF.Config.getDefaultConfig();
-        if (System.getProperty("config") != null) {
-            config = LukeRoberts.LampF.Config.loadOverriddenConfigFromSysprop("config");
-        }
+
         if (System.getProperty("lamp.f.mac") != null) {
             config.setMac(System.getProperty("lamp.f.mac"));
         }
@@ -84,7 +82,7 @@ public class Test {
             smartLamp
                     .power(true).sleep(2000)
                     .setBrightness((byte) 50).sleep(2000)
-                    .fadeFromToBrightness((byte) 0, (byte) 100, SmartLampFacade.FadeStyle.FAST).get();
+                    .fadeBrightnessFromTo((byte) 0, (byte) 100, SmartLampFacade.FadeStyle.FAST).get();
             
             // blink
             for (int i = 0; i < 25; i++) {
