@@ -2,8 +2,6 @@ package ch.sebpiller.iot.lamp.sequencer;
 
 import org.junit.Test;
 
-import java.util.function.Consumer;
-
 public class SmartLampYamlScriptTest {
     @Test
     public void testParseBoomFile() {
@@ -18,18 +16,14 @@ public class SmartLampYamlScriptTest {
                 .fromInputStream(getClass().getResourceAsStream("/embedded-scripts/temperature.yaml"));
         smartLampScript.buildMainLoopSequence();
     }
+
     @Test
     public void testParseCommentedFile() {
         SmartLampScript smartLampScript = SmartLampScript
                 .fromInputStream(getClass().getResourceAsStream("/scripts/commented.yaml"));
         SmartLampSequence smartLampSequence = smartLampScript.buildMainLoopSequence();
 
-        smartLampSequence.callables.forEach(new Consumer<SmartLampSequence.InvokeOnSmartLamp>() {
-            @Override
-            public void accept(SmartLampSequence.InvokeOnSmartLamp invokeOnSmartLamp) {
-                System.out.println(invokeOnSmartLamp);
-            }
-        });
+        smartLampSequence.callables.forEach(System.out::println);
     }
 
     @Test(expected = IllegalArgumentException.class)

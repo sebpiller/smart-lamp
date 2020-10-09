@@ -11,7 +11,7 @@ this process is very simple:
 ````shell script
 sudo apt-get install git -y                     # git
 sudo apt-get install bluetooth blueman bluez -y # bluetooth: needed in production and to run integration tests
-sudo apt-get install openjdk-11-jdk maven -y    # java compilation and runtime
+sudo apt-get install default-jdk maven -y       # java compilation and runtime
 ```` 
 - checkout and compile the sources:
 ```shell script
