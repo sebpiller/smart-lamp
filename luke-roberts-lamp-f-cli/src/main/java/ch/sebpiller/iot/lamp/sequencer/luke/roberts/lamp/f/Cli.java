@@ -10,6 +10,7 @@ import ch.sebpiller.iot.lamp.sequencer.SmartLampSequence;
 import ch.sebpiller.tictac.BpmSource;
 import ch.sebpiller.tictac.TicTac;
 import ch.sebpiller.tictac.TicTacBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,32 +19,73 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.PicocliException;
 
-import javax.sound.sampled.*;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.PositiveOrZero;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.Optional;
-import java.util.Scanner;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
-
-import static java.lang.String.format;
 
 @Command(
         name = "java -jar luke-roberts-lamp-f-cli.jar",
         footer = "NO Copyright - 2020",
-        description = "Automated manipulation of a @|bold,underline Luke Roberts' Lamp F|@.",
-        sortOptions = false
+        description = "Automated manipulation of a @|bold,underline Luke Roberts' Lamp F.|@",
+        sortOptions = false,
+        versionProvider = Cli.VersionProvider.class,
+        header = {
+                " _      _____             _                             ______ ",
+                "| |    |  __ \\           | |                           |  ____|",
+                "| |    | |__) |  ______  | |     __ _ _ __ ___  _ __   | |__   ",
+                "| |    |  _  /  |______| | |    / _` | '_ ` _ \\| '_ \\  |  __|  ",
+                "| |____| | \\ \\           | |___| (_| | | | | | | |_) | | |     ",
+                "|______|_|  \\_\\          |______\\__,_|_| |_| |_| .__/  |_|     ",
+                "                                               | |             ",
+                "                                               |_|             "
+        }
 )
 public class Cli implements Callable<Integer> {
+    public static final String ARTIFACT_ID = "luke-roberts-lamp-f-cli";
+
+    static class VersionProvider implements CommandLine.IVersionProvider {
+        public String[] getVersion() {
+            String implementationVersion = getClass().getPackage().getImplementationVersion();
+            if (implementationVersion != null) {
+                return new String[]{implementationVersion};
+            }
+
+            String name = "/" + ARTIFACT_ID + ".version";
+            InputStream versionsInfo = getClass().getResourceAsStream(name);
+            if (versionsInfo == null) {
+                System.err.println("unable to find version info file.");
+            } else {
+                try (InputStream is = versionsInfo) {
+                    Properties props = new Properties();
+                    props.load(is);
+
+                    assert props.getProperty("artifact").equals("luke-roberts-lamp-f-cli");
+
+                    return new String[]{props.getProperty("version") + " (built on " + props.getProperty("timestamp") + ")"};
+                } catch (IOException e) {
+                    System.err.println("unable to load file " + name);
+                }
+            }
+
+            return new String[]{"unknown"};
+        }
+    }
+
+    private String getVersion() {
+        return new VersionProvider().getVersion()[0];
+    }
+
     /**
      * Flashes the lamp 1 time at each beat, 4 times
      */
@@ -69,6 +111,15 @@ public class Cli implements Callable<Integer> {
             ;
     private static final String EMBEDDED_PREFIX = "embedded:";
     private static final Logger LOG = LoggerFactory.getLogger(Cli.class);
+
+    @Option(
+            names = {"-v", "--version"},
+            description = "Print version information to the console and exit.",
+            arity = "0",
+            versionHelp = true,
+            type = Boolean.class
+    )
+    private Boolean cliParamVersion;
 
     @Option(
             names = {"-h", "--help"},
@@ -168,21 +219,6 @@ public class Cli implements Callable<Integer> {
         System.exit(exitCode);
     }
 
-    private String toAsciiArt(String text) {
-        String url = format("http://artii.herokuapp.com/make?text=%s&font=%s",
-                text.replaceAll("\\s", "+"), "standard");
-
-        String asciiArt;
-
-        try (Scanner s = new Scanner(new URL(url).openStream())) {
-            asciiArt = s.useDelimiter("\\A").next();
-        } catch (Exception e) {
-            asciiArt = text;
-        }
-
-        return asciiArt;
-    }
-
     private void playScriptOnLamp(SmartLampScript script, SmartLampFacade lamp) {
         try {
             script.getBeforeSequence().play(lamp);
@@ -199,8 +235,6 @@ public class Cli implements Callable<Integer> {
                     source = () -> finalTempo;
                 }
 
-                final AudioFilePlayer player = new AudioFilePlayer("/home/spiller/Bureau/Queen - Bohemian Rhapsody- The Original Soundtrack - 12 - Another One Bites the Dust.wav");
-
                 try (TicTac ticTac = new TicTacBuilder()
                         .connectedToBpm(source)
                         .withListener(new TicTac.TicTacListener() {
@@ -215,11 +249,6 @@ public class Cli implements Callable<Integer> {
 
                             @Override
                             public void beat(boolean ticOrTac, float bpm) {
-                                // Start queen playing
-                                if (i == 0) {
-                                    player.start();
-                                }
-
                                 if (LOG.isDebugEnabled()) {
                                     LOG.debug("beat {} (measure {})", i, (i / 4) + 1);
                                 }
@@ -277,8 +306,10 @@ public class Cli implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        // Hello world !
-        String asciiLampF = toAsciiArt("Lamp F");
+        String asciiLampF = StringUtils.join(Cli.class.getAnnotation(Command.class).header(), "\n");
+
+        asciiLampF = asciiLampF + "\n" + "version: " + getVersion() + "\n";
+
         LOG.info("booting app...\n{}\n", asciiLampF);
 
         // Validation of the injected configuration
@@ -356,57 +387,5 @@ public class Cli implements Callable<Integer> {
                 ", cliParamDuration=" + cliParamDuration +
                 ", cliParamTempo=" + cliParamTempo +
                 '}';
-    }
-
-
-    static class AudioFilePlayer extends Thread {
-        private final String file;
-
-        AudioFilePlayer(String file) {
-            this.file = file;
-        }
-
-        @Override
-        public void run() {
-            play(file);
-        }
-
-        public void play(String filePath) {
-            final File file = new File(filePath);
-
-            try {
-                final AudioInputStream in = AudioSystem.getAudioInputStream(file);
-
-                final AudioFormat outFormat = getOutFormat(in.getFormat());
-                final DataLine.Info info = new DataLine.Info(SourceDataLine.class, outFormat);
-
-                final SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
-
-                if (line != null) {
-                    line.open(outFormat);
-                    line.start();
-                    stream(AudioSystem.getAudioInputStream(outFormat, in), line);
-                    line.drain();
-                    line.stop();
-                }
-
-            } catch (Exception e) {
-                throw new IllegalStateException(e);
-            }
-        }
-
-        private AudioFormat getOutFormat(AudioFormat inFormat) {
-            final int ch = inFormat.getChannels();
-            final float rate = inFormat.getSampleRate();
-            return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, rate, 16, ch, ch * 2, rate, false);
-        }
-
-        private void stream(AudioInputStream in, SourceDataLine line)
-                throws IOException {
-            final byte[] buffer = new byte[65_536];
-            for (int n = 0; n != -1; n = in.read(buffer, 0, buffer.length)) {
-                line.write(buffer, 0, n);
-            }
-        }
     }
 }
