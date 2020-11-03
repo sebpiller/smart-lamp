@@ -41,13 +41,14 @@
     <distributionManagement>
         <repository>
             <id>spidybox-release</id>
-            <url>http://spidybox.home:8091/repository/maven-releases/</url>
+            <url>http://home.sebpiller.ch:8081/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
             <id>spidybox-snapshots</id>
-            <url>http://spidybox.home:8091/repository/maven-snapshots/</url>
+            <url>http://home.sebpiller.ch:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
+
 
     <modules>
         <module>beatdetect-bpmsource</module>
@@ -231,7 +232,7 @@
             <dependency>
                 <groupId>ch.sebpiller</groupId>
                 <artifactId>metronom</artifactId>
-                <version>0.1.3</version>
+                <version>0.1.4-SNAPSHOT</version>
             </dependency>
 
             <dependency>
