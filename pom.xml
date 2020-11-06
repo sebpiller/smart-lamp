@@ -32,20 +32,20 @@
     </properties>
 
     <scm>
-        <url>scm:git:http://spidybox.home:8082/spiller/smart-lamp.git</url>
-        <connection>scm:git:http://spidybox.home:8082/spiller/smart-lamp.git</connection>
-        <developerConnection>scm:git:http://spidybox.home:8082/spiller/smart-lamp.git</developerConnection>
+        <url>scm:git:http://git.home/spiller/smart-lamp.git</url>
+        <connection>scm:git:http://git.home/spiller/smart-lamp.git</connection>
+        <developerConnection>scm:git:http://git.home/spiller/smart-lamp.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
         <repository>
             <id>spidybox-release</id>
-            <url>http://home.sebpiller.ch:8081/repository/maven-releases/</url>
+            <url>http://repos.home/nexus/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
             <id>spidybox-snapshots</id>
-            <url>http://home.sebpiller.ch:8081/repository/maven-snapshots/</url>
+            <url>http://repos.home/nexus/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
