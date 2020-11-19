@@ -7,7 +7,7 @@ import ch.sebpiller.iot.lamp.SmartLampFacade;
 import ch.sebpiller.iot.lamp.cli.SmartLampInteractive;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampScript;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampSequence;
-import ch.sebpiller.tictac.BpmSource;
+import ch.sebpiller.tictac.TempoProvider;
 import ch.sebpiller.tictac.TicTac;
 import ch.sebpiller.tictac.TicTacBuilder;
 import org.hibernate.validator.constraints.Range;
@@ -190,7 +190,7 @@ public class Cli implements Callable<Integer> {
 
             // if we have a main loop, play it.
             if (!SmartLampSequence.NOOP.equals(loop)) {
-                BpmSource source;
+                TempoProvider source;
 
                 if (cliParamTempo == null || cliParamTempo <= 0) {
                     source = BpmSourceAudioListener.getBpmFromLineIn();
