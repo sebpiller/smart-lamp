@@ -1,6 +1,6 @@
 package ch.sebpiller.beatdetect;
 
-import ch.sebpiller.tictac.BpmSource;
+import ch.sebpiller.tictac.TempoProvider;
 import ddf.minim.AudioInput;
 import ddf.minim.AudioListener;
 import ddf.minim.Minim;
@@ -18,10 +18,10 @@ import java.util.Queue;
  * A BpmSource that connects directly an {@link ddf.minim.spi.AudioStream} (Minim) (system line-in by default)
  * and automatically find the tempo of the music actually playing.
  */
-public class BpmSourceAudioListener implements BpmSource, AudioListener {
+public class BpmSourceAudioListener implements TempoProvider, AudioListener {
     private static final Logger LOG = LoggerFactory.getLogger(BpmSourceAudioListener.class);
 
-    private static BpmSource lineIn;
+    private static TempoProvider lineIn;
     // 20 items in the buffer: that means the tempo returned is computed using the average
     // of the ~ 8..12 last seconds of measured beat.
     private final Queue<Float> mostRecentDetectedBpms = new CircularFifoQueue<>(20);
@@ -40,7 +40,7 @@ public class BpmSourceAudioListener implements BpmSource, AudioListener {
         initAudioInput(audioInput);
     }
 
-    public synchronized static BpmSource getBpmFromLineIn() {
+    public synchronized static TempoProvider getBpmFromLineIn() {
         if (lineIn == null) {
             lineIn = new BpmSourceAudioListener();
         }
@@ -96,7 +96,7 @@ public class BpmSourceAudioListener implements BpmSource, AudioListener {
     }
 
     @Override
-    public float getBpm() {
-        return average;
-    }
+    public float getTempo() {
+            return average;
+        }
 }
