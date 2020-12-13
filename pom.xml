@@ -68,14 +68,14 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>${artifactId}.version</include>
+                    <include>${project.artifactId}.version</include>
                 </includes>
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
                 <excludes>
-                    <exclude>${artifactId}.version</exclude>
+                    <exclude>${project.artifactId}.version</exclude>
                 </excludes>
             </resource>
         </resources>
