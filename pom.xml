@@ -232,7 +232,7 @@
             <dependency>
                 <groupId>ch.sebpiller</groupId>
                 <artifactId>metronom</artifactId>
-                <version>0.2.0</version>
+                <version>0.2.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
