@@ -41,11 +41,11 @@
     <distributionManagement>
         <repository>
             <id>spidybox-release</id>
-            <url>http://repos.home/nexus/repository/maven-releases/</url>
+            <url>http://nexus.home/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
             <id>spidybox-snapshots</id>
-            <url>http://repos.home/nexus/repository/maven-snapshots/</url>
+            <url>http://nexus.home/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
