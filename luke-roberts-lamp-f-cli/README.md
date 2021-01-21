@@ -1,6 +1,13 @@
 # Luke Roberts Lamp F - with Smart Lamp Sequencer
 
-A cli tool to pilot and sequence commands for a Luke Roberts' Lamp F. 
+A cli tool to pilot and sequence commands for a Luke Roberts' Lamp F.
+
+## Repos
+
+Fetch latest snapshot with :
+````shell
+curl -O -J -L http://nexus.home/service/rest/v1/search/assets/download?repository=maven-snapshots&group=ch.sebpiller.iot&name=luke-roberts-lamp-f-cli&maven.classifier=jar-with-dependencies&sort=version&direction=desc
+````
 
 ## Interactive mode
 
