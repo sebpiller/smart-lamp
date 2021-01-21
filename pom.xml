@@ -244,7 +244,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.17.2</version>
+                <version>3.18.1</version>
                 <scope>test</scope>
             </dependency>
 
@@ -266,7 +266,7 @@
             <dependency>
                 <groupId>info.picocli</groupId>
                 <artifactId>picocli</artifactId>
-                <version>4.5.1</version>
+                <version>4.6.1</version>
             </dependency>
             <dependency>
                 <groupId>commons-cli</groupId>
@@ -316,12 +316,12 @@
             <dependency>
                 <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator</artifactId>
-                <version>6.1.6.Final</version>
+                <version>7.0.0.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator-annotation-processor</artifactId>
-                <version>6.1.6.Final</version>
+                <version>7.0.0.Final</version>
             </dependency>
             <dependency>
                 <groupId>javax.el</groupId>
