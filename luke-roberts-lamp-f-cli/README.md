@@ -21,6 +21,7 @@ java \
     # when no script specified, the mode is interactive and waits for human interaction
 ````
 
+
 ## Scripted mode
 
 Using the parameter ``--script`` you enter the scripted mode. You can pilot a sequence of transition to be played in 
@@ -71,3 +72,10 @@ java \
       --duration 30
 ````
 
+
+## [EXPERIMENTAL] AMQP
+
+With the flag '--amqp', can subscribe to an AMQP Message Queue (e.g. RabbitMq) and execute commands published to it. 
+The syntax of the message's payload is the same as with the scripted mode. 
+
+TODO: Host/port/user/pass are hardcoded: rabbitmq.home:5672, lampf/spidybox

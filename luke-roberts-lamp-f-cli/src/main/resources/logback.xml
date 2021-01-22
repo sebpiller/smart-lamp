@@ -18,7 +18,7 @@
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>WARN</level>
+            <level>INFO</level>
         </filter>
         <encoder>
             <pattern>%-4r [%t] %-5p %c - %m%n</pattern>
@@ -27,12 +27,15 @@
 
     <root level="DEBUG" additivity="false">
         <!-- log nothing by default -->
-        <appender-ref ref="noop" />
+<!--        <appender-ref ref="noop" />-->
+
+        <appender-ref ref="file" level="INFO" />
+        <appender-ref ref="console" level="INFO" />
     </root>
 
     <!-- enable log for ch.sebpiller -->
     <logger name="ch.sebpiller" level="INFO" additivity="false">
         <appender-ref ref="file" level="INFO" />
-        <appender-ref ref="console" level="WARN" />
+        <appender-ref ref="console" level="INFO" />
     </logger>
 </configuration>

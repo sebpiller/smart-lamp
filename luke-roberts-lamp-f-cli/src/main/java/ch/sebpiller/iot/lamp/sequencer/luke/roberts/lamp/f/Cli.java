@@ -10,6 +10,10 @@ import ch.sebpiller.iot.lamp.sequencer.SmartLampSequence;
 import ch.sebpiller.tictac.TempoProvider;
 import ch.sebpiller.tictac.TicTac;
 import ch.sebpiller.tictac.TicTacBuilder;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.DeliverCallback;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
@@ -29,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
@@ -53,6 +58,11 @@ import java.util.concurrent.Callable;
 )
 public class Cli implements Callable<Integer> {
     public static final String ARTIFACT_ID = "luke-roberts-lamp-f-cli";
+    public static final String USERNAME = "lampf";
+    public static final String QUEUE = "lampf";
+    public static final String HOST = "rabbitmq.home";
+    public static final String PASSWORD = "spidybox";
+    public static final int PORT = 5672;
 
     static class VersionProvider implements CommandLine.IVersionProvider {
         public String[] getVersion() {
@@ -70,7 +80,7 @@ public class Cli implements Callable<Integer> {
                     Properties props = new Properties();
                     props.load(is);
 
-                    assert props.getProperty("artifact").equals("luke-roberts-lamp-f-cli");
+                    assert props.getProperty("artifact").equals(ARTIFACT_ID);
 
                     return new String[]{props.getProperty("version") + " (built on " + props.getProperty("timestamp") + ")"};
                 } catch (IOException e) {
@@ -191,6 +201,15 @@ public class Cli implements Callable<Integer> {
     @Range(min = 20, max = 200)
     private Float cliParamTempo;
 
+    @Option(
+            order = 6,
+            names = {"--amqp"},
+            description = "[EXPERIMENTAL] Set the mode to AMQP (RabbitMq) queue listening mode. Will execute commands as messages are consumed from RabbitMq",
+            paramLabel = "",
+            type = Boolean.class
+    )
+    private Boolean cliParamAmqp = false;
+
     private Cli() {
     }
 
@@ -219,9 +238,13 @@ public class Cli implements Callable<Integer> {
         System.exit(exitCode);
     }
 
+    private void playSequenceOnLamp(SmartLampSequence script, SmartLampFacade lamp) {
+        script.play(lamp);
+    }
+
     private void playScriptOnLamp(SmartLampScript script, SmartLampFacade lamp) {
         try {
-            script.getBeforeSequence().play(lamp);
+            playSequenceOnLamp(script.getBeforeSequence(), lamp);
             final SmartLampSequence loop = script.buildMainLoopSequence();
 
             // if we have a main loop, play it.
@@ -262,15 +285,15 @@ public class Cli implements Callable<Integer> {
                         try {
                             Thread.sleep(cliParamDuration * 1_000);
                         } catch (InterruptedException e) {
-                            // ignore
+                            Thread.currentThread().interrupt();
                         }
-                    } else {
-                        ticTac.waitTermination();
                     }
+
+                    ticTac.waitTermination();
                 }
             }
         } finally {
-            script.getAfterSequence().play(lamp);
+            playSequenceOnLamp(script.getAfterSequence(), lamp);
         }
     }
 
@@ -307,9 +330,7 @@ public class Cli implements Callable<Integer> {
     @Override
     public Integer call() {
         String asciiLampF = StringUtils.join(Cli.class.getAnnotation(Command.class).header(), "\n");
-
         asciiLampF = asciiLampF + "\n" + "version: " + getVersion() + "\n";
-
         LOG.info("booting app...\n{}\n", asciiLampF);
 
         // Validation of the injected configuration
@@ -325,34 +346,90 @@ public class Cli implements Callable<Integer> {
         }
 
         try (LampFBle lamp = buildLukeRobertsLampFFacadeFromSettings()) {
-            boolean interactive = cliParamScript == null;
+            boolean interactive = cliParamScript == null && !cliParamAmqp;
             if (interactive) {
                 new SmartLampInteractive(lamp).run(asciiLampF);
             } else {
-                SmartLampScript scriptToPlay = Optional.ofNullable(script).orElse(new SmartLampScript() {
-                    @Override
-                    public SmartLampSequence getBeforeSequence() {
-                        return SmartLampSequence.NOOP;
-                    }
+                if (cliParamAmqp) {
+                    listenToAmqpAndExecuteOnLamp(lamp);
+                } else {
+                    SmartLampScript scriptToPlay = Optional.ofNullable(script).orElse(new SmartLampScript() {
+                        @Override
+                        public SmartLampSequence getBeforeSequence() {
+                            return SmartLampSequence.NOOP;
+                        }
 
-                    @Override
-                    public SmartLampSequence getAfterSequence() {
-                        return SmartLampSequence.NOOP;
-                    }
+                        @Override
+                        public SmartLampSequence getAfterSequence() {
+                            return SmartLampSequence.NOOP;
+                        }
 
-                    @Override
-                    public SmartLampSequence buildMainLoopSequence() {
-                        return DEFAULT_PLAYBACK;
-                    }
-                });
+                        @Override
+                        public SmartLampSequence buildMainLoopSequence() {
+                            return DEFAULT_PLAYBACK;
+                        }
+                    });
 
-                playScriptOnLamp(scriptToPlay, lamp);
+                    playScriptOnLamp(scriptToPlay, lamp);
+                }
             }
 
             return 0;
         } catch (Exception e) {
-            LOG.error("error: " + e, e);
+            LOG.error("error: {}", e, e);
             return 1;
+        }
+    }
+
+    private void listenToAmqpAndExecuteOnLamp(LampFBle lamp) {
+        LOG.info("starting RabbitMq queue listening mode...");
+        ConnectionFactory factory = getConnectionFactory();
+
+        try (Connection connection = factory.newConnection();
+             Channel channel = connection.createChannel()) {
+            channel.queueDeclare(QUEUE, false, false, false, null);
+            channel.exchangeDeclare("command", "direct", false);
+            String queueName = channel.queueDeclare().getQueue();
+            channel.queueBind(queueName, "command", "push");
+            channel.basicConsume(QUEUE, true, (consumerTag, delivery) -> {
+                String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
+                LOG.info("consuming message: '{}'", message);
+
+                try {
+                    SmartLampScript script = SmartLampScript.fromSingleCommand(message);
+                    playScriptOnLamp(script, lamp);
+                    LOG.debug("message consumed!");
+                } catch (Exception e) {
+                    LOG.error("error running command", e);
+                }
+            }, consumerTag -> {
+            });
+
+            waitForever();
+        } catch (Exception e) {
+            LOG.error("Error connecting AMQP", e);
+        }
+    }
+
+    private ConnectionFactory getConnectionFactory() {
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost(HOST);
+        factory.setUsername(USERNAME);
+        factory.setPassword(PASSWORD);
+        factory.setPort(PORT);
+        return factory;
+    }
+
+    private void waitForever() {
+        boolean done = false;
+        while (!done) {
+            // pause the main thread forever - only kill-9 will quit the loop
+            try {
+                Thread.sleep(1_000);
+            } catch (InterruptedException e) {
+                done = true;
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
@@ -386,6 +463,7 @@ public class Cli implements Callable<Integer> {
                 ", cliParamScript='" + cliParamScript + '\'' +
                 ", cliParamDuration=" + cliParamDuration +
                 ", cliParamTempo=" + cliParamTempo +
+                ", cliParamAmqp=" + cliParamAmqp +
                 '}';
     }
 }

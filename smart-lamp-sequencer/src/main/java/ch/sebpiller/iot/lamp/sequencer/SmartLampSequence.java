@@ -261,6 +261,7 @@ public class SmartLampSequence implements SmartLampFacade {
         return this;
     }
 
+
     /**
      * Append another sequence to the one actually in creation.
      *
