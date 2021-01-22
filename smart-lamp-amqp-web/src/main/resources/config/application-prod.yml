@@ -31,6 +31,24 @@ spring:
       enabled: false
     livereload:
       enabled: false
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mariadb://localhost:3306/smartlampweb?useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: root
+    password:
+    hikari:
+      poolName: Hikari
+      auto-commit: false
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+  jpa:
+    show-sql: false
+  # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
+  liquibase:
+    contexts: prod
   mail:
     host: localhost
     port: 25
@@ -41,7 +59,7 @@ spring:
 
 # ===================================================================
 # To enable TLS in production, generate a certificate using:
-# keytool -genkey -alias smartlampamqpweb -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650
+# keytool -genkey -alias smartlampweb -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650
 #
 # You can also use Let's Encrypt:
 # https://maximilian-boehm.com/hp2121/Create-a-Java-Keystore-JKS-from-Let-s-Encrypt-Certificates.htm
@@ -75,6 +93,10 @@ jhipster:
   http:
     cache: # Used by the CachingHttpHeadersFilter
       timeToLiveInDays: 1461
+  cache: # Cache configuration
+    ehcache: # Ehcache configuration
+      time-to-live-seconds: 3600 # By default objects stay 1 hour in the cache
+      max-entries: 1000 # Number of objects in each cache entry
   security:
     authentication:
       jwt:
@@ -83,7 +105,7 @@ jhipster:
         # - In the JHipster Registry (which includes a Spring Cloud Config server)
         # - In a separate `application-prod.yml` file, in the same folder as your executable JAR file
         # - In the `JHIPSTER_SECURITY_AUTHENTICATION_JWT_BASE64_SECRET` environment variable
-        base64-secret: NmVlZWIxMTVhZmUxYmVmNzhiMGI3OTU1NTBmYmM5ZmU5YzljMzhkOGQxNTU0Y2I0ODRlZjcyOTUzMDJkMTZjZThkNmMwZWVlMDE4Zjc5NTNiOTJhOWEwYzk2YjJhYWU2ZjU4MDQxYjU1NjZiMWI1MGU0YzQ0ZTFhNDRjMzBjMzg=
+        base64-secret: M2JlODRkOWQ3MTZkNmYxZDA5YTYzZjEyY2Y2YTJkMjIwNGQ3MzFjY2UzMDhlNWQ5ZGQxZGNjZDE0NzVkOTUwOWNlMjYwMTJiMDBiMjE4N2I2NjRjMjZmY2IwYmM2ZTI3MzQ5ZTM3Y2FlZTkzMDhmYThjZDZiNmU2MTkxNDE0YTA=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000
@@ -100,6 +122,9 @@ jhipster:
       host: localhost
       port: 5000
       queue-size: 512
+  audit-events:
+    retention-period: 30 # Number of days before audit events are deleted.
+
 # ===================================================================
 # Application specific properties
 # Add your own application properties here, see the ApplicationProperties class

@@ -1,6 +1,5 @@
 package ch.sebpiller.iot.lamp.sequencer.luke.roberts.lamp.f;
 
-import ch.sebpiller.iot.lamp.sequencer.SmartLampScript;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -13,8 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
-import static org.junit.Assert.*;
 
 public class AmqpIntegrationCliTest {
     private static final Logger LOG = LoggerFactory.getLogger(AmqpIntegrationCliTest.class);
@@ -30,19 +27,15 @@ public class AmqpIntegrationCliTest {
         factory.setPassword("spidybox");
         factory.setPort(5672);
 
-        LOG.info("starting RabbitMq queue listening mode...");
-
         connection = factory.newConnection();
         channel = connection.createChannel();
 
-        channel.queueDeclare("lampf", true, false, false, null);
-        channel.exchangeDeclare("command", "direct", true);
+        channel.queueDeclare("lampf", false, false, false, null);
+        channel.exchangeDeclare("command", "direct", false);
 
         queueName = channel.queueDeclare().getQueue();
         channel.queueBind(queueName, "command", "push");
-
     }
-
 
     @After
     public void tearDown() throws Exception {
@@ -52,17 +45,17 @@ public class AmqpIntegrationCliTest {
 
     @Test
     public void testCreateMessages() throws IOException {
-        String com = "color=emerald;";
+        String com = "scene=5";
 
         //for (int i = 0; i < 50; i++) {
-            channel.basicPublish("command", "push",
-                    new AMQP.BasicProperties.Builder()
-                            .contentType("text/plain")
-                            .deliveryMode(2)
-                            .priority(1)
-                            .userId("lampf")
-                            .build(),
-                    com.getBytes(StandardCharsets.UTF_8));
-       // }
+        channel.basicPublish("command", "push",
+                new AMQP.BasicProperties.Builder()
+                        .contentType("text/plain")
+                        .deliveryMode(2)
+                        .priority(1)
+                        .userId("lampf")
+                        .build(),
+                com.getBytes(StandardCharsets.UTF_8));
+        // }
     }
 }

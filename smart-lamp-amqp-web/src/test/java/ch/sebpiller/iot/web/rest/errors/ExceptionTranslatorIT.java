@@ -1,6 +1,6 @@
 package ch.sebpiller.iot.web.rest.errors;
 
-import ch.sebpiller.iot.SmartlampamqpwebApp;
+import ch.sebpiller.iot.SmartlampwebApp;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,11 +20,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WithMockUser
 @AutoConfigureMockMvc
-@SpringBootTest(classes = SmartlampamqpwebApp.class)
+@SpringBootTest(classes = SmartlampwebApp.class)
 public class ExceptionTranslatorIT {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Test
+    public void testConcurrencyFailure() throws Exception {
+        mockMvc.perform(get("/api/exception-translator-test/concurrency-failure"))
+            .andExpect(status().isConflict())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(jsonPath("$.message").value(ErrorConstants.ERR_CONCURRENCY_FAILURE));
+    }
 
     @Test
     public void testMethodArgumentNotValid() throws Exception {

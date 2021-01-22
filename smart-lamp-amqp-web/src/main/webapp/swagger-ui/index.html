@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>smartlampamqpweb - Swagger UI</title>
+    <title>smartlampweb - Swagger UI</title>
     <link rel="stylesheet" type="text/css" href="./swagger-ui.css">
     <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32"/>
     <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16"/>
@@ -17,9 +17,9 @@
 
 
 <script type="text/javascript">
+
+
     window.onload = function () {
-
-
         var urls = [];
         axios.get("/swagger-resources").then(function (response) {
             response.data.forEach(function (resource) {
@@ -46,9 +46,9 @@
                 plugins: [
                     SwaggerUIBundle.plugins.DownloadUrl
                 ],
-                requestInterceptor: function (req) {
-                    var authToken = JSON.parse(localStorage.getItem("jhi-authenticationtoken")
-                        || sessionStorage.getItem("jhi-authenticationtoken"));
+                requestInterceptor: function(req) {
+                    var authToken = JSON.parse(localStorage.getItem("jhi-authenticationToken")
+                        || sessionStorage.getItem("jhi-authenticationToken"));
                     if (authToken) {
                         req.headers['Authorization'] = "Bearer " + authToken;
                     }

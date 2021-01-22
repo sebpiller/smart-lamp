@@ -1,14 +1,18 @@
 package ch.sebpiller.iot.web.rest;
 
-import ch.sebpiller.iot.SmartlampamqpwebApp;
+import ch.sebpiller.iot.SmartlampwebApp;
+import ch.sebpiller.iot.domain.User;
+import ch.sebpiller.iot.repository.UserRepository;
 import ch.sebpiller.iot.web.rest.vm.LoginVM;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -23,16 +27,31 @@ import static org.hamcrest.Matchers.not;
  * Integration tests for the {@link UserJWTController} REST controller.
  */
 @AutoConfigureMockMvc
-@SpringBootTest(classes = SmartlampamqpwebApp.class)
+@SpringBootTest(classes = SmartlampwebApp.class)
 public class UserJWTControllerIT {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
+    @Transactional
     public void testAuthorize() throws Exception {
+        User user = new User();
+        user.setLogin("user-jwt-controller");
+        user.setEmail("user-jwt-controller@example.com");
+        user.setActivated(true);
+        user.setPassword(passwordEncoder.encode("test"));
+
+        userRepository.saveAndFlush(user);
+
         LoginVM login = new LoginVM();
-        login.setUsername("test");
+        login.setUsername("user-jwt-controller");
         login.setPassword("test");
         mockMvc.perform(post("/api/authenticate")
             .contentType(MediaType.APPLICATION_JSON)
@@ -45,9 +64,18 @@ public class UserJWTControllerIT {
     }
 
     @Test
+    @Transactional
     public void testAuthorizeWithRememberMe() throws Exception {
+        User user = new User();
+        user.setLogin("user-jwt-controller-remember-me");
+        user.setEmail("user-jwt-controller-remember-me@example.com");
+        user.setActivated(true);
+        user.setPassword(passwordEncoder.encode("test"));
+
+        userRepository.saveAndFlush(user);
+
         LoginVM login = new LoginVM();
-        login.setUsername("test");
+        login.setUsername("user-jwt-controller-remember-me");
         login.setPassword("test");
         login.setRememberMe(true);
         mockMvc.perform(post("/api/authenticate")

@@ -59,6 +59,8 @@
         <module>luke-roberts-lamp-f-cli</module>
         <module>philips-hue</module>
         <module>philips-hue-cli</module>
+
+        <module>smart-lamp-amqp-web</module>
     </modules>
 
     <build>

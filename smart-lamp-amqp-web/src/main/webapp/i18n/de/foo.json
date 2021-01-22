@@ -1,0 +1,22 @@
+{
+  "smartlampwebApp": {
+    "foo": {
+      "home": {
+        "title": "Foos",
+        "createLabel": "Foo erstellen",
+        "createOrEditLabel": "Foo erstellen oder bearbeiten",
+        "notFound": "No Foos found"
+      },
+      "created": "Foo erstellt mit ID {{ param }}",
+      "updated": "Foo aktualisiert mit ID {{ param }}",
+      "deleted": "Foo gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Foo {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Foo"
+      },
+      "name": "Name"
+    }
+  }
+}
