@@ -1,0 +1,40 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "ch.sebpiller.iot"
+    },
+    "jhipsterVersion": "6.10.5",
+    "applicationType": "monolith",
+    "baseName": "smartlampamqpweb",
+    "packageName": "ch.sebpiller.iot",
+    "packageFolder": "ch/sebpiller/iot",
+    "serverPort": "8080",
+    "authenticationType": "jwt",
+    "cacheProvider": "no",
+    "enableHibernateCache": false,
+    "websocket": false,
+    "databaseType": "no",
+    "devDatabaseType": "no",
+    "prodDatabaseType": "no",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": false,
+    "buildTool": "maven",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "NmVlZWIxMTVhZmUxYmVmNzhiMGI3OTU1NTBmYmM5ZmU5YzljMzhkOGQxNTU0Y2I0ODRlZjcyOTUzMDJkMTZjZThkNmMwZWVlMDE4Zjc5NTNiOTJhOWEwYzk2YjJhYWU2ZjU4MDQxYjU1NjZiMWI1MGU0YzQ0ZTFhNDRjMzBjMzg=",
+    "embeddableLaunchScript": false,
+    "useSass": true,
+    "clientPackageManager": "npm",
+    "clientFramework": "angularX",
+    "clientTheme": "none",
+    "clientThemeVariant": "",
+    "creationTimestamp": 1611337239920,
+    "testFrameworks": [],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": false,
+    "blueprints": []
+  }
+}
