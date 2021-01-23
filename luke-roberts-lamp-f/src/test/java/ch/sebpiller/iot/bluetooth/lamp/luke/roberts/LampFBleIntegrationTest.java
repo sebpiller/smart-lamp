@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -81,7 +82,11 @@ public class LampFBleIntegrationTest {
 
     @Test
     public void testBrightnessMax() {
-        facade.setBrightness((byte) 100);
+        facade.selectScene(LukeRoberts.LampF.Scene.INDIRECT_SCENE);
+        //facade.selectScene(LukeRoberts.LampF.Scene.WELCOME_SCENE);
+        //facade.selectScene(LukeRoberts.LampF.Scene.CANDLE_LIGHT_SCENE);
+        //facade.setBrightness((byte) 70);
+
     }
 
     @Test
@@ -89,9 +94,31 @@ public class LampFBleIntegrationTest {
         facade.setBrightness((byte) 50);
     }
 
+
+
+    @Test
+    public void testBrightnessOutOfBounds() {
+        facade.setBrightness((byte) 52);
+    }
+
     @Test
     public void testBrightnessMin() {
         facade.setBrightness((byte) 0);
+    }
+
+    @Test
+    public void testTemperatureMax() {
+        facade.setTemperature(4000);
+    }
+
+    @Test
+    public void testTemperatureMedium() {
+        facade.setTemperature(3350);
+    }
+
+    @Test
+    public void testTemperatureMin() {
+        facade.setTemperature(2700);
     }
 
     @Test
@@ -103,6 +130,18 @@ public class LampFBleIntegrationTest {
                 .fadeBrightnessFromTo((byte) 100, (byte) 0, SmartLampFacade.FadeStyle.NORMAL).get(5, TimeUnit.SECONDS)
                 .fadeBrightnessFromTo((byte) 0, (byte) 100, SmartLampFacade.FadeStyle.FAST).get(3, TimeUnit.SECONDS)
                 .fadeBrightnessFromTo((byte) 100, (byte) 0, SmartLampFacade.FadeStyle.FAST).get(3, TimeUnit.SECONDS)
+        ;
+    }
+
+    @Test
+    public void testFadeFromToTemperature() throws Exception {
+        facade
+                .fadeTemperatureFromTo(2700, 4000, SmartLampFacade.FadeStyle.SLOW).get(15, TimeUnit.SECONDS)
+                .fadeTemperatureFromTo(4000, 2700, SmartLampFacade.FadeStyle.SLOW).get(15, TimeUnit.SECONDS)
+                .fadeTemperatureFromTo(2700, 4000, SmartLampFacade.FadeStyle.NORMAL).get(5, TimeUnit.SECONDS)
+                .fadeTemperatureFromTo(4000, 2700, SmartLampFacade.FadeStyle.NORMAL).get(5, TimeUnit.SECONDS)
+                .fadeTemperatureFromTo(2700, 4000, SmartLampFacade.FadeStyle.FAST).get(3, TimeUnit.SECONDS)
+                .fadeTemperatureFromTo(4000, 2700, SmartLampFacade.FadeStyle.FAST).get(3, TimeUnit.SECONDS)
         ;
     }
 
@@ -193,5 +232,13 @@ public class LampFBleIntegrationTest {
                     .fadeColorTo(blue, style).get()
             ;
         }
+    }
+
+    @Test
+    public void testReadValueFromApi() {
+        byte[] r = facade.readValueFromExternalApi(LukeRoberts.LampF.Command.PING_V2);
+
+        LOG.warn("read: {}", r);
+        LOG.warn("      {}", new String(r, StandardCharsets.UTF_8));
     }
 }

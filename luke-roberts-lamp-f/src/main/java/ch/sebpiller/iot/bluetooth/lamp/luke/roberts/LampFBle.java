@@ -71,29 +71,30 @@ public class LampFBle extends AbstractBluetoothLamp {
     }
 
     private BluetoothGattCharacteristic getExternalApi() {
-        if (externalApi == null) {
+        if (this.externalApi == null) {
             Map<DiscoveryFilter, Object> filter = new HashMap<>();
             filter.put(DiscoveryFilter.Transport, DiscoveryTransport.LE);
             filter.put(DiscoveryFilter.UUIDs, new String[]{
-                    config.getCustomControlService().getUserExternalApiEndpoint().getUuid()
+                    this.config.getCustomControlService().getUserExternalApiEndpoint().getUuid()
             });
 
-            externalApi = retrieveCharacteristic(
-                    config.getLocalBtAdapter(),
-                    config.getMac(),
-                    config.getCustomControlService().getUuid(),
-                    config.getCustomControlService().getUserExternalApiEndpoint().getUuid(),
+            this.externalApi = retrieveCharacteristic(
+                    this.config.getLocalBtAdapter(),
+                    this.config.getMac(),
+                    this.config.getCustomControlService().getUuid(),
+                    this.config.getCustomControlService().getUserExternalApiEndpoint().getUuid(),
                     filter
             );
         }
 
-        return externalApi;
+        return this.externalApi;
     }
 
     public byte[] readValueFromExternalApi(LukeRoberts.LampF.Command command, Byte... parameters) {
         try {
             // FIXME not working yet
             Map<String, Object> options = new HashMap<>();
+            //options.put("offset", "");
 
             byte[] reversed = command.toByteArray(parameters);
             ArrayUtils.reverse(reversed);
@@ -125,7 +126,7 @@ public class LampFBle extends AbstractBluetoothLamp {
 
     @Override
     public LampFBle setBrightness(byte percent) {
-        Validate.inclusiveBetween(0, 100, percent, "percentage must be in range 0..100");
+        //Validate.inclusiveBetween(0, 100, percent, "percentage must be in range 0..100");
         sendCommandToExternalApi(LukeRoberts.LampF.Command.BRIGHTNESS, percent);
         return this;
     }
