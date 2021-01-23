@@ -95,7 +95,6 @@ public class LampFBleIntegrationTest {
     }
 
 
-
     @Test
     public void testBrightnessOutOfBounds() {
         facade.setBrightness((byte) 52);
@@ -122,15 +121,23 @@ public class LampFBleIntegrationTest {
     }
 
     @Test
-    public void testFadeFromToBrightness() throws Exception {
-        facade
-                .fadeBrightnessFromTo((byte) 0, (byte) 100, SmartLampFacade.FadeStyle.SLOW).get(15, TimeUnit.SECONDS)
-                .fadeBrightnessFromTo((byte) 100, (byte) 0, SmartLampFacade.FadeStyle.SLOW).get(15, TimeUnit.SECONDS)
-                .fadeBrightnessFromTo((byte) 0, (byte) 100, SmartLampFacade.FadeStyle.NORMAL).get(5, TimeUnit.SECONDS)
-                .fadeBrightnessFromTo((byte) 100, (byte) 0, SmartLampFacade.FadeStyle.NORMAL).get(5, TimeUnit.SECONDS)
-                .fadeBrightnessFromTo((byte) 0, (byte) 100, SmartLampFacade.FadeStyle.FAST).get(3, TimeUnit.SECONDS)
-                .fadeBrightnessFromTo((byte) 100, (byte) 0, SmartLampFacade.FadeStyle.FAST).get(3, TimeUnit.SECONDS)
+    public void testAdjustBrightness() {
+        facade//.selectScene(LukeRoberts.LampF.Scene.INDIRECT_SCENE)
+
+                .adjustBrightness((byte) 10)
         ;
+    }
+
+    @Test
+    public void testFadeFromToBrightness() throws Exception {
+        for (LukeRoberts.LampF.Scene scene : LukeRoberts.LampF.Scene.values()){
+            LOG.info("playing fade for {}", scene);
+            facade.selectScene(scene)
+                    .fadeBrightnessFromTo((byte) 0, (byte) 100, SmartLampFacade.FadeStyle.SLOW).get()
+                    .fadeBrightnessFromTo((byte) 100, (byte) 0, SmartLampFacade.FadeStyle.SLOW).get()
+                    .sleep(5000)
+                    ;
+        }
     }
 
     @Test

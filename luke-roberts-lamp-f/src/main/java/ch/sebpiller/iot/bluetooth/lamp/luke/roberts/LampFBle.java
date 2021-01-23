@@ -34,6 +34,12 @@ public class LampFBle extends AbstractBluetoothLamp {
 
     private final LukeRoberts.LampF.Config config;
 
+    @Override
+    public LampFBle sleep(int millis) {
+        super.sleep(millis);
+        return this;
+    }
+
     /**
      * The Bluetooth endpoint to invoke to control the lamp.
      */
@@ -114,13 +120,19 @@ public class LampFBle extends AbstractBluetoothLamp {
         }
     }
 
-    public void selectScene(LukeRoberts.LampF.Scene scene) {
+    public LampFBle selectScene(LukeRoberts.LampF.Scene scene) {
         setScene(scene.getId());
+        return this;
     }
 
     @Override
     public LampFBle setScene(byte sceneId) {
         sendCommandToExternalApi(LukeRoberts.LampF.Command.SELECT_SCENE, sceneId);
+        return this;
+    }
+
+    public LampFBle adjustBrightness(byte percent) {
+        sendCommandToExternalApi(LukeRoberts.LampF.Command.RELATIVE_BRIGHTNESS, percent);
         return this;
     }
 
