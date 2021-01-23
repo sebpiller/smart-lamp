@@ -10,6 +10,7 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattCharacteristic;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
+import org.bluez.exceptions.*;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.slf4j.Logger;
@@ -18,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -45,26 +48,26 @@ public class LampFBle extends AbstractBluetoothLamp {
     }
 
     private void sendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte... parameters) {
-        try {
-            BluetoothGattCharacteristic api = getExternalApi();
-            BluetoothHelper.reconnectIfNeeded(api);
+        retry((Callable<Void>) () -> {
+            trySendCommandToExternalApi(command, parameters);
+            return null;
+        }, 3, DBusException.class, DBusExecutionException.class);
+    }
 
-            if (LOG.isTraceEnabled()) {
-                BluetoothDevice device = api.getService().getDevice();
-                LOG.trace("sending command {} to Lamp F '{}' ({})",
-                        command,
-                        device.getName(),
-                        device.getAddress()
-                );
-            }
+    private void trySendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte[] parameters) throws DBusException, DBusExecutionException {
+        BluetoothGattCharacteristic api = getExternalApi();
+        BluetoothHelper.reconnectIfNeeded(api);
 
-            api.writeValue(command.toByteArray(parameters), Collections.emptyMap());
-        } catch (DBusException e) {
-            throw new BluetoothException("unable to invoke command " + command + " on Lamp F: " + e, e);
-        } catch (DBusExecutionException e) {
-            throw new BluetoothException("unable to invoke command " + command + " on Lamp F: " +
-                    "error type is " + e.getType() + ": " + e, e);
+        if (LOG.isTraceEnabled()) {
+            BluetoothDevice device = api.getService().getDevice();
+            LOG.trace("sending command {} to Lamp F '{}' ({})",
+                    command,
+                    device.getName(),
+                    device.getAddress()
+            );
         }
+
+        api.writeValue(command.toByteArray(parameters), Collections.emptyMap());
     }
 
     private BluetoothGattCharacteristic getExternalApi() {

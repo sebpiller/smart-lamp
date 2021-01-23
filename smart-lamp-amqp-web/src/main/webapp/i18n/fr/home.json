@@ -1,7 +1,7 @@
 {
   "home": {
-    "title": "Bienvenue, Java Hipster !",
-    "subtitle": "Ceci est votre page d'accueil",
+    "title": "Luke Roberts Lamp F",
+    "subtitle": "Pilotez votre Lamp F en envoyant des messages AMQP.",
     "logged": {
       "message": "Vous êtes connecté en tant que \"{{username}}\"."
     },

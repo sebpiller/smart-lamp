@@ -3,11 +3,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ch.sebpiller.iot</groupId>
+    <parent>
+        <groupId>ch.sebpiller.iot</groupId>
+        <artifactId>smart-lamp-parent</artifactId>
+        <version>0.1.6-SNAPSHOT</version>
+    </parent>
+
     <artifactId>smartlampweb</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Smartlampweb</name>
+    <name>Smart Lamp - AMQP web</name>
 
     <repositories>
         <!-- jhipster-needle-maven-repository -->
@@ -326,6 +330,15 @@
             <scope>test</scope>
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

@@ -1,6 +1,8 @@
 package ch.sebpiller.iot.config;
 
+import com.rabbitmq.client.ConnectionFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 
 /**
  * Properties specific to Smartlampweb.
@@ -10,4 +12,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "application", ignoreUnknownFields = false)
 public class ApplicationProperties {
+    private ConnectionFactory amqpConnectionFactory;
+
+    @Bean
+    public ConnectionFactory getAmqpConnectionFactory() {
+        return amqpConnectionFactory;
+    }
+
+    public void setAmqpConnectionFactory(ConnectionFactory amqpConnectionFactory) {
+        this.amqpConnectionFactory = amqpConnectionFactory;
+    }
 }

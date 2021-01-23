@@ -162,4 +162,9 @@ jhipster:
 # https://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
-# application:
+application:
+  amqp-connection-factory:
+    host: rabbitmq.home
+    port: 5672
+    username: lampf
+    password: spidybox

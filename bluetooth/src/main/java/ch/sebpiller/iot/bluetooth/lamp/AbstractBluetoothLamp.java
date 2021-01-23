@@ -17,7 +17,11 @@ import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static ch.sebpiller.iot.bluetooth.BluetoothHelper.discoverDeviceManager;
 import static ch.sebpiller.iot.bluetooth.BluetoothHelper.findDeviceOnAdapter;
@@ -79,5 +83,40 @@ public abstract class AbstractBluetoothLamp extends AbstractLampBase {
         } finally {
             super.close();
         }
+    }
+
+
+    /**
+     * Retry to run a function a few times, retry if specific exceptions occur.
+     *
+     * @param timeoutExceptionClasses what exceptions should lead to retry. Default: any exception
+     */
+    public static <T> T retry(Callable<T> call, int maxRetries, Class<? extends Exception>... timeoutExceptionClasses) {
+        timeoutExceptionClasses = timeoutExceptionClasses.length == 0 ? new Class[]{Exception.class} : timeoutExceptionClasses;
+        int retryCounter = 0;
+        Exception lastException = null;
+        while (retryCounter < maxRetries) {
+            try {
+                return call.call();
+            } catch (Exception e) {
+                lastException = e;
+                if (Arrays.stream(timeoutExceptionClasses).noneMatch(tClass ->
+                        tClass.isAssignableFrom(e.getClass())
+                ))
+                    throw lastException instanceof RuntimeException ?
+                            ((RuntimeException) lastException) :
+                            new RuntimeException(lastException);
+                else {
+                    retryCounter++;
+                    LOG.warn("FAILED - Command failed on retry {} of {}", retryCounter, maxRetries);
+                    if (retryCounter >= maxRetries) {
+                        break;
+                    }
+                }
+            }
+        }
+        throw lastException instanceof RuntimeException ?
+                ((RuntimeException) lastException) :
+                new RuntimeException(lastException);
     }
 }
