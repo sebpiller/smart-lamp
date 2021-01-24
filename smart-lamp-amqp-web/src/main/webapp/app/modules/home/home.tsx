@@ -79,7 +79,7 @@ export const Home = (props: IHomeProp) => {
   return (
     <Row>
       <Col md="9">
-        <h2><Translate contentKey="home.title">Luke Roberts Lamp F.</Translate></h2>
+        <h2><Translate contentKey="home.title">Smart Lamp management</Translate></h2>
         <p className="lead">
           <Translate contentKey="home.subtitle">Pilotez votre Lamp F en envoyant des messages AMQP.</Translate>
         </p>
@@ -154,7 +154,7 @@ export const Home = (props: IHomeProp) => {
         <Row>
           <Col md="3">
             <label>
-              <span>Température de la lampe: {temperature}</span>
+              <span>Température de la lampe: {temperature}K</span>
             </label>
           </Col>
 
