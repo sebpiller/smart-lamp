@@ -21,7 +21,6 @@ java \
     # when no script specified, the mode is interactive and waits for human interaction
 ````
 
-
 ## Scripted mode
 
 Using the parameter ``--script`` you enter the scripted mode. You can pilot a sequence of transition to be played in 

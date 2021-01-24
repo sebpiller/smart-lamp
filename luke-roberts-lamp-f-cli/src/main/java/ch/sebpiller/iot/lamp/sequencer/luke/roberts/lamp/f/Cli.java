@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.Yaml;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -57,11 +58,8 @@ import java.util.concurrent.Callable;
 )
 public class Cli implements Callable<Integer> {
     public static final String ARTIFACT_ID = "luke-roberts-lamp-f-cli";
-    public static final String USERNAME = "lampf";
     public static final String QUEUE = "lampf";
-    public static final String HOST = "rabbitmq.home";
-    public static final String PASSWORD = "spidybox";
-    public static final int PORT = 5672;
+    private ConnectionFactory connectionFactory;
 
     static class VersionProvider implements CommandLine.IVersionProvider {
         public String[] getVersion() {
@@ -298,6 +296,7 @@ public class Cli implements Callable<Integer> {
 
     private LampFBle buildLukeRobertsLampFFacadeFromSettings() {
         LukeRoberts.LampF.Config lampFConfig = LukeRoberts.LampF.Config.getDefaultConfig();
+        lampFConfig = lampFConfig.merge(LukeRoberts.LampF.Config.loadFromStream(getClass().getResourceAsStream("/config/lampf.living.home.yaml")));
 
         // load config overrides from file if defined
         if (cliParamConfig != null) {
@@ -411,12 +410,9 @@ public class Cli implements Callable<Integer> {
     }
 
     private ConnectionFactory getConnectionFactory() {
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(HOST);
-        factory.setUsername(USERNAME);
-        factory.setPassword(PASSWORD);
-        factory.setPort(PORT);
-        return factory;
+        if (connectionFactory == null)
+            connectionFactory = new Yaml().loadAs(getClass().getResourceAsStream("/config/amqp.rabbitmq.home.yaml"), ConnectionFactory.class);
+        return connectionFactory;
     }
 
     private void waitForever() {

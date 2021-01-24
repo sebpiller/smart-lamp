@@ -31,21 +31,36 @@ spring:
       enabled: false
     livereload:
       enabled: false
+
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mariadb://localhost:3306/smartlampweb?useLegacyDatetimeCode=false&serverTimezone=UTC
-    username: root
+    url: jdbc:h2:mem:smartlampweb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: smartlampweb
     password:
     hikari:
       poolName: Hikari
       auto-commit: false
-      data-source-properties:
-        cachePrepStmts: true
-        prepStmtCacheSize: 250
-        prepStmtCacheSqlLimit: 2048
-        useServerPrepStmts: true
+  h2:
+    console:
+      enabled: false
   jpa:
-    show-sql: false
+    database-platform: io.github.jhipster.domain.util.FixedH2Dialect
+    show-sql: true
+  #  datasource:
+  #    type: com.zaxxer.hikari.HikariDataSource
+  #    url: jdbc:mariadb://localhost:3306/smartlampweb?useLegacyDatetimeCode=false&serverTimezone=UTC
+  #    username: root
+  #    password:
+  #    hikari:
+  #      poolName: Hikari
+  #      auto-commit: false
+  #      data-source-properties:
+  #        cachePrepStmts: true
+  #        prepStmtCacheSize: 250
+  #        prepStmtCacheSqlLimit: 2048
+  #        useServerPrepStmts: true
+  #  jpa:
+  #    show-sql: false
   # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
   liquibase:
     contexts: prod

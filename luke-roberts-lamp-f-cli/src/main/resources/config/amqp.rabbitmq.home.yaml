@@ -1,0 +1,4 @@
+host: rabbitmq.home
+port: 5672
+username: lampf
+password: spidybox

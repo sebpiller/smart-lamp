@@ -9,9 +9,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 
 public class AmqpIntegrationCliTest {
     private static final Logger LOG = LoggerFactory.getLogger(AmqpIntegrationCliTest.class);
@@ -19,13 +21,14 @@ public class AmqpIntegrationCliTest {
     private String queueName;
     private Connection connection;
 
+
+    private ConnectionFactory getConnectionFactory() {
+        return new Yaml().loadAs(getClass().getResourceAsStream("/config/amqp.rabbitmq.home.yaml"), ConnectionFactory.class);
+    }
+
     @Before
     public void setUp() throws Exception {
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("rabbitmq.home");
-        factory.setUsername("lampf");
-        factory.setPassword("spidybox");
-        factory.setPort(5672);
+        ConnectionFactory factory = getConnectionFactory();
 
         connection = factory.newConnection();
         channel = connection.createChannel();
