@@ -4,7 +4,7 @@
     <parent>
         <groupId>ch.sebpiller.iot</groupId>
         <artifactId>smart-lamp-parent</artifactId>
-        <version>0.1.7-SNAPSHOT</version>
+        <version>0.1.7</version>
     </parent>
 
     <artifactId>bluetooth</artifactId>

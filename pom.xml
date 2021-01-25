@@ -4,7 +4,7 @@
 
     <groupId>ch.sebpiller.iot</groupId>
     <artifactId>smart-lamp-parent</artifactId>
-    <version>0.1.7-SNAPSHOT</version>
+    <version>0.1.7</version>
     <packaging>pom</packaging>
     <name>Smart Lamp - Parent</name>
 
@@ -34,7 +34,8 @@
         <url>scm:git:http://git.home/spiller/smart-lamp.git</url>
         <connection>scm:git:http://git.home/spiller/smart-lamp.git</connection>
         <developerConnection>scm:git:http://git.home/spiller/smart-lamp.git</developerConnection>
-    </scm>
+      <tag>smart-lamp-0.1.7</tag>
+  </scm>
 
     <modules>
         <module>beatdetect-bpmsource</module>
