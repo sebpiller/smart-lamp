@@ -1,6 +1,7 @@
 package ch.sebpiller.iot.web.rest.vm;
 
 import ch.sebpiller.iot.service.dto.UserDTO;
+
 import javax.validation.constraints.Size;
 
 /**

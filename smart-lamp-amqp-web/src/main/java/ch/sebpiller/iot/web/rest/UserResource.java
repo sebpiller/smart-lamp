@@ -5,23 +5,20 @@ import ch.sebpiller.iot.domain.User;
 import ch.sebpiller.iot.repository.UserRepository;
 import ch.sebpiller.iot.security.AuthoritiesConstants;
 import ch.sebpiller.iot.service.MailService;
-import org.springframework.data.domain.Sort;
-import java.util.Collections;
 import ch.sebpiller.iot.service.UserService;
 import ch.sebpiller.iot.service.dto.UserDTO;
 import ch.sebpiller.iot.web.rest.errors.BadRequestAlertException;
 import ch.sebpiller.iot.web.rest.errors.EmailAlreadyUsedException;
 import ch.sebpiller.iot.web.rest.errors.LoginAlreadyUsedException;
-
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +29,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * REST controller for managing users.

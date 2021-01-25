@@ -8,9 +8,7 @@ import ch.sebpiller.iot.repository.UserRepository;
 import ch.sebpiller.iot.security.AuthoritiesConstants;
 import ch.sebpiller.iot.security.SecurityUtils;
 import ch.sebpiller.iot.service.dto.UserDTO;
-
 import io.github.jhipster.security.RandomUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;

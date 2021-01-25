@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { Col, Row, Button } from 'reactstrap';
-import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, getUrlParameter } from 'react-jhipster';
-import { RouteComponentProps } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {connect} from 'react-redux';
+import {Button, Col, Row} from 'reactstrap';
+import {AvField, AvForm} from 'availity-reactstrap-validation';
+import {getUrlParameter, translate, Translate} from 'react-jhipster';
+import {RouteComponentProps} from 'react-router-dom';
 
-import { handlePasswordResetFinish, reset } from '../password-reset.reducer';
+import {handlePasswordResetFinish, reset} from '../password-reset.reducer';
 import PasswordStrengthBar from 'app/shared/layout/password/password-strength-bar';
 
 export interface IPasswordResetFinishProps extends DispatchProps, RouteComponentProps<{ key: string }> {}

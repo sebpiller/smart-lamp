@@ -5,7 +5,8 @@ import ch.sebpiller.iot.lamp.impl.LoggingLamp;
 import ch.sebpiller.tictac.TicTac;
 import ch.sebpiller.tictac.TicTacBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

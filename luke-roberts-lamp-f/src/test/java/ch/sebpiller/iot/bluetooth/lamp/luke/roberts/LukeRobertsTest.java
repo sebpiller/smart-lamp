@@ -1,6 +1,7 @@
 package ch.sebpiller.iot.bluetooth.lamp.luke.roberts;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

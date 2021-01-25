@@ -1,8 +1,8 @@
 package ch.sebpiller.iot.config;
 
-import ch.sebpiller.iot.security.*;
-import ch.sebpiller.iot.security.jwt.*;
-
+import ch.sebpiller.iot.security.AuthoritiesConstants;
+import ch.sebpiller.iot.security.jwt.JWTConfigurer;
+import ch.sebpiller.iot.security.jwt.TokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;

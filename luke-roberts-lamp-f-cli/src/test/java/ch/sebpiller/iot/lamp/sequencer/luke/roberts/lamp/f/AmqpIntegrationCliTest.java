@@ -4,9 +4,10 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -26,7 +27,7 @@ public class AmqpIntegrationCliTest {
         return new Yaml().loadAs(getClass().getResourceAsStream("/config/amqp.rabbitmq.home.yaml"), ConnectionFactory.class);
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         ConnectionFactory factory = getConnectionFactory();
 
@@ -40,7 +41,7 @@ public class AmqpIntegrationCliTest {
         channel.queueBind(queueName, "command", "push");
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         channel.close();
         connection.close();

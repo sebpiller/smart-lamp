@@ -1,6 +1,9 @@
 package ch.sebpiller.iot.lamp.sequencer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SmartLampYamlScriptTest {
     @Test
@@ -26,18 +29,22 @@ public class SmartLampYamlScriptTest {
         smartLampSequence.callables.forEach(System.out::println);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testParseBadlyFormattedFile() {
-        SmartLampScript smartLampScript = SmartLampScript
-                .fromInputStream(getClass().getResourceAsStream("/scripts/badly_formatted.yaml"));
-        smartLampScript.buildMainLoopSequence();
+        assertThrows(IllegalArgumentException.class, () -> {
+            SmartLampScript smartLampScript = SmartLampScript
+                    .fromInputStream(getClass().getResourceAsStream("/scripts/badly_formatted.yaml"));
+            smartLampScript.buildMainLoopSequence();
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testParseSequenceNotDefined() {
-        SmartLampScript smartLampScript = SmartLampScript
-                .fromInputStream(getClass().getResourceAsStream("/scripts/sequence_not_defined.yaml"));
-        smartLampScript.buildMainLoopSequence();
+        assertThrows(IllegalArgumentException.class, () -> {
+            SmartLampScript smartLampScript = SmartLampScript
+                    .fromInputStream(getClass().getResourceAsStream("/scripts/sequence_not_defined.yaml"));
+            smartLampScript.buildMainLoopSequence();
+        });
     }
 
 }

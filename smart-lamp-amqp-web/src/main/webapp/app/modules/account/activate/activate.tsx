@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { Link, RouteComponentProps } from 'react-router-dom';
-import { Row, Col, Alert } from 'reactstrap';
-import { Translate, getUrlParameter } from 'react-jhipster';
+import React, {useEffect} from 'react';
+import {connect} from 'react-redux';
+import {Link, RouteComponentProps} from 'react-router-dom';
+import {Alert, Col, Row} from 'reactstrap';
+import {getUrlParameter, Translate} from 'react-jhipster';
 
-import { IRootState } from 'app/shared/reducers';
-import { activateAction, reset } from './activate.reducer';
+import {IRootState} from 'app/shared/reducers';
+import {activateAction, reset} from './activate.reducer';
 
 const successAlert = (
   <Alert color="success">

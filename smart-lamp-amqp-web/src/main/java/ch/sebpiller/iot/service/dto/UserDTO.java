@@ -1,11 +1,13 @@
 package ch.sebpiller.iot.service.dto;
 
 import ch.sebpiller.iot.config.Constants;
-
 import ch.sebpiller.iot.domain.Authority;
 import ch.sebpiller.iot.domain.User;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -1,7 +1,7 @@
 import React from 'react';
-import { DropdownItem } from 'reactstrap';
-import { NavDropdown } from './menu-components';
-import { locales, languages } from 'app/config/translation';
+import {DropdownItem} from 'reactstrap';
+import {NavDropdown} from './menu-components';
+import {languages, locales} from 'app/config/translation';
 
 export const LocaleMenu = ({ currentLocale, onClick }: { currentLocale: string; onClick: Function }) =>
   Object.keys(languages).length > 1 ? (

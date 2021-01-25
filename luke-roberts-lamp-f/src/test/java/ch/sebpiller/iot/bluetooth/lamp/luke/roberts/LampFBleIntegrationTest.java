@@ -1,9 +1,9 @@
 package ch.sebpiller.iot.bluetooth.lamp.luke.roberts;
 
 import ch.sebpiller.iot.lamp.SmartLampFacade;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,14 +13,14 @@ import java.util.concurrent.TimeUnit;
 
 import static ch.sebpiller.iot.lamp.ColorHelper.parseColor;
 
-@Ignore("ignored unless in real world testing with an adequate lamp running, and a human can verify " +
+@Disabled("ignored unless in real world testing with an adequate lamp running, and a human can verify " +
         "it actually worked.")
 public class LampFBleIntegrationTest {
     private static final Logger LOG = LoggerFactory.getLogger(LampFBleIntegrationTest.class);
 
     private static LampFBle facade;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         LukeRoberts.LampF.Config intgConfig = LukeRoberts.LampF.Config.loadFromStream(LampFBleIntegrationTest.class.
                 getResourceAsStream("/luke-roberts-lamp-f-tests.yaml"));

@@ -1,8 +1,7 @@
 package ch.sebpiller.iot.repository;
 
 import ch.sebpiller.iot.domain.Foo;
-
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**

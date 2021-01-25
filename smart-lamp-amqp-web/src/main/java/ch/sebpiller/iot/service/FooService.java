@@ -1,7 +1,6 @@
 package ch.sebpiller.iot.service;
 
 import ch.sebpiller.iot.domain.Foo;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

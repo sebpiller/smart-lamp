@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { Translate } from 'react-jhipster';
-import { Table, Badge, Col, Row, Button } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, {useEffect, useState} from 'react';
+import {connect} from 'react-redux';
+import {Translate} from 'react-jhipster';
+import {Badge, Button, Col, Row, Table} from 'reactstrap';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 
-import { IRootState } from 'app/shared/reducers';
-import { systemHealth } from '../administration.reducer';
+import {IRootState} from 'app/shared/reducers';
+import {systemHealth} from '../administration.reducer';
 import HealthModal from './health-modal';
 
 export interface IHealthPageProps extends StateProps, DispatchProps {}

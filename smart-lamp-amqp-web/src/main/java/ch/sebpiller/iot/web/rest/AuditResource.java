@@ -1,7 +1,6 @@
 package ch.sebpiller.iot.web.rest;
 
 import ch.sebpiller.iot.service.AuditEventService;
-
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.springframework.boot.actuate.audit.AuditEvent;

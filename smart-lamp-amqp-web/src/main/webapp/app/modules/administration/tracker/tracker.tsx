@@ -1,6 +1,6 @@
 import React from 'react';
-import { Translate } from 'react-jhipster';
-import { connect } from 'react-redux';
+import {Translate} from 'react-jhipster';
+import {connect} from 'react-redux';
 
 export interface ITrackerPageProps {
   activities: any[];

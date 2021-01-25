@@ -3,10 +3,12 @@ package ch.sebpiller.iot.service.mapper;
 import ch.sebpiller.iot.domain.Authority;
 import ch.sebpiller.iot.domain.User;
 import ch.sebpiller.iot.service.dto.UserDTO;
-
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**

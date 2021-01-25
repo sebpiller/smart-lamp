@@ -1,11 +1,10 @@
 package ch.sebpiller.iot.service.impl;
 
-import ch.sebpiller.iot.service.FooService;
 import ch.sebpiller.iot.domain.Foo;
 import ch.sebpiller.iot.repository.FooRepository;
+import ch.sebpiller.iot.service.FooService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

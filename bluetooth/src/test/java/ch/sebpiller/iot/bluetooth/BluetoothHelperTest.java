@@ -1,11 +1,11 @@
 package ch.sebpiller.iot.bluetooth;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class BluetoothHelperTest {
 
-    @Ignore("fails on windows")
+    @Disabled("fails on windows")
     @Test
     public void printBluetoothEnvironment() {
         BluetoothHelper.printBluetoothEnvironment();

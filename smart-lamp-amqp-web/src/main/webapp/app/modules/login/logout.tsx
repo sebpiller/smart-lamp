@@ -1,8 +1,8 @@
-import React, { useLayoutEffect } from 'react';
-import { connect } from 'react-redux';
+import React, {useLayoutEffect} from 'react';
+import {connect} from 'react-redux';
 
-import { IRootState } from 'app/shared/reducers';
-import { logout } from 'app/shared/reducers/authentication';
+import {IRootState} from 'app/shared/reducers';
+import {logout} from 'app/shared/reducers/authentication';
 
 export interface ILogoutProps extends StateProps, DispatchProps {
   idToken: string;

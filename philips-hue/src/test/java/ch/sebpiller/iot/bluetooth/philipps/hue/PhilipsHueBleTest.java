@@ -1,21 +1,21 @@
 package ch.sebpiller.iot.bluetooth.philipps.hue;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-@Ignore("ignore unless you have a real Philips Hue bulb connected to your system")
+@Disabled("ignore unless you have a real Philips Hue bulb connected to your system")
 public class PhilipsHueBleTest {
     static String mac = "D7:0E:87:C6:D2:58";
     private PhilipsHueBle test;
 
-    @Before
+    @BeforeAll
     public void setUp() throws Exception {
         test = new PhilipsHueBle("hci0", mac);
     }
 
-    @After
+    @AfterAll
     public void tearDown() throws Exception {
         test.close();
     }

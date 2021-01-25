@@ -1,11 +1,9 @@
 import React from 'react';
-import { Translate, translate } from 'react-jhipster';
-import { connect } from 'react-redux';
-import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { Button, Alert, Col, Row } from 'reactstrap';
-
-import { IRootState } from 'app/shared/reducers';
-import { handlePasswordResetInit, reset } from '../password-reset.reducer';
+import {Translate, translate} from 'react-jhipster';
+import {connect} from 'react-redux';
+import {AvField, AvForm} from 'availity-reactstrap-validation';
+import {Alert, Button, Col, Row} from 'reactstrap';
+import {handlePasswordResetInit, reset} from '../password-reset.reducer';
 
 export type IPasswordResetInitProps = DispatchProps;
 

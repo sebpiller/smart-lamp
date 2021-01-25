@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react';
-import { Button, Col, Alert, Row } from 'reactstrap';
-import { connect } from 'react-redux';
-import { Translate, translate } from 'react-jhipster';
-import { AvForm, AvField } from 'availity-reactstrap-validation';
+import React, {useEffect} from 'react';
+import {Button, Col, Row} from 'reactstrap';
+import {connect} from 'react-redux';
+import {Translate, translate} from 'react-jhipster';
+import {AvField, AvForm} from 'availity-reactstrap-validation';
 
-import { locales, languages } from 'app/config/translation';
-import { IRootState } from 'app/shared/reducers';
-import { getSession } from 'app/shared/reducers/authentication';
-import { saveAccountSettings, reset } from './settings.reducer';
+import {languages, locales} from 'app/config/translation';
+import {IRootState} from 'app/shared/reducers';
+import {getSession} from 'app/shared/reducers/authentication';
+import {reset, saveAccountSettings} from './settings.reducer';
 
 export interface IUserSettingsProps extends StateProps, DispatchProps {}
 

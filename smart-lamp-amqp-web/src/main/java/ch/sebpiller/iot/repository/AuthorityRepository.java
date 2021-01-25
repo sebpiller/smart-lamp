@@ -1,7 +1,6 @@
 package ch.sebpiller.iot.repository;
 
 import ch.sebpiller.iot.domain.Authority;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

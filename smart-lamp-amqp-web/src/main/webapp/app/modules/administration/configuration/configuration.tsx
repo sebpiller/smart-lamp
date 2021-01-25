@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { Table, Input, Row, Col, Badge } from 'reactstrap';
-import { Translate } from 'react-jhipster';
+import React, {useEffect, useState} from 'react';
+import {connect} from 'react-redux';
+import {Badge, Col, Input, Row, Table} from 'reactstrap';
+import {Translate} from 'react-jhipster';
 
-import { getConfigurations, getEnv } from '../administration.reducer';
-import { IRootState } from 'app/shared/reducers';
+import {getConfigurations, getEnv} from '../administration.reducer';
+import {IRootState} from 'app/shared/reducers';
 
 export interface IConfigurationPageProps extends StateProps, DispatchProps {}
 

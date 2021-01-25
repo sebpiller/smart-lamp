@@ -1,6 +1,5 @@
 package ch.sebpiller.iot.bluetooth.lamp.luke.roberts;
 
-import ch.sebpiller.iot.bluetooth.BluetoothException;
 import ch.sebpiller.iot.bluetooth.BluetoothHelper;
 import ch.sebpiller.iot.bluetooth.lamp.AbstractBluetoothLamp;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
@@ -9,8 +8,6 @@ import com.github.hypfvieh.bluetooth.DiscoveryTransport;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattCharacteristic;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.Validate;
-import org.bluez.exceptions.*;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.slf4j.Logger;
@@ -20,7 +17,6 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.function.Supplier;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;

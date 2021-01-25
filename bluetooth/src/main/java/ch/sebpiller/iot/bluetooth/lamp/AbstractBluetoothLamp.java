@@ -20,8 +20,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static ch.sebpiller.iot.bluetooth.BluetoothHelper.discoverDeviceManager;
 import static ch.sebpiller.iot.bluetooth.BluetoothHelper.findDeviceOnAdapter;

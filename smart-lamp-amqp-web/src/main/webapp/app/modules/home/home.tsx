@@ -1,7 +1,7 @@
 import './home.scss';
 
-import React, {Component, useState,} from "react";
-import {Row, Col} from 'reactstrap';
+import React, {useState,} from "react";
+import {Col, Row} from 'reactstrap';
 import {Translate} from 'react-jhipster';
 import {Checkbox, MenuItem, Select, Slider} from '@material-ui/core';
 import {connect} from 'react-redux';
