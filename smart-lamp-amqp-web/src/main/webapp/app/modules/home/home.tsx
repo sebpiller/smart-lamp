@@ -19,6 +19,7 @@ export const Home = (props: IHomeProp) => {
   const [color, setColor] = useState("#ffffff");
   const [whiteChecked, setWhiteChecked] = useState(true);
   const [lastCommand, setLastCommand] = useState("none");
+  const [directCommand, setDirectCommand] = useState("");
 
   const sendCommand = command => {
     // eslint-disable-next-line no-console
@@ -27,7 +28,11 @@ export const Home = (props: IHomeProp) => {
     if (lastCommand !== command) { // prevent multiple message with same command
       setLastCommand(command)
       axios
-        .post("amqp/command", command)
+        .post("amqp/command", command, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        })
         .then(e => {
           // eslint-disable-next-line no-console
           console.log("command accepted: " + command);
@@ -72,6 +77,14 @@ export const Home = (props: IHomeProp) => {
   const colorChangeCompleteHandler = (value, evt) => {
     setColor(value.hex)
     applyColor(whiteChecked)
+  }
+
+  const handleDirectCommandChange = (evt) => {
+    setDirectCommand(evt.target.value)
+  }
+
+  const handleSubmitDirectCommand = (evt) => {
+    sendCommand(directCommand)
   }
 
   const valuetext = t => t;
@@ -190,6 +203,19 @@ export const Home = (props: IHomeProp) => {
               checked={whiteChecked}
               onChange={whiteCheckedChangeHandler}/>
             white (#ffffff)
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md="3">
+            <label>
+              <span>Commande directe:</span>
+            </label>
+          </Col>
+
+          <Col md="6">
+            <textarea value={directCommand} onChange={handleDirectCommandChange} />
+            <input type="submit" onClick={handleSubmitDirectCommand}/>
           </Col>
         </Row>
       </Col>

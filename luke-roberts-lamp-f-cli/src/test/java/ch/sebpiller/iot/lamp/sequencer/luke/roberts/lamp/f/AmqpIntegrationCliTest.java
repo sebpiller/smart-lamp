@@ -14,7 +14,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
 
 public class AmqpIntegrationCliTest {
     private static final Logger LOG = LoggerFactory.getLogger(AmqpIntegrationCliTest.class);
