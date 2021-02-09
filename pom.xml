@@ -34,8 +34,7 @@
         <url>scm:git:http://git.home/spiller/smart-lamp.git</url>
         <connection>scm:git:http://git.home/spiller/smart-lamp.git</connection>
         <developerConnection>scm:git:http://git.home/spiller/smart-lamp.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+    </scm>
 
     <modules>
         <module>beatdetect-bpmsource</module>
