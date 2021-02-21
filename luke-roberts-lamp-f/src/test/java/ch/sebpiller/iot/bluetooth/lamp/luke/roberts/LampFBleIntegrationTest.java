@@ -130,13 +130,13 @@ public class LampFBleIntegrationTest {
 
     @Test
     public void testFadeFromToBrightness() throws Exception {
-        for (LukeRoberts.LampF.Scene scene : LukeRoberts.LampF.Scene.values()){
+        for (LukeRoberts.LampF.Scene scene : LukeRoberts.LampF.Scene.values()) {
             LOG.info("playing fade for {}", scene);
             facade.selectScene(scene)
                     .fadeBrightnessFromTo((byte) 0, (byte) 100, SmartLampFacade.FadeStyle.SLOW).get()
                     .fadeBrightnessFromTo((byte) 100, (byte) 0, SmartLampFacade.FadeStyle.SLOW).get()
                     .sleep(5000)
-                    ;
+            ;
         }
     }
 
@@ -179,7 +179,7 @@ public class LampFBleIntegrationTest {
         System.out.println("TESTING TEMPERATURE...");
         for (int j = 2700; j <= 4000; j += 10) {
             System.out.println("TEMP IS " + j);
-            facade.immediateLight(0, 0, 0, j, 0, 0);
+            facade.immediateLight(0, 0, (byte) 0, (byte) 0, j, null, null);
         }
     }
 
@@ -192,7 +192,21 @@ public class LampFBleIntegrationTest {
         for (int i = 255; i > 0; i -= 5) {
             for (int j = 0; j < 65_535; j += 1_000) {
                 LOG.info("SATURATION IS " + i + ", HUE IS " + j);
-                facade.immediateLight(0, i, j, 0, 0, 0);
+                facade.immediateLight(0, j, (byte) i, (byte) 0xFF, null, null, null);
+            }
+        }
+    }
+
+
+    @Test
+    public void testChangeMainBulbSettingsWithImmediateLight() {
+        // to test color changes, the best is to use an indirect scene.
+        facade.selectScene(LukeRoberts.LampF.Scene.INDIRECT_SCENE);
+
+        for (int i = 2700; i<= 4000; i += 50) {
+            for (int j = 0; j <= 255; j += 5) {
+                LOG.info("TEMP IS " + i + ", BRIGHTNESS IS " + j);
+                facade.immediateLight(0, null, null, null, null, i, (byte) j);
             }
         }
     }

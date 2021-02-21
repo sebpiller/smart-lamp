@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.Callable;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import static java.lang.Math.*;
 import static java.lang.String.format;
 
 /**
@@ -28,18 +27,23 @@ import static java.lang.String.format;
 public class LampFBle extends AbstractBluetoothLamp {
     private static final Logger LOG = LoggerFactory.getLogger(LampFBle.class);
 
+    /**
+     * Lamp minimum temperature in kelvin.
+     */
+    private static final int MIN_TEMP = 2700;
+    /**
+     * Lamp maximum temperature in kelvin.
+     */
+    private static final int MAX_TEMP = 4000;
+
     private final LukeRoberts.LampF.Config config;
-
-    @Override
-    public LampFBle sleep(int millis) {
-        super.sleep(millis);
-        return this;
-    }
-
     /**
      * The Bluetooth endpoint to invoke to control the lamp.
      */
     private BluetoothGattCharacteristic externalApi;
+    // values cached by call of #immediateLight
+    private Byte _sat, _bri, _mbri;
+    private Integer _hue, _temp, _mtemp;
 
     public LampFBle() {
         this(LukeRoberts.LampF.Config.getDefaultConfig());
@@ -47,6 +51,12 @@ public class LampFBle extends AbstractBluetoothLamp {
 
     public LampFBle(LukeRoberts.LampF.Config config) {
         this.config = Objects.requireNonNull(config);
+    }
+
+    @Override
+    public LampFBle sleep(int millis) {
+        super.sleep(millis);
+        return this;
     }
 
     private void sendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte... parameters) {
@@ -124,6 +134,7 @@ public class LampFBle extends AbstractBluetoothLamp {
     @Override
     public LampFBle setScene(byte sceneId) {
         sendCommandToExternalApi(LukeRoberts.LampF.Command.SELECT_SCENE, sceneId);
+        invalidateCacheFromImmediateLight();
         return this;
     }
 
@@ -141,10 +152,17 @@ public class LampFBle extends AbstractBluetoothLamp {
 
     @Override
     public LampFBle setTemperature(int kelvin) {
-        // valid value are 2700K..4000K
-        int k = min(max(2700, kelvin), 4000);
+        int k = lampTemp(kelvin);
+        this._mtemp = k;
         sendCommandToExternalApi(LukeRoberts.LampF.Command.COLOR_TEMP, (byte) (k >> 8), (byte) (k));
         return this;
+    }
+
+    /**
+     * Range the given kelvin to acceptable lamp temperature.
+     */
+    private int lampTemp(int kelvin) {
+        return min(max(MIN_TEMP, kelvin), MAX_TEMP);
     }
 
     @Override
@@ -166,7 +184,9 @@ public class LampFBle extends AbstractBluetoothLamp {
         int b = min(max(0x00, blue), 0xFF);
 
         float[] hsb = Color.RGBtoHSB(r, g, b, null);
-        immediateLight(0, Math.round(hsb[1] * 255f), Math.round(hsb[0] * 65_535f), 0, 0, 0);
+        immediateLight(0,
+                round(hsb[0] * 65_535f), (byte) round(hsb[1] * 255f), (byte) round(hsb[2] * 255f), null,
+                null, null);
         return this;
     }
 
@@ -178,10 +198,54 @@ public class LampFBle extends AbstractBluetoothLamp {
         sendCommandToExternalApi(LukeRoberts.LampF.Command.PING_V2);
     }
 
+    public void setTopTemperature(int kelvin) {
+        int k = lampTemp(kelvin);
+        immediateLight(0,
+                null, (byte) 0, null, k,
+                null, null);
+    }
+
     /**
-     * @param hue Color.
+     * Invalidate cached values from the command {@link #immediateLight(int, Integer, Byte, Byte, Integer, Integer, Byte)}.
      */
-    public void immediateLight(int duration, int sat, int hue, int temp, int mtemp, int mbrightness) {
+    private void invalidateCacheFromImmediateLight() {
+        this._sat = null;
+        this._bri = null;
+        this._mbri = null;
+        this._hue = null;
+        this._temp = null;
+        this._mtemp = null;
+    }
+
+    /**
+     * Sends the command "IMMEDIATE_LIGHT" to the Lamp.
+     * This command can change either the configuration of the top bulb (the colored one), the main bulb
+     * (with only color temperature and brightness), or both with a single call.
+     * <p>
+     * If all values #sat, #bri, #hue and #temp are null, then this call does not change any setting of the top bulb.
+     * <p>
+     * If all values #mtemp and #mbrightness are null, then this call does not change any setting of the main bulb.
+     * <p>
+     * NOTE: after creating an instance of {@link LampFBle}, all values are defaulted, even if the lamp actually has
+     * different settings. If is advised to sync internal state with the lamp by calling this method once. Setting the
+     * lamp's scene will actually invalidate all values.
+     * <p>
+     * NOTE: users of the API would rather use the methods {@link #setColor(int, int, int)},
+     * {@link #setTopTemperature(int)}, etc than this low-level call.
+     *
+     * @param duration Duration in seconds to apply this configuration
+     * @param hue      Top bulb HUE value in HSB color space. A null value means no change.
+     * @param sat      Top bulb saturation in HSB color space. A null value means no changes.
+     * @param bri      Top bulb brightness in HSB color space. A null value means no change.
+     * @param temp     Top bulb temperature value (2700K..4000K). Apply only if saturation is 0 or null (eg.
+     *                 when converting black color to HSB).
+     * @param mtemp    Main bulb temperature value (2700K..4000K). A null value means no change.
+     * @param mbri     Main bulb brightness. A null value means no change.
+     */
+    public void immediateLight(int duration, // duration apply to this command
+                               Integer hue, Byte sat, Byte bri, Integer temp, // top bulb
+                               Integer mtemp, Byte mbri // main bulb
+    ) {
         /* structure:
          * XX Flags that specify what content is present
          *
@@ -196,29 +260,66 @@ public class LampFBle extends AbstractBluetoothLamp {
         List<Byte> bytes = new ArrayList<>(12);
         byte xx = 0x00;
 
-        // TODO make correct use of immediate light body
-        ////////
-        if (true) {
-            xx |= 0x01;
-            bytes.add((byte) (duration >> 8));
-            bytes.add((byte) (duration));
+        // set duration
+        bytes.add((byte) (duration >> 8));
+        bytes.add((byte) (duration));
 
-            int i = sat == 0 ? temp : hue;
-            bytes.add((byte) sat);
+        ////////
+        boolean changeTop = false;
+        if (hue != null) {
+            this._hue = hue;
+            changeTop = true;
+        }
+        if (sat != null) {
+            this._sat = sat;
+            changeTop = true;
+        }
+        if (bri != null) {
+            this._bri = bri;
+            changeTop = true;
+        }
+
+        if ((sat == null || sat == 0) && temp != null) {
+            this._temp = lampTemp(temp);
+            changeTop = true;
+        } else {
+            this._temp = null;
+        }
+
+        if (changeTop) {
+            xx |= 0x01;
+
+            // FIXME simplify case where temp has not been defined before and sat is 0
+            int i = this._sat == 0 ?
+                    (this._temp == null ? this._temp = lampTemp(Integer.MAX_VALUE) : this._temp)
+                    : this._hue;
+            bytes.add(this._sat);
             bytes.add((byte) (i >> 8));
             bytes.add((byte) (i));
+            bytes.add(this._bri);
         }
 
         ////////
-        if (true) {
+        boolean changeMain = false;
+
+        if (mtemp != null) {
+            this._mtemp = lampTemp(mtemp);
+            changeMain = true;
+        }
+        if (mbri != null) {
+            this._mbri = mbri;
+            changeMain = true;
+        }
+
+        if (changeMain) {
             xx |= 0x02;
-            bytes.add((byte) (mtemp >> 8));
-            bytes.add((byte) (mtemp));
-            bytes.add((byte) (mbrightness));
+            bytes.add((byte) (this._mtemp.intValue() >> 8));
+            bytes.add((byte) (this._mtemp.intValue()));
+            bytes.add(this._mbri);
         }
 
         bytes.add(0, xx);
-        sendCommandToExternalApi(LukeRoberts.LampF.Command.IMMEDIATE_LIGHT, bytes.toArray(new Byte[0]));
+        sendCommandToExternalApi(LukeRoberts.LampF.Command.IMMEDIATE_LIGHT, bytes.toArray(new Byte[bytes.size()]));
     }
 }
 
