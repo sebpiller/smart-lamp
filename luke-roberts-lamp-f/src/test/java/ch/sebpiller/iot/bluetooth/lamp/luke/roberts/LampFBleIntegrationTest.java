@@ -255,11 +255,11 @@ public class LampFBleIntegrationTest {
         }
     }
 
-    @Test
-    public void testReadValueFromApi() {
-        byte[] r = facade.readValueFromExternalApi(LukeRoberts.LampF.Command.PING_V2);
-
-        LOG.warn("read: {}", r);
-        LOG.warn("      {}", new String(r, StandardCharsets.UTF_8));
-    }
+//    @Test
+//    public void testReadValueFromApi() {
+//        byte[] r = facade.readValueFromExternalApi(LukeRoberts.LampF.Command.PING_V2);
+//
+//        LOG.warn("read: {}", r);
+//        LOG.warn("      {}", new String(r, StandardCharsets.UTF_8));
+//    }
 }
