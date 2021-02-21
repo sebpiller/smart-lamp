@@ -1,31 +1,30 @@
 package ch.sebpiller.iot.bluetooth.lamp.luke.roberts;
 
-import ch.sebpiller.iot.bluetooth.BluetoothHelper;
-import ch.sebpiller.iot.bluetooth.lamp.AbstractBluetoothLamp;
+import ch.sebpiller.iot.bluetooth.BluetoothDelegate;
+import ch.sebpiller.iot.bluetooth.BluetoothException;
+import ch.sebpiller.iot.bluetooth.BluezDelegate;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
-import com.github.hypfvieh.bluetooth.DiscoveryFilter;
-import com.github.hypfvieh.bluetooth.DiscoveryTransport;
-import com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice;
-import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattCharacteristic;
-import org.apache.commons.lang3.ArrayUtils;
-import org.freedesktop.dbus.exceptions.DBusException;
-import org.freedesktop.dbus.exceptions.DBusExecutionException;
+import ch.sebpiller.iot.lamp.impl.AbstractLampBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.*;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import static java.lang.Math.*;
 import static java.lang.String.format;
 
 /**
- * Implementation of a {@link SmartLampFacade} able to drive a "Luke Roberts' model Lamp F" with bluetooth BLE.
+ * Implementation of a {@link SmartLampFacade} able to drive a "Luke Roberts' model Lamp F".
  */
-public class LampFBle extends AbstractBluetoothLamp {
+public class LampFBle extends AbstractLampBase {
     private static final Logger LOG = LoggerFactory.getLogger(LampFBle.class);
+
+    private final BluetoothDelegate bluetoothDelegate;
 
     /**
      * Lamp minimum temperature in kelvin.
@@ -37,10 +36,7 @@ public class LampFBle extends AbstractBluetoothLamp {
     private static final int MAX_TEMP = 4000;
 
     private final LukeRoberts.LampF.Config config;
-    /**
-     * The Bluetooth endpoint to invoke to control the lamp.
-     */
-    private BluetoothGattCharacteristic externalApi;
+
     // values cached by call of #immediateLight
     private Byte _sat, _bri, _mbri;
     private Integer _hue, _temp, _mtemp;
@@ -49,7 +45,20 @@ public class LampFBle extends AbstractBluetoothLamp {
         this(LukeRoberts.LampF.Config.getDefaultConfig());
     }
 
+    /**
+     * Default bluetooth implementation is BlueZ (does not work under windows !)
+     */
     public LampFBle(LukeRoberts.LampF.Config config) {
+        this(new BluezDelegate(
+                config.getLocalBtAdapter(),
+                config.getMac(),
+                UUID.fromString(config.getCustomControlService().getUuid()),
+                UUID.fromString(config.getCustomControlService().getUserExternalApiEndpoint().getUuid())
+        ), config);
+    }
+
+    public LampFBle(BluetoothDelegate delegate, LukeRoberts.LampF.Config config) {
+        this.bluetoothDelegate = Objects.requireNonNull(delegate);
         this.config = Objects.requireNonNull(config);
     }
 
@@ -60,71 +69,41 @@ public class LampFBle extends AbstractBluetoothLamp {
     }
 
     private void sendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte... parameters) {
-        retry((Callable<Void>) () -> {
+        BluetoothDelegate.retry((Callable<Void>) () -> {
             trySendCommandToExternalApi(command, parameters);
             return null;
-        }, 3, DBusException.class, DBusExecutionException.class);
+        }, 3, BluetoothException.class);
     }
 
-    private void trySendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte[] parameters) throws DBusException, DBusExecutionException {
-        BluetoothGattCharacteristic api = getExternalApi();
-        BluetoothHelper.reconnectIfNeeded(api);
-
-        if (LOG.isTraceEnabled()) {
-            BluetoothDevice device = api.getService().getDevice();
-            LOG.trace("sending command {} to Lamp F '{}' ({})",
-                    command,
-                    device.getName(),
-                    device.getAddress()
-            );
-        }
-
-        api.writeValue(command.toByteArray(parameters), Collections.emptyMap());
+    private void trySendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte[] parameters) {
+        this.bluetoothDelegate.write(command.toByteArray(parameters));
     }
 
-    private BluetoothGattCharacteristic getExternalApi() {
-        if (this.externalApi == null) {
-            Map<DiscoveryFilter, Object> filter = new HashMap<>();
-            filter.put(DiscoveryFilter.Transport, DiscoveryTransport.LE);
-            filter.put(DiscoveryFilter.UUIDs, new String[]{
-                    this.config.getCustomControlService().getUserExternalApiEndpoint().getUuid()
-            });
 
-            this.externalApi = retrieveCharacteristic(
-                    this.config.getLocalBtAdapter(),
-                    this.config.getMac(),
-                    this.config.getCustomControlService().getUuid(),
-                    this.config.getCustomControlService().getUserExternalApiEndpoint().getUuid(),
-                    filter
-            );
-        }
+//    public byte[] readValueFromExternalApi(LukeRoberts.LampF.Command command, Byte... parameters) {
+//        try {
+//            // FIXME not working yet
+//            Map<String, Object> options = new HashMap<>();
+//            //options.put("offset", "");
+//
+//            byte[] reversed = command.toByteArray(parameters);
+//            ArrayUtils.reverse(reversed);
+//
+//            BluetoothGattCharacteristic api = getExternalApi();
+//
+//            BluetoothDevice device = api.getService().getDevice();
+//            LOG.debug("{}: reading value from Lamp F '{}' ({})",
+//                    command,
+//                    device.getName(),
+//                    device.getAddress()
+//            );
+//
+//            return api.readValue(options);
+//        } catch (DBusException e) {
+//            throw new IllegalStateException("unable to invoke command on Lamp F: " + e, e);
+//        }
+//    }
 
-        return this.externalApi;
-    }
-
-    public byte[] readValueFromExternalApi(LukeRoberts.LampF.Command command, Byte... parameters) {
-        try {
-            // FIXME not working yet
-            Map<String, Object> options = new HashMap<>();
-            //options.put("offset", "");
-
-            byte[] reversed = command.toByteArray(parameters);
-            ArrayUtils.reverse(reversed);
-
-            BluetoothGattCharacteristic api = getExternalApi();
-
-            BluetoothDevice device = api.getService().getDevice();
-            LOG.debug("{}: reading value from Lamp F '{}' ({})",
-                    command,
-                    device.getName(),
-                    device.getAddress()
-            );
-
-            return api.readValue(options);
-        } catch (DBusException e) {
-            throw new IllegalStateException("unable to invoke command on Lamp F: " + e, e);
-        }
-    }
 
     public LampFBle selectScene(LukeRoberts.LampF.Scene scene) {
         setScene(scene.getId());
@@ -228,7 +207,7 @@ public class LampFBle extends AbstractBluetoothLamp {
      * <p>
      * NOTE: after creating an instance of {@link LampFBle}, all values are defaulted, even if the lamp actually has
      * different settings. If is advised to sync internal state with the lamp by calling this method once. Setting the
-     * lamp's scene will actually invalidate all values.
+     * lamp's scene will reset all values used by this method.
      * <p>
      * NOTE: users of the API would rather use the methods {@link #setColor(int, int, int)},
      * {@link #setTopTemperature(int)}, etc than this low-level call.
@@ -320,6 +299,17 @@ public class LampFBle extends AbstractBluetoothLamp {
 
         bytes.add(0, xx);
         sendCommandToExternalApi(LukeRoberts.LampF.Command.IMMEDIATE_LIGHT, bytes.toArray(new Byte[bytes.size()]));
+    }
+
+    @Override
+    public void close() throws Exception {
+        try {
+            if (this.bluetoothDelegate instanceof AutoCloseable) {
+                this.bluetoothDelegate.close();
+            }
+        } finally {
+            super.close();
+        }
     }
 }
 

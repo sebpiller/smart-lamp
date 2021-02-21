@@ -1,6 +1,6 @@
-# Bluetooth Base Lamp
+# Bluetooth 
 
-An abstract implementation of a smart lamp using bluetooth BLE as communication protocol.
+An unified API to write bytes to a bluetooth device. At the moment, only bluez-dbus API is supported (Linux only!)
 
 ## Useful commands and references
 (just a collection of commands I should not forget ^^)

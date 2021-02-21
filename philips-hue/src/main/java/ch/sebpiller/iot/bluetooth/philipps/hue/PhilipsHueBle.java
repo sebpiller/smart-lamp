@@ -2,7 +2,7 @@ package ch.sebpiller.iot.bluetooth.philipps.hue;
 
 import ch.sebpiller.iot.bluetooth.BluetoothException;
 import ch.sebpiller.iot.bluetooth.BluetoothHelper;
-import ch.sebpiller.iot.bluetooth.lamp.AbstractBluetoothLamp;
+import ch.sebpiller.iot.lamp.impl.AbstractLampBase;
 import com.github.hypfvieh.bluetooth.DiscoveryFilter;
 import com.github.hypfvieh.bluetooth.DiscoveryTransport;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice;
@@ -213,8 +213,9 @@ Connection successful
 and 0x00 to turn the bulb on and off respectively. Brightness can be set using characteristic **0002**.
 */
 
+// FIXME implement
 // WARN : the mac address of an Hue changes randomly at each "factory reset" of the bulb !
-public class PhilipsHueBle extends AbstractBluetoothLamp {
+public class PhilipsHueBle extends AbstractLampBase {
     private static final Logger LOG = LoggerFactory.getLogger(PhilipsHueBle.class);
 
     //
@@ -322,18 +323,19 @@ public class PhilipsHueBle extends AbstractBluetoothLamp {
 
     private BluetoothGattCharacteristic getPrimaryServiceCharacteristic(String characId) {
         // TODO maintain cache of characs ?
-        Map<DiscoveryFilter, Object> filter = new HashMap<>();
-        filter.put(DiscoveryFilter.Transport, DiscoveryTransport.LE);
-        filter.put(DiscoveryFilter.UUIDs, new String[]{PHILIPS_PRIMARY_SERVICE_UUID});
-
-        BluetoothGattCharacteristic characteristic = retrieveCharacteristic(
-                adapter,
-                mac,
-                PHILIPS_PRIMARY_SERVICE_UUID,
-                characId,
-                filter);
-
-        BluetoothHelper.reconnectIfNeeded(characteristic);
-        return characteristic;
+//        Map<DiscoveryFilter, Object> filter = new HashMap<>();
+//        filter.put(DiscoveryFilter.Transport, DiscoveryTransport.LE);
+//        filter.put(DiscoveryFilter.UUIDs, new String[]{PHILIPS_PRIMARY_SERVICE_UUID});
+//
+//        BluetoothGattCharacteristic characteristic = retrieveCharacteristic(
+//                this.adapter,
+//                this.mac,
+//                PHILIPS_PRIMARY_SERVICE_UUID,
+//                characId,
+//                filter);
+//
+//        BluetoothHelper.reconnectIfNeeded(characteristic);
+//        return characteristic;
+        return null;
     }
 }

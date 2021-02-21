@@ -63,7 +63,7 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
                     break;
             }
 
-            brightLock.lockInterruptibly();
+            this.brightLock.lockInterruptibly();
             try {
                 for (byte b = from; up ? b <= to : b >= to; b += inc) {
                     setBrightness(b);
@@ -74,23 +74,23 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
                     }
                 }
             } finally {
-                brightLock.unlock();
+                this.brightLock.unlock();
             }
 
             return AbstractLampBase.this;
         };
 
-        return executor.submit(callable);
+        return this.executor.submit(callable);
     }
 
     @Override
     public Future<AbstractLampBase> fadeBrightnessTo(byte percent, SmartLampFacade.FadeStyle fadeStyle) {
-        return fadeBrightnessFromTo(brightness, percent, fadeStyle);
+        return fadeBrightnessFromTo(this.brightness, percent, fadeStyle);
     }
 
     @Override
     public Future<AbstractLampBase> fadeTemperatureTo(int kelvin, FadeStyle fadeStyle) {
-        return fadeTemperatureFromTo(temperature, kelvin, fadeStyle);
+        return fadeTemperatureFromTo(this.temperature, kelvin, fadeStyle);
     }
 
     @Override
@@ -111,7 +111,7 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
                     break;
             }
 
-            tempLock.lockInterruptibly();
+            this.tempLock.lockInterruptibly();
             try {
                 for (int b = from; up ? b <= to : b >= to; b += inc) {
                     setTemperature(b);
@@ -122,13 +122,13 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
                     }
                 }
             } finally {
-                tempLock.unlock();
+                this.tempLock.unlock();
             }
 
             return AbstractLampBase.this;
         };
 
-        return executor.submit(callable);
+        return this.executor.submit(callable);
     }
 
 
@@ -158,7 +158,7 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
                     break;
             }
 
-            colorLock.lockInterruptibly();
+            this.colorLock.lockInterruptibly();
             try {
                 int[] actual = new int[3];
 
@@ -177,18 +177,18 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
                 setColor(to[0], to[1], to[2]);
                 this.color = to;
             } finally {
-                colorLock.unlock();
+                this.colorLock.unlock();
             }
 
             return AbstractLampBase.this;
         };
 
-        return executor.submit(callable);
+        return this.executor.submit(callable);
     }
 
     @Override
     public Future<AbstractLampBase> fadeColorTo(int[] to, FadeStyle fadeStyle) {
-        return fadeColorFromTo(color, to, fadeStyle);
+        return fadeColorFromTo(this.color, to, fadeStyle);
     }
 
 
@@ -198,7 +198,7 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
      * Stop the executor used to schedule fading effects.
      */
     @Override
-    public void close() {
-        executor.shutdownNow();
+    public void close() throws Exception  {
+        this.executor.shutdownNow();
     }
 }

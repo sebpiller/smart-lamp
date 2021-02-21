@@ -81,34 +81,38 @@ public class BluetoothHelper {
     }
 
     public static void reconnectIfNeeded(BluetoothGattCharacteristic charac) {
-        if (charac != null) {
-            boolean quit = false;
-            int tryIndex = 0;
-            RuntimeException lastError = null;
+        if (charac == null) {
+            if (LOG.isTraceEnabled())
+                LOG.trace("charac is null");
+            return;
+        }
 
-            while (!quit) {
-                tryIndex++;
+        boolean quit = false;
+        int tryIndex = 0;
+        RuntimeException lastError = null;
 
-                try {
-                    BluetoothDevice device = charac.getService().getDevice();
-                    if (!device.isConnected() && !device.connect()) {
-                        throw new BluetoothException("!!! connection to the device was unsuccessful !!!");
-                    }
+        while (!quit) {
+            tryIndex++;
 
-                    quit = true;
-                } catch (RuntimeException e) {
-                    lastError = e;
-                    quit = true;
+            try {
+                BluetoothDevice device = charac.getService().getDevice();
+                if (!device.isConnected() && !device.connect()) {
+                    throw new BluetoothException("!!! connection to the device was unsuccessful !!!");
+                }
 
-                    if (e.getMessage().contains(RETRY_MESSAGE)) {
-                        quit = tryIndex < MAX_RETRY;
-                    }
+                quit = true;
+            } catch (RuntimeException e) {
+                lastError = e;
+                quit = true;
+
+                if (e.getMessage().contains(RETRY_MESSAGE)) {
+                    quit = tryIndex < MAX_RETRY;
                 }
             }
+        }
 
-            if (lastError != null) {
-                throw lastError;
-            }
+        if (lastError != null) {
+            throw lastError;
         }
     }
 
