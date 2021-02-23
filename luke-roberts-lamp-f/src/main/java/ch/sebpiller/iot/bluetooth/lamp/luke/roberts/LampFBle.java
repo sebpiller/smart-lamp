@@ -1,20 +1,18 @@
 package ch.sebpiller.iot.bluetooth.lamp.luke.roberts;
 
 import ch.sebpiller.iot.bluetooth.BluetoothDelegate;
+import ch.sebpiller.iot.bluetooth.BluetoothException;
 import ch.sebpiller.iot.bluetooth.BluezDelegate;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
 import ch.sebpiller.iot.lamp.impl.AbstractLampBase;
-import com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice;
-import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattCharacteristic;
-import org.apache.commons.lang3.ArrayUtils;
-import org.freedesktop.dbus.exceptions.DBusException;
-import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.*;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import static java.lang.Math.*;
@@ -74,10 +72,10 @@ public class LampFBle extends AbstractLampBase {
         BluetoothDelegate.retry((Callable<Void>) () -> {
             trySendCommandToExternalApi(command, parameters);
             return null;
-        }, 3, DBusException.class, DBusExecutionException.class);
+        }, 3, BluetoothException.class);
     }
 
-    private void trySendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte[] parameters) throws DBusException, DBusExecutionException {
+    private void trySendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte[] parameters) {
         this.bluetoothDelegate.write(command.toByteArray(parameters));
     }
 
@@ -209,7 +207,7 @@ public class LampFBle extends AbstractLampBase {
      * <p>
      * NOTE: after creating an instance of {@link LampFBle}, all values are defaulted, even if the lamp actually has
      * different settings. If is advised to sync internal state with the lamp by calling this method once. Setting the
-     * lamp's scene will actually invalidate all values.
+     * lamp's scene will reset all values used by this method.
      * <p>
      * NOTE: users of the API would rather use the methods {@link #setColor(int, int, int)},
      * {@link #setTopTemperature(int)}, etc than this low-level call.

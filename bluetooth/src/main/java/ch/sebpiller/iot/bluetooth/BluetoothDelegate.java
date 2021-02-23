@@ -12,10 +12,10 @@ public interface BluetoothDelegate extends AutoCloseable {
     /**
      * Retry to run a function a few times, retry if specific exceptions occur.
      *
-     * @param timeoutExceptionClasses what exceptions should lead to retry. Default: any exception
+     * @param retryExceptions what exceptions should lead to retry. Default: any exception
      */
-    static <T> T retry(Callable<T> call, int maxRetries, Class<? extends Exception>... timeoutExceptionClasses) {
-        timeoutExceptionClasses = timeoutExceptionClasses.length == 0 ? new Class[]{Exception.class} : timeoutExceptionClasses;
+    static <T> T retry(Callable<T> call, int maxRetries, Class<? extends Exception>... retryExceptions) {
+        retryExceptions = retryExceptions.length == 0 ? new Class[]{Exception.class} : retryExceptions;
         int retryCounter = 0;
         Exception lastException = null;
         while (retryCounter < maxRetries) {
@@ -23,7 +23,7 @@ public interface BluetoothDelegate extends AutoCloseable {
                 return call.call();
             } catch (Exception e) {
                 lastException = e;
-                if (Arrays.stream(timeoutExceptionClasses).noneMatch(tClass ->
+                if (Arrays.stream(retryExceptions).noneMatch(tClass ->
                         tClass.isAssignableFrom(e.getClass())
                 ))
                     throw lastException instanceof RuntimeException ?
@@ -44,5 +44,5 @@ public interface BluetoothDelegate extends AutoCloseable {
                 new RuntimeException(lastException);
     }
 
-    void write(byte... bytes);
+    void write(byte... bytes) throws BluetoothException;
 }
