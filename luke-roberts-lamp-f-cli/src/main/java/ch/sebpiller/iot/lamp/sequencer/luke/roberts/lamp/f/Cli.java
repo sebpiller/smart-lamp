@@ -7,9 +7,10 @@ import ch.sebpiller.iot.lamp.SmartLampFacade;
 import ch.sebpiller.iot.lamp.cli.SmartLampInteractive;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampScript;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampSequence;
-import ch.sebpiller.tictac.TempoProvider;
-import ch.sebpiller.tictac.TicTac;
-import ch.sebpiller.tictac.TicTacBuilder;
+
+import ch.sebpiller.metronome.Metronome;
+import ch.sebpiller.metronome.MetronomeBuilder;
+import ch.sebpiller.metronome.Tempo;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -62,6 +63,7 @@ public class Cli implements Callable<Integer> {
     private ConnectionFactory connectionFactory;
 
     static class VersionProvider implements CommandLine.IVersionProvider {
+        @Override
         public String[] getVersion() {
             String implementationVersion = getClass().getPackage().getImplementationVersion();
             if (implementationVersion != null) {
@@ -246,41 +248,41 @@ public class Cli implements Callable<Integer> {
 
             // if we have a main loop, play it.
             if (!SmartLampSequence.NOOP.equals(loop)) {
-                TempoProvider source;
+                Tempo source;
 
-                if (cliParamTempo == null || cliParamTempo <= 0) {
+                if (this.cliParamTempo == null || this.cliParamTempo <= 0) {
                     source = BpmSourceAudioListener.getBpmFromLineIn();
                 } else {
-                    float finalTempo = cliParamTempo;
+                    float finalTempo = this.cliParamTempo;
                     source = () -> finalTempo;
                 }
 
-                try (TicTac ticTac = new TicTacBuilder()
-                        .connectedToBpm(source)
-                        .withListener(new TicTac.TicTacListener() {
+                try (Metronome ticTac = new MetronomeBuilder()
+                        .withRhythm(source)
+                        .withListener(new Metronome.MetronomeListener() {
                             private int i = 0;
 
                             @Override
                             public void missedBeats(int count, float bpm) {
-                                i += count;
-                                LOG.warn("missed beat {} (measure {})", i, (i / 4) + 1);
+                                this.i += count;
+                                LOG.warn("missed beat {} (measure {})", this.i, (this.i / 4) + 1);
                                 loop.skip(count);
                             }
 
                             @Override
                             public void beat(boolean ticOrTac, float bpm) {
                                 if (LOG.isDebugEnabled()) {
-                                    LOG.debug("beat {} (measure {})", i, (i / 4) + 1);
+                                    LOG.debug("beat {} (measure {})", this.i, (this.i / 4) + 1);
                                 }
 
                                 loop.play(lamp);
-                                i++;
+                                this.i++;
                             }
                         })
                         .build()) {
-                    if (cliParamDuration > 0) {
+                    if (this.cliParamDuration > 0) {
                         try {
-                            Thread.sleep(cliParamDuration * 1_000);
+                            Thread.sleep(this.cliParamDuration * 1_000);
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }
@@ -299,12 +301,12 @@ public class Cli implements Callable<Integer> {
         lampFConfig = lampFConfig.merge(LukeRoberts.LampF.Config.loadFromStream(getClass().getResourceAsStream("/config/lampf.living.home.yaml")));
 
         // load config overrides from file if defined
-        if (cliParamConfig != null) {
+        if (this.cliParamConfig != null) {
             LukeRoberts.LampF.Config c;
             try {
-                c = LukeRoberts.LampF.Config.loadFromStream(new FileInputStream(cliParamConfig));
+                c = LukeRoberts.LampF.Config.loadFromStream(new FileInputStream(this.cliParamConfig));
             } catch (FileNotFoundException e) {
-                throw new IllegalArgumentException("file does not exist " + cliParamConfig, e);
+                throw new IllegalArgumentException("file does not exist " + this.cliParamConfig, e);
             }
 
             lampFConfig = lampFConfig.merge(c);
@@ -313,11 +315,11 @@ public class Cli implements Callable<Integer> {
         // load cli flags overrides
         LukeRoberts.LampF.Config c = new LukeRoberts.LampF.Config();
 
-        if (cliParamAdapter != null) {
-            c.setLocalBtAdapter(cliParamAdapter);
+        if (this.cliParamAdapter != null) {
+            c.setLocalBtAdapter(this.cliParamAdapter);
         }
-        if (cliParamMac != null) {
-            c.setMac(cliParamMac);
+        if (this.cliParamMac != null) {
+            c.setMac(this.cliParamMac);
         }
         lampFConfig = lampFConfig.merge(c);
         // -----
@@ -335,20 +337,20 @@ public class Cli implements Callable<Integer> {
         validateThis();
 
         SmartLampScript script = null;
-        if (cliParamScript != null) {
-            if (cliParamScript.toLowerCase().startsWith(EMBEDDED_PREFIX)) {
-                script = SmartLampScript.embeddedScript(cliParamScript.substring(EMBEDDED_PREFIX.length()));
+        if (this.cliParamScript != null) {
+            if (this.cliParamScript.toLowerCase().startsWith(EMBEDDED_PREFIX)) {
+                script = SmartLampScript.embeddedScript(this.cliParamScript.substring(EMBEDDED_PREFIX.length()));
             } else {
-                script = SmartLampScript.fromFile(cliParamScript);
+                script = SmartLampScript.fromFile(this.cliParamScript);
             }
         }
 
         try (LampFBle lamp = buildLukeRobertsLampFFacadeFromSettings()) {
-            boolean interactive = cliParamScript == null && !cliParamAmqp;
+            boolean interactive = this.cliParamScript == null && !this.cliParamAmqp;
             if (interactive) {
                 new SmartLampInteractive(lamp).run(asciiLampF);
             } else {
-                if (cliParamAmqp) {
+                if (this.cliParamAmqp) {
                     listenToAmqpAndExecuteOnLamp(lamp);
                 } else {
                     SmartLampScript scriptToPlay = Optional.ofNullable(script).orElse(new SmartLampScript() {
@@ -410,9 +412,9 @@ public class Cli implements Callable<Integer> {
     }
 
     private ConnectionFactory getConnectionFactory() {
-        if (connectionFactory == null)
-            connectionFactory = new Yaml().loadAs(getClass().getResourceAsStream("/config/amqp.rabbitmq.home.yaml"), ConnectionFactory.class);
-        return connectionFactory;
+        if (this.connectionFactory == null)
+            this.connectionFactory = new Yaml().loadAs(getClass().getResourceAsStream("/config/amqp.rabbitmq.home.yaml"), ConnectionFactory.class);
+        return this.connectionFactory;
     }
 
     private void waitForever() {
@@ -452,13 +454,13 @@ public class Cli implements Callable<Integer> {
     @Override
     public String toString() {
         return "Cli{" +
-                "cliParamConfig='" + cliParamConfig + '\'' +
-                ", cliParamAdapter='" + cliParamAdapter + '\'' +
-                ", cliParamMac='" + cliParamMac + '\'' +
-                ", cliParamScript='" + cliParamScript + '\'' +
-                ", cliParamDuration=" + cliParamDuration +
-                ", cliParamTempo=" + cliParamTempo +
-                ", cliParamAmqp=" + cliParamAmqp +
+                "cliParamConfig='" + this.cliParamConfig + '\'' +
+                ", cliParamAdapter='" + this.cliParamAdapter + '\'' +
+                ", cliParamMac='" + this.cliParamMac + '\'' +
+                ", cliParamScript='" + this.cliParamScript + '\'' +
+                ", cliParamDuration=" + this.cliParamDuration +
+                ", cliParamTempo=" + this.cliParamTempo +
+                ", cliParamAmqp=" + this.cliParamAmqp +
                 '}';
     }
 }

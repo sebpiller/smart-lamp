@@ -218,8 +218,8 @@
 
             <dependency>
                 <groupId>ch.sebpiller</groupId>
-                <artifactId>metronom</artifactId>
-                <version>0.2.2</version>
+                <artifactId>metronome</artifactId>
+                <version>0.2.3-SNAPSHOT</version>
             </dependency>
 
             <dependency>

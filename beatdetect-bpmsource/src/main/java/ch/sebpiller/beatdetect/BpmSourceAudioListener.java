@@ -1,6 +1,6 @@
 package ch.sebpiller.beatdetect;
 
-import ch.sebpiller.tictac.TempoProvider;
+import ch.sebpiller.metronome.Tempo;
 import ddf.minim.AudioInput;
 import ddf.minim.AudioListener;
 import ddf.minim.Minim;
@@ -18,10 +18,10 @@ import java.util.Queue;
  * A BpmSource that connects directly an {@link ddf.minim.spi.AudioStream} (Minim) (system line-in by default)
  * and automatically find the tempo of the music actually playing.
  */
-public class BpmSourceAudioListener implements TempoProvider, AudioListener {
+public class BpmSourceAudioListener implements Tempo, AudioListener {
     private static final Logger LOG = LoggerFactory.getLogger(BpmSourceAudioListener.class);
 
-    private static TempoProvider lineIn;
+    private static Tempo lineIn;
     // 20 items in the buffer: that means the tempo returned is computed using the average
     // of the ~ 8..12 last seconds of measured beat.
     private final Queue<Float> mostRecentDetectedBpms = new CircularFifoQueue<>(20);
@@ -40,7 +40,7 @@ public class BpmSourceAudioListener implements TempoProvider, AudioListener {
         initAudioInput(audioInput);
     }
 
-    public synchronized static TempoProvider getBpmFromLineIn() {
+    public synchronized static Tempo getBpmFromLineIn() {
         if (lineIn == null) {
             lineIn = new BpmSourceAudioListener();
         }
@@ -49,9 +49,9 @@ public class BpmSourceAudioListener implements TempoProvider, AudioListener {
 
     private void initAudioInput(AudioInput audioInput) {
         AudioFormat format = audioInput.getFormat();
-        beatDetect = new BeatDetect(format.getFrameSize(), format.getSampleRate());
-        beatDetect.detectMode(BeatDetect.SOUND_ENERGY/**//*FREQ_ENERGY*/);
-        beatDetect.setSensitivity(300);
+        this.beatDetect = new BeatDetect(format.getFrameSize(), format.getSampleRate());
+        this.beatDetect.detectMode(BeatDetect.SOUND_ENERGY/**//*FREQ_ENERGY*/);
+        this.beatDetect.setSensitivity(300);
         audioInput.addListener(this);
     }
 
@@ -67,23 +67,23 @@ public class BpmSourceAudioListener implements TempoProvider, AudioListener {
 
     private void onSamplesAcquired(float[] samp) {
         long now = System.nanoTime();
-        beatDetect.detect(samp);
+        this.beatDetect.detect(samp);
 
-        if (beatDetect.isOnset() || beatDetect.isKick()) {
+        if (this.beatDetect.isOnset() || this.beatDetect.isKick()) {
 
-            if (lastBeatNanoTime != 0) {
-                float detectedBpm = (float) (60_000_000_000d / (now - lastBeatNanoTime));
+            if (this.lastBeatNanoTime != 0) {
+                float detectedBpm = (float) (60_000_000_000d / (now - this.lastBeatNanoTime));
 
                 // suspicious tempos are ignored
                 if (detectedBpm > 80 && detectedBpm < 180) {
-                    synchronized (mostRecentDetectedBpms) {
-                        mostRecentDetectedBpms.add(detectedBpm);
+                    synchronized (this.mostRecentDetectedBpms) {
+                        this.mostRecentDetectedBpms.add(detectedBpm);
                         LOG.info("detected bpm: {}", detectedBpm);
 
                         if (LOG.isTraceEnabled()) {
-                            LOG.trace("  > bpms are: {}", Arrays.toString(mostRecentDetectedBpms.toArray()));
+                            LOG.trace("  > bpms are: {}", Arrays.toString(this.mostRecentDetectedBpms.toArray()));
                         }
-                        average = (float) mostRecentDetectedBpms.stream()
+                        this.average = (float) this.mostRecentDetectedBpms.stream()
                                 .mapToDouble((x) -> x).summaryStatistics()
                                 .getAverage()
                         ;
@@ -91,12 +91,12 @@ public class BpmSourceAudioListener implements TempoProvider, AudioListener {
                 }
             }
 
-            lastBeatNanoTime = now;
+            this.lastBeatNanoTime = now;
         }
     }
 
     @Override
-    public float getTempo() {
-            return average;
+    public Number get() {
+            return this.average;
         }
 }
