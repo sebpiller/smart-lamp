@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 
 import static java.lang.Math.*;
 import static java.lang.String.format;
@@ -69,7 +68,7 @@ public class LampFBle extends AbstractLampBase {
     }
 
     private void sendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte... parameters) {
-        BluetoothDelegate.retry((Callable<Void>) () -> {
+        BluetoothDelegate.retry(() -> {
             trySendCommandToExternalApi(command, parameters);
             return null;
         }, 3, BluetoothException.class);
@@ -304,7 +303,7 @@ public class LampFBle extends AbstractLampBase {
     @Override
     public void close() throws Exception {
         try {
-            if (this.bluetoothDelegate instanceof AutoCloseable) {
+            if (this.bluetoothDelegate != null) {
                 this.bluetoothDelegate.close();
             }
         } finally {

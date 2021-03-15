@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LukeRobertsTest {
+class LukeRobertsTest {
     private static final Logger LOG = LoggerFactory.getLogger(LukeRobertsTest.class);
 
     @Test
-    public void testCommandsByteArrayConversion() {
+    void testCommandsByteArrayConversion() {
         assertThat(LukeRoberts.LampF.Command.BRIGHTNESS.toByteArray((byte) 0)).isEqualTo(new byte[]{
                 (byte) 0xA0, 0x01, 0x03, 0x00});
         assertThat(LukeRoberts.LampF.Command.BRIGHTNESS.toByteArray((byte) 0x7F)).isEqualTo(new byte[]{
@@ -21,7 +21,7 @@ public class LukeRobertsTest {
     }
 
     @Test
-    public void testConfigCanBeLoaded() {
+    void testConfigCanBeLoaded() {
         LukeRoberts.LampF.Config defaultConfig = LukeRoberts.LampF.Config.getDefaultConfig();
 
         assertThat(defaultConfig).isNotNull();

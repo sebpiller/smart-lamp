@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>ch.sebpiller</groupId>
-            <artifactId>metronom</artifactId>
+            <artifactId>metronome</artifactId>
         </dependency>
     </dependencies>
 </project>

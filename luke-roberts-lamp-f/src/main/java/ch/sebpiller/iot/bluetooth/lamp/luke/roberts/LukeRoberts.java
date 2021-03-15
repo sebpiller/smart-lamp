@@ -18,17 +18,20 @@ import java.util.stream.Collectors;
  * Implements Bluetooth format from Luke Roberts'.
  */
 public final class LukeRoberts {
+    private LukeRoberts() {
+    }
+
     public static class LampF {
         private static final byte COMMAND_PREFIX = (byte) 0xA0;
         private static final byte VERSION_1 = 0x01;
         private static final byte VERSION_2 = 0x02;
 
         /**
-         * @deprecated as per Luke Roberts' documentation, this characteristics is now deprecated. It was used to change
+         * @deprecated as per Luke Roberts' documentation, this characteristic is now deprecated. It was used to change
          * the scene displayed.
          */
         @Deprecated
-        static String UUID_CHARACTERISTICS_SELECT_SCENE_SERVICE = "44092844-0567-11e6-b862-0002a5d5c51b";
+        static final String UUID_CHARACTERISTICS_SELECT_SCENE_SERVICE = "44092844-0567-11e6-b862-0002a5d5c51b";
 
         public enum Command {
             PING_V1(COMMAND_PREFIX, VERSION_1, (byte) 0x00, bytes -> bytes.length == 0),
@@ -184,7 +187,8 @@ public final class LukeRoberts {
         public static final class Config {
             private static final String LUKE_ROBERTS_DEFAULTS = "/config/luke-roberts-defaults.yaml";
 
-            private String mac, localBtAdapter;
+            private String mac;
+            private String localBtAdapter;
             private CustomControlService customControlService;
 
             public static Config getDefaultConfig() {

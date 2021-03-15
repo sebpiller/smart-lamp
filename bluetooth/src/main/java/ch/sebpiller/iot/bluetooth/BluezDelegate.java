@@ -9,13 +9,19 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.bluez.exceptions.*;
+import org.bluez.exceptions.BluezFailedException;
+import org.bluez.exceptions.BluezInvalidArgumentsException;
+import org.bluez.exceptions.BluezNotReadyException;
+import org.bluez.exceptions.BluezNotSupportedException;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.UUID;
 
 import static ch.sebpiller.iot.bluetooth.BluetoothHelper.discoverDeviceManager;
 import static ch.sebpiller.iot.bluetooth.BluetoothHelper.findDeviceOnAdapter;
@@ -132,9 +138,7 @@ public final class BluezDelegate implements BluetoothDelegate {
 
         try {
             api.writeValue(bytes, Collections.emptyMap());
-        } catch (BluezFailedException | BluezInProgressException | BluezNotPermittedException | BluezNotAuthorizedException |
-                BluezNotSupportedException | BluezInvalidValueLengthException
-                e) {
+        } catch (DBusException e) {
             throw new BluetoothException(e);
         }
     }

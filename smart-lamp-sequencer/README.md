@@ -2,7 +2,7 @@
 
 A tool to programmatically record a list of manipulations to do on a smart lamp.
  
-That in rhythm with a metronom that dispatch the . 
+That in rhythm with a metronome that dispatch the . 
 
 ## Write your own scripted sequence of changes
 
@@ -35,7 +35,7 @@ before: seq=before
 after: seq=after
 
 # the main loop that will execute until an exit condition is met. An element will be executed at each tick of 
-# the metronom plugged in. Once the end is reached, the execution starts again from the beginning. 
+# the metronome plugged in. Once the end is reached, the execution starts again from the beginning. 
 loop:
   - seq=green;seq=flash;
   - seq=flash;

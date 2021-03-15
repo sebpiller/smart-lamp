@@ -29,7 +29,9 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
      */
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     // locks to prevent multiple concurrent fading effects of the same property
-    private final Lock tempLock = new ReentrantLock(), brightLock = new ReentrantLock(), colorLock = new ReentrantLock();
+    private final Lock tempLock = new ReentrantLock();
+    private final Lock brightLock = new ReentrantLock();
+    private final Lock colorLock = new ReentrantLock();
 
     // TODO load actual state of the lamp if possible...
     /**
@@ -198,7 +200,7 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
      * Stop the executor used to schedule fading effects.
      */
     @Override
-    public void close() throws Exception  {
+    public void close() throws Exception {
         this.executor.shutdownNow();
     }
 }
