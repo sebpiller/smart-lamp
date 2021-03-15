@@ -7,9 +7,9 @@ import ch.sebpiller.iot.lamp.SmartLampFacade;
 import ch.sebpiller.iot.lamp.cli.SmartLampInteractive;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampScript;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampSequence;
-import ch.sebpiller.tictac.TempoProvider;
-import ch.sebpiller.tictac.TicTac;
-import ch.sebpiller.tictac.TicTacBuilder;
+import ch.sebpiller.metronome.Metronome;
+import ch.sebpiller.metronome.MetronomeBuilder;
+import ch.sebpiller.metronome.Tempo;
 import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -190,22 +190,22 @@ public class Cli implements Callable<Integer> {
 
             // if we have a main loop, play it.
             if (!SmartLampSequence.NOOP.equals(loop)) {
-                TempoProvider source;
+                Tempo source;
 
-                if (cliParamTempo == null || cliParamTempo <= 0) {
+                if (this.cliParamTempo == null || this.cliParamTempo <= 0) {
                     source = BpmSourceAudioListener.getBpmFromLineIn();
                 } else {
-                    int finalTempo = cliParamTempo;
+                    int finalTempo = this.cliParamTempo;
                     source = () -> finalTempo;
                 }
 
-                try (TicTac ticTac = new TicTacBuilder()
-                        .connectedToBpm(source)
+                try (Metronome ticTac = new MetronomeBuilder()
+                        .withRhythm(source)
                         .withListener((ticOrTac, b) -> loop.play(lamp))
                         .build()) {
-                    if (cliParamDuration > 0) {
+                    if (this.cliParamDuration > 0) {
                         try {
-                            Thread.sleep(cliParamDuration * 1_000);
+                            Thread.sleep(this.cliParamDuration * 1_000);
                         } catch (InterruptedException e) {
                             // ignore
                         }
@@ -244,7 +244,7 @@ public class Cli implements Callable<Integer> {
 //        lampFConfig = lampFConfig.merge(c);
         // -----
 
-        return new PhilipsHueBle(cliParamAdapter, cliParamMac);
+        return new PhilipsHueBle(this.cliParamAdapter, this.cliParamMac);
     }
 
     @Override
@@ -257,16 +257,16 @@ public class Cli implements Callable<Integer> {
         validateThis();
 
         SmartLampScript script = null;
-        if (cliParamScript != null) {
-            if (cliParamScript.toLowerCase().startsWith(EMBEDDED_PREFIX)) {
-                script = SmartLampScript.embeddedScript(cliParamScript.substring(EMBEDDED_PREFIX.length()));
+        if (this.cliParamScript != null) {
+            if (this.cliParamScript.toLowerCase().startsWith(EMBEDDED_PREFIX)) {
+                script = SmartLampScript.embeddedScript(this.cliParamScript.substring(EMBEDDED_PREFIX.length()));
             } else {
-                script = SmartLampScript.fromFile(cliParamScript);
+                script = SmartLampScript.fromFile(this.cliParamScript);
             }
         }
 
         try (PhilipsHueBle lamp = buildPhilipsHueLampFromSettings()) {
-            boolean interactive = cliParamScript == null;
+            boolean interactive = this.cliParamScript == null;
             if (interactive) {
                 new SmartLampInteractive(lamp).run(asciiHue);
             } else {
@@ -322,12 +322,12 @@ public class Cli implements Callable<Integer> {
     @Override
     public String toString() {
         return "Cli{" +
-                "cliParamHelp=" + cliParamHelp +
-                ", cliParamAdapter='" + cliParamAdapter + '\'' +
-                ", cliParamMac='" + cliParamMac + '\'' +
-                ", cliParamScript='" + cliParamScript + '\'' +
-                ", cliParamDuration=" + cliParamDuration +
-                ", cliParamTempo=" + cliParamTempo +
+                "cliParamHelp=" + this.cliParamHelp +
+                ", cliParamAdapter='" + this.cliParamAdapter + '\'' +
+                ", cliParamMac='" + this.cliParamMac + '\'' +
+                ", cliParamScript='" + this.cliParamScript + '\'' +
+                ", cliParamDuration=" + this.cliParamDuration +
+                ", cliParamTempo=" + this.cliParamTempo +
                 '}';
     }
 }
