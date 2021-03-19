@@ -18,7 +18,7 @@ Caused by: org.freedesktop.dbus.exceptions.DBusExecutionException: Software caus
         at org.freedesktop.dbus.RemoteInvocationHandler.invoke(RemoteInvocationHandler.java:228)
         at com.sun.proxy.$Proxy22.Connect(Unknown Source)
         at com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice.connect(BluetoothDevice.java:408)
-        at ch.sebpiller.iot.bluetooth.BluetoothHelper.reconnectIfNeeded(BluetoothHelper.java:86)
+        at BluetoothHelper.reconnectIfNeeded(BluetoothHelper.java:86)
         ... 16 common frames omitted
 ````
 

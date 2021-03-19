@@ -19,6 +19,10 @@
         </dependency>
         <dependency>
             <groupId>ch.sebpiller.iot</groupId>
+            <artifactId>smart-lamp-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.sebpiller.iot</groupId>
             <artifactId>smart-lamp-sequencer</artifactId>
         </dependency>
         <dependency>

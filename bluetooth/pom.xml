@@ -16,9 +16,5 @@
             <groupId>com.github.hypfvieh</groupId>
             <artifactId>bluez-dbus</artifactId>
         </dependency>
-        <dependency>
-            <groupId>ch.sebpiller.iot</groupId>
-            <artifactId>smart-lamp-api</artifactId>
-        </dependency>
     </dependencies>
 </project>

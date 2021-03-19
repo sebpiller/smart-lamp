@@ -10,6 +10,7 @@ import java.util.concurrent.Callable;
  * Interface of a class that can write bytes to a bluetooth device.
  * Autocloseable by default to make it easier to code implementations that require some closing mechanism.
  */
+@FunctionalInterface
 public interface BluetoothDelegate extends AutoCloseable {
     Logger _LOG = LoggerFactory.getLogger(BluetoothDelegate.class);
 

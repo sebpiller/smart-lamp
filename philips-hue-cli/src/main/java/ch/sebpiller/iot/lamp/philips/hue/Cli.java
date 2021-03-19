@@ -1,8 +1,8 @@
 package ch.sebpiller.iot.lamp.philips.hue;
 
 import ch.sebpiller.beatdetect.BpmSourceAudioListener;
-import ch.sebpiller.iot.bluetooth.BluetoothHelper;
-import ch.sebpiller.iot.bluetooth.philipps.hue.PhilipsHueBle;
+import ch.sebpiller.iot.bluetooth.bluez.BluetoothHelper;
+import ch.sebpiller.iot.bluetooth.bluez.philipps.hue.PhilipsHueBle;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
 import ch.sebpiller.iot.lamp.cli.SmartLampInteractive;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampScript;
