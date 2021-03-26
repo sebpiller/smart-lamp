@@ -97,7 +97,7 @@ public class BluetoothHelper {
 
             try {
                 BluetoothDevice device = charac.getService().getDevice();
-                if (!device.isConnected() && !device.connect()) {
+                if (!Boolean.TRUE.equals(device.isConnected()) && !Boolean.TRUE.equals(device.connect())) {
                     throw new BluetoothException("!!! connection to the device was unsuccessful !!!");
                 }
 
@@ -143,4 +143,7 @@ public class BluetoothHelper {
                 .findFirst()
                 .orElseThrow(() -> new BluetoothException("device " + remoteDeviceMac + " is not registered. Please use 'bluetoothctl' to trust/connect this device."));
     }
+
+
+    private BluetoothHelper() {}
 }

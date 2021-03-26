@@ -10,7 +10,7 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattCharacteristic;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bluez.exceptions.BluezFailedException;
 import org.bluez.exceptions.BluezInvalidArgumentsException;
 import org.bluez.exceptions.BluezNotReadyException;
@@ -59,19 +59,21 @@ public final class BluezDelegate implements BluetoothDelegate {
             }
             LOG.info("found service {} at UUID {}", service, serviceUuid);
 
-            // *****************
             BluetoothGattCharacteristic charac = service.getGattCharacteristicByUuid(characUuid);
             if (charac == null) {
                 throw new BluetoothException("unable to connect to characteristic " + characUuid + ": maybe the device is out of range, or has not been connected?");
             }
             LOG.info("found characteristic {} at UUID {}/{}", charac, characUuid, serviceUuid);
             if (LOG.isDebugEnabled()) {
-                LOG.debug("  > inner structure: {}", ReflectionToStringBuilder.reflectionToString(charac));
+                LOG.debug("  > inner structure: {}", ToStringBuilder.reflectionToString(charac));
             }
 
             return charac;
         } catch (DBusException | DBusExecutionException e) {
-            throw new BluetoothException("dbus error trying to retrieve characteristic " + serviceUuid + "/" + characUuid + " on device " + mac + "@" + adapter + ": " + e, e);
+            throw new BluetoothException(
+                    String.format("dbus error trying to retrieve characteristic %s/%s on device %s@%s: %s", serviceUuid, characUuid, mac, adapter, e),
+                    e
+            );
         }
     }
 
@@ -95,15 +97,12 @@ public final class BluezDelegate implements BluetoothDelegate {
         return this.externalApi;
     }
 
-    protected final BluetoothDevice getBluetoothDevice(String adapter, String mac, Map<DiscoveryFilter, Object> filter) throws BluezInvalidArgumentsException, BluezNotReadyException, BluezNotSupportedException, BluezFailedException {
+    private BluetoothDevice getBluetoothDevice(String adapter, String mac, Map<DiscoveryFilter, Object> filter) throws BluezInvalidArgumentsException, BluezNotReadyException, BluezNotSupportedException, BluezFailedException {
         DeviceManager manager = BluetoothHelper.discoverDeviceManager();
-
-        // TODO find out if the filter is really useful here
         if (filter != null && !filter.isEmpty()) {
             manager.setScanFilter(filter);
         }
 
-        // *****************
         this.device = BluetoothHelper.findDeviceOnAdapter(manager, adapter, mac);
         if (this.device == null || !this.device.connect()) {
             throw new BluetoothException("can not connect to device " + mac + "@" + adapter);
@@ -120,18 +119,18 @@ public final class BluezDelegate implements BluetoothDelegate {
     }
 
     @Override
-    public void write(byte[] bytes) {
+    public void write(byte... bytes) {
         Validate.isTrue(ArrayUtils.isNotEmpty(bytes), "empty command received");
 
         BluetoothGattCharacteristic api = getExternalApi();
         BluetoothHelper.reconnectIfNeeded(api);
 
         if (LOG.isTraceEnabled()) {
-            BluetoothDevice device = api.getService().getDevice();
+            BluetoothDevice dev = api.getService().getDevice();
             LOG.trace("sending {} bytes to BlueZ API '{}' ({})",
                     bytes.length,
-                    device.getName(),
-                    device.getAddress()
+                    dev.getName(),
+                    dev.getAddress()
             );
         }
 
