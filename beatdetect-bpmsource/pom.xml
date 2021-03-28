@@ -5,7 +5,8 @@
     <parent>
         <artifactId>smart-lamp-parent</artifactId>
         <groupId>ch.sebpiller.iot</groupId>
-        <version>0.1.8-SNAPSHOT</version>
+        <version>${revision}</version>
+        <relativePath>../</relativePath>
     </parent>
 
     <artifactId>beatdetect-bpmsource</artifactId>

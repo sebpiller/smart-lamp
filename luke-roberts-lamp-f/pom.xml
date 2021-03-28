@@ -4,8 +4,10 @@
     <parent>
         <groupId>ch.sebpiller.iot</groupId>
         <artifactId>smart-lamp-parent</artifactId>
-        <version>0.1.8-SNAPSHOT</version>
+        <version>${revision}</version>
+        <relativePath>../</relativePath>
     </parent>
+
     <artifactId>luke-roberts-lamp-f</artifactId>
     <name>Smart Lamp - Luke Roberts' Lamp F</name>
     <description>Implementation of the communication with a Lamp F.</description>
