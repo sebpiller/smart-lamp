@@ -2,9 +2,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
+        <groupId>ch.sebpiller.iot.smartlamp</groupId>
         <artifactId>smart-lamp-parent</artifactId>
-        <groupId>ch.sebpiller.iot</groupId>
-        <version>${revision}</version>
+        <version>${dynamicVersion}</version>
         <relativePath>../</relativePath>
     </parent>
 

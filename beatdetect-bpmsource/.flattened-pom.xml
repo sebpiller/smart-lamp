@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>ch.sebpiller.iot</groupId>
+    <artifactId>smart-lamp-parent</artifactId>
+    <version>0.1.8-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
+  <groupId>ch.sebpiller.iot</groupId>
+  <artifactId>beatdetect-bpmsource</artifactId>
+  <version>0.1.8-SNAPSHOT</version>
+  <name>Smart Lamp - BPM Detection</name>
+  <description>A bpm source that detects the tempo from an audio stream.</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.compartmental.code</groupId>
+      <artifactId>minim</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.sebpiller</groupId>
+      <artifactId>metronome</artifactId>
+    </dependency>
+  </dependencies>
+</project>

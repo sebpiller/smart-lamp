@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ch.sebpiller.iot</groupId>
+    <groupId>ch.sebpiller.iot.smartlamp</groupId>
     <artifactId>smart-lamp-parent</artifactId>
-    <version>${revision}</version>
+    <version>${dynamicVersion}</version>
 
     <packaging>pom</packaging>
     <name>Smart Lamp - Parent</name>
@@ -16,7 +16,7 @@
         <feature/> <!-- tag with the feature name for feature branches build -->
         <revision/><!-- will be assigned by jenkins -->
         <modifier>-SNAPSHOT</modifier><!-- replace with blank for a release deploy -->
-        <revision>{branch}${feature}${revision}${modifier}</revision>
+        <dynamicVersion>${branch}${feature}${revision}${modifier}</dynamicVersion>
 
         <checkstyle.version>3.1.2</checkstyle.version>
 
@@ -391,12 +391,13 @@
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <version>${checkstyle.version}</version>
                     <configuration>
-                        <configLocation>smart-lamp/checkstyle_custom.xml</configLocation>
+                        <configLocation>checkstyle_custom.xml</configLocation>
                     </configuration>
                     <dependencies>
                         <dependency>
                             <groupId>ch.sebpiller.iot</groupId>
                             <artifactId>build-tools</artifactId>
+                            <version>${project.version}</version>
                         </dependency>
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
@@ -626,22 +627,27 @@
                 </plugin>
 
                 <plugin>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>3.9.1</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
                     <executions>
                         <execution>
-                            <id>build-site</id>
+                            <id>build-sources-jar</id>
+                            <phase>site</phase>
+                            <configuration>
+                                <attach>true</attach>
+                            </configuration>
                             <goals>
-                                <goal>site</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>pack-site</id>
-                            <goals>
-                                <goal>jar</goal>
+                                <goal>jar-no-fork</goal>
+                                <goal>test-jar-no-fork</goal>
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.9.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -755,6 +761,7 @@
                 <configuration>
                     <append>false</append>
                     <dataFile>${project.build.directory}/UT-coverage.jacoco</dataFile>
+                    <outputDirectory>${project.reporting.outputDirectory}/ut</outputDirectory>
                 </configuration>
                 <reportSets>
                     <reportSet>
@@ -770,6 +777,7 @@
                 <configuration>
                     <append>false</append>
                     <dataFile>${project.build.directory}/IT-coverage.jacoco</dataFile>
+                    <outputDirectory>${project.reporting.outputDirectory}/it</outputDirectory>
                 </configuration>
                 <reportSets>
                     <reportSet>
@@ -778,6 +786,12 @@
                         </reports>
                     </reportSet>
                 </reportSets>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>3.0.0</version>
             </plugin>
         </plugins>
     </reporting>

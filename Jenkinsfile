@@ -134,7 +134,7 @@ stages
       script
        {
           sh '''
-             mvn --batch-mode package -DskipUTs -DskipITs -Dmaven.site.skip ${MAVEN_ARGS}
+             mvn --batch-mode package -DskipUTs -DskipITs ${MAVEN_ARGS}
           '''
        }
      }
@@ -148,7 +148,7 @@ stages
       script
        {
           sh '''
-             mvn --batch-mode verify -DskipITs -Dmaven.site.skip ${MAVEN_ARGS}
+             mvn --batch-mode verify -DskipITs ${MAVEN_ARGS}
           '''
        }
      }
@@ -172,7 +172,7 @@ stages
             echo "skipping ITs"
         } else {
              sh '''
-                 mvn --batch-mode verify -DskipUTs -Dmaven.site.skip ${MAVEN_ARGS}
+                 mvn --batch-mode verify -DskipUTs ${MAVEN_ARGS}
              '''
              junit testResults: 'target/failsafe-reports/*.xml', allowEmptyResults: true
          }
@@ -180,12 +180,26 @@ stages
     }
   }
 
+  stage('Install')
+   {
+    steps
+     {
+      script
+       {
+         sh '''
+             mvn --batch-mode install -DskipUTs -DskipITs ${MAVEN_ARGS}
+         '''
+       }
+     }
+   }
+
   stage('Documentation')
    {
     steps
      {
       script
        {
+         // TODO fix site:stage, fails because of lack of distributionManagement tag in pom.
          sh '''
              mvn --batch-mode site ${MAVEN_ARGS}
          '''
@@ -204,13 +218,13 @@ stages
          if ( env.DO_TAG == "true" ) {
              echo "Site and tag for this kind of branch: " + env.BRANCH_TYPE
              sh '''
-                 mvn --batch-mode deploy scm:tag -DskipUTs -DskipITs ${MAVEN_ARGS}
+                 mvn --batch-mode source:jar site:jar deploy scm:tag -DskipUTs -DskipITs ${MAVEN_ARGS}
              '''
          } else {
              echo "Skip and doc tag for this kind of branch: " + env.BRANCH_TYPE
 
              sh '''
-                 mvn --batch-mode deploy -DskipUTs -DskipITs -Dmaven.site.skip ${MAVEN_ARGS}
+                 mvn --batch-mode source:jar site:jar deploy -DskipUTs -DskipITs ${MAVEN_ARGS}
              '''
          }
        }

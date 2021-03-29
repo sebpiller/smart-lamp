@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>ch.sebpiller.iot</groupId>
+    <artifactId>smart-lamp-parent</artifactId>
+    <version>{branch}-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
+  <groupId>ch.sebpiller.iot</groupId>
+  <artifactId>philips-hue</artifactId>
+  <version>{branch}-SNAPSHOT</version>
+  <name>Smart Lamp - Philips Hue BLE</name>
+  <dependencies>
+    <dependency>
+      <groupId>ch.sebpiller.iot</groupId>
+      <artifactId>bluetooth</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.sebpiller.iot</groupId>
+      <artifactId>smart-lamp-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+    </dependency>
+  </dependencies>
+</project>

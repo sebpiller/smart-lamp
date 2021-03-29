@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>ch.sebpiller.iot</groupId>
+    <artifactId>smart-lamp-parent</artifactId>
+    <version>0.1.8-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
+  <groupId>ch.sebpiller.iot</groupId>
+  <artifactId>smart-lamp-sequencer</artifactId>
+  <version>0.1.8-SNAPSHOT</version>
+  <name>Smart Lamp - Sequencer</name>
+  <description>Pilot a Smart Lamp using a succession of action to be executed in rhythm with a tempo.</description>
+  <dependencies>
+    <dependency>
+      <groupId>ch.sebpiller</groupId>
+      <artifactId>metronome</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.sebpiller.iot</groupId>
+      <artifactId>smart-lamp-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+    </dependency>
+  </dependencies>
+</project>
