@@ -12,7 +12,7 @@
 
     <properties>
         <!-- RELEASE PIPELINE VERSION -->
-        <branch>0.1.8</branch><!-- fallback when not in a release branch-->
+        <branch>999</branch><!-- fallback when not in a release branch-->
         <feature/> <!-- tag with the feature name for feature branches build -->
         <revision/><!-- will be assigned by jenkins -->
         <modifier>-SNAPSHOT</modifier><!-- replace with blank for a release deploy -->
