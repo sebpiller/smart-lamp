@@ -5,12 +5,12 @@
   <parent>
     <groupId>ch.sebpiller.iot.smartlamp</groupId>
     <artifactId>smart-lamp-parent</artifactId>
-    <version>{branch}-SNAPSHOT</version>
+    <version>0.1.8-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>ch.sebpiller.iot.smartlamp</groupId>
   <artifactId>luke-roberts-lamp-f</artifactId>
-  <version>{branch}-SNAPSHOT</version>
+  <version>0.1.8-SNAPSHOT</version>
   <name>Smart Lamp - Luke Roberts' Lamp F</name>
   <description>Implementation of the communication with a Lamp F.</description>
   <properties>
