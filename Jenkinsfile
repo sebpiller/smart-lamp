@@ -201,7 +201,7 @@ stages
        {
          // TODO fix site:stage, fails because of lack of distributionManagement tag in pom.
          sh '''
-             mvn --batch-mode site ${MAVEN_ARGS}
+             mvn --batch-mode site -X ${MAVEN_ARGS}
          '''
          publishHTML(target: [reportName: 'Site', reportDir: 'target/site', reportFiles: 'index.html', keepAll: false])
        }
