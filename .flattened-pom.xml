@@ -44,6 +44,7 @@
     <url>http://git.home/spiller/smart-lamp/issues</url>
   </issueManagement>
   <properties>
+    <checkstyle-plugin.version>3.1.2</checkstyle-plugin.version>
     <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
     <maven.compiler.source>8</maven.compiler.source>
     <modifier>-SNAPSHOT</modifier>
@@ -55,7 +56,6 @@
     <failsafe.jacoco.args></failsafe.jacoco.args>
     <revision></revision>
     <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
-    <checkstyle.version>3.1.2</checkstyle.version>
     <feature></feature>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
     <skipITs>false</skipITs>
@@ -119,13 +119,13 @@
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-api</artifactId>
-        <version>5.7.0</version>
+        <version>5.7.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-engine</artifactId>
-        <version>5.7.0</version>
+        <version>5.7.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -137,7 +137,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.30</version>
+        <version>1.7.25</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
@@ -157,7 +157,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.11</version>
+        <version>3.12.0</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -178,12 +178,12 @@
       <dependency>
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
-        <version>1.27</version>
+        <version>1.28</version>
       </dependency>
       <dependency>
         <groupId>com.github.hypfvieh</groupId>
         <artifactId>bluez-dbus</artifactId>
-        <version>0.1.3</version>
+        <version>0.1.4</version>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
@@ -193,12 +193,12 @@
       <dependency>
         <groupId>org.hibernate.validator</groupId>
         <artifactId>hibernate-validator</artifactId>
-        <version>6.1.6.Final</version>
+        <version>6.2.0.Final</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate.validator</groupId>
         <artifactId>hibernate-validator-annotation-processor</artifactId>
-        <version>6.1.6.Final</version>
+        <version>6.2.0.Final</version>
       </dependency>
       <dependency>
         <groupId>javax.el</groupId>
@@ -213,7 +213,7 @@
       <dependency>
         <groupId>com.rabbitmq</groupId>
         <artifactId>amqp-client</artifactId>
-        <version>5.10.0</version>
+        <version>5.11.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -342,7 +342,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>${checkstyle.version}</version>
+          <version>${checkstyle-plugin.version}</version>
           <dependencies>
             <dependency>
               <groupId>ch.sebpiller.iot.smartlamp</groupId>
@@ -371,7 +371,6 @@
               </goals>
               <configuration>
                 <append>false</append>
-                <destFile>${project.build.directory}/UT-coverage.jacoco</destFile>
                 <propertyName>surefire.jacoco.args</propertyName>
               </configuration>
             </execution>
@@ -381,7 +380,6 @@
                 <goal>report</goal>
               </goals>
               <configuration>
-                <dataFile>${project.build.directory}/UT-coverage.jacoco</dataFile>
                 <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
               </configuration>
             </execution>
@@ -393,7 +391,6 @@
               </goals>
               <configuration>
                 <append>false</append>
-                <destFile>${project.build.directory}/IT-coverage.jacoco</destFile>
                 <propertyName>failsafe.jacoco.args</propertyName>
               </configuration>
             </execution>
@@ -404,7 +401,6 @@
                 <goal>report-integration</goal>
               </goals>
               <configuration>
-                <dataFile>${project.build.directory}/IT-coverage.jacoco</dataFile>
                 <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
               </configuration>
             </execution>
@@ -429,7 +425,6 @@
                     </limits>
                   </rule>
                 </rules>
-                <dataFile>${project.build.directory}/UT-coverage.jacoco</dataFile>
               </configuration>
             </execution>
             <execution>
@@ -453,7 +448,6 @@
                     </limits>
                   </rule>
                 </rules>
-                <dataFile>${project.build.directory}/IT-coverage.jacoco</dataFile>
               </configuration>
             </execution>
           </executions>
@@ -461,24 +455,6 @@
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
           <version>3.3.0</version>
-          <executions>
-            <execution>
-              <phase>install</phase>
-              <goals>
-                <goal>single</goal>
-              </goals>
-            </execution>
-          </executions>
-          <configuration>
-            <archive>
-              <manifest>
-                <mainClass>ch.sebpiller.epg.scrapper.ScrapperCli</mainClass>
-              </manifest>
-            </archive>
-            <descriptorRefs>
-              <descriptorRef>jar-with-dependencies</descriptorRef>
-            </descriptorRefs>
-          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
@@ -562,18 +538,25 @@
           </configuration>
         </plugin>
         <plugin>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>3.9.1</version>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>3.2.1</version>
           <executions>
             <execution>
-              <id>build-site</id>
+              <id>build-sources-jar</id>
               <phase>site</phase>
               <goals>
-                <goal>site</goal>
-                <goal>jar</goal>
+                <goal>jar-no-fork</goal>
+                <goal>test-jar-no-fork</goal>
               </goals>
+              <configuration>
+                <attach>true</attach>
+              </configuration>
             </execution>
           </executions>
+        </plugin>
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.9.1</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -634,7 +617,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>${checkstyle.version}</version>
+        <version>${checkstyle-plugin.version}</version>
         <reportSets>
           <reportSet>
             <reports>
@@ -671,32 +654,10 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>report</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-        <configuration>
-          <append>false</append>
-          <dataFile>${project.build.directory}/UT-coverage.jacoco</dataFile>
-        </configuration>
       </plugin>
       <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>report-integration</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-        <configuration>
-          <append>false</append>
-          <dataFile>${project.build.directory}/IT-coverage.jacoco</dataFile>
-        </configuration>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>3.0.0</version>
       </plugin>
     </plugins>
   </reporting>

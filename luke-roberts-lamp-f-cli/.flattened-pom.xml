@@ -5,12 +5,12 @@
   <parent>
     <groupId>ch.sebpiller.iot.smartlamp</groupId>
     <artifactId>smart-lamp-parent</artifactId>
-    <version>{branch}-SNAPSHOT</version>
+    <version>0.1.8-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>ch.sebpiller.iot.smartlamp</groupId>
   <artifactId>luke-roberts-lamp-f-cli</artifactId>
-  <version>{branch}-SNAPSHOT</version>
+  <version>0.1.8-SNAPSHOT</version>
   <name>Smart Lamp - Luke Roberts' Lamp F - CLI</name>
   <description>CLI to run a sequencer connected to a Luke Roberts' Lamp F.</description>
   <dependencies>

@@ -420,7 +420,6 @@
                             </goals>
                             <configuration>
                                 <append>false</append>
-                                <destFile>${project.build.directory}/UT-coverage.jacoco</destFile>
                                 <propertyName>surefire.jacoco.args</propertyName>
                             </configuration>
                         </execution>
@@ -429,10 +428,9 @@
                             <goals>
                                 <goal>report</goal>
                             </goals>
-                            <configuration>
-                                <dataFile>${project.build.directory}/UT-coverage.jacoco</dataFile>
+                            <!--<configuration>
                                 <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-                            </configuration>
+                            </configuration>-->
                         </execution>
 
                         <!-- Failsafe -->
@@ -444,7 +442,6 @@
                             </goals>
                             <configuration>
                                 <append>false</append>
-                                <destFile>${project.build.directory}/IT-coverage.jacoco</destFile>
                                 <propertyName>failsafe.jacoco.args</propertyName>
                             </configuration>
                         </execution>
@@ -454,10 +451,9 @@
                             <goals>
                                 <goal>report-integration</goal>
                             </goals>
-                            <configuration>
-                                <dataFile>${project.build.directory}/IT-coverage.jacoco</dataFile>
+                            <!--<configuration>
                                 <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
-                            </configuration>
+                            </configuration>-->
                         </execution>
 
                         <!-- Code coverage threshold -->
@@ -482,7 +478,6 @@
                                         </limits>
                                     </rule>
                                 </rules>
-                                <dataFile>${project.build.directory}/UT-coverage.jacoco</dataFile>
                             </configuration>
                         </execution>
 
@@ -507,7 +502,6 @@
                                         </limits>
                                     </rule>
                                 </rules>
-                                <dataFile>${project.build.directory}/IT-coverage.jacoco</dataFile>
                             </configuration>
                         </execution>
                     </executions>
@@ -758,30 +752,10 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <configuration>
-                    <append>false</append>
-                    <dataFile>${project.build.directory}/UT-coverage.jacoco</dataFile>
-                    <outputDirectory>${project.reporting.outputDirectory}/ut</outputDirectory>
-                </configuration>
                 <reportSets>
                     <reportSet>
                         <reports>
                             <report>report</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <configuration>
-                    <append>false</append>
-                    <dataFile>${project.build.directory}/IT-coverage.jacoco</dataFile>
-                    <outputDirectory>${project.reporting.outputDirectory}/it</outputDirectory>
-                </configuration>
-                <reportSets>
-                    <reportSet>
-                        <reports>
                             <report>report-integration</report>
                         </reports>
                     </reportSet>

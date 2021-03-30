@@ -5,12 +5,12 @@
   <parent>
     <groupId>ch.sebpiller.iot.smartlamp</groupId>
     <artifactId>smart-lamp-parent</artifactId>
-    <version>{branch}-SNAPSHOT</version>
+    <version>0.1.8-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>ch.sebpiller.iot.smartlamp</groupId>
   <artifactId>philips-hue-cli</artifactId>
-  <version>{branch}-SNAPSHOT</version>
+  <version>0.1.8-SNAPSHOT</version>
   <name>Smart Lamp - Philips Hue BLE - CLI</name>
   <dependencies>
     <dependency>
