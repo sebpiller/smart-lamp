@@ -15,7 +15,6 @@
         <dependency>
             <groupId>ch.sebpiller.iot.smartlamp</groupId>
             <artifactId>bluetooth</artifactId>
-            <version>0.1.8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>ch.sebpiller.iot.smartlamp</groupId>
