@@ -18,7 +18,7 @@
         <modifier>-SNAPSHOT</modifier><!-- replace with blank for a release deploy -->
         <dynamicVersion>${branch}${feature}${revision}${modifier}</dynamicVersion>
 
-        <checkstyle.version>3.1.2</checkstyle.version>
+        <checkstyle-plugin.version>3.1.2</checkstyle-plugin.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
@@ -389,7 +389,7 @@
 
                 <plugin>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>${checkstyle.version}</version>
+                    <version>${checkstyle-plugin.version}</version>
                     <configuration>
                         <configLocation>checkstyle_custom.xml</configLocation>
                     </configuration>
@@ -715,7 +715,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${checkstyle.version}</version>
+                <version>${checkstyle-plugin.version}</version>
                 <reportSets>
                     <reportSet>
                         <reports>
