@@ -134,7 +134,7 @@ stages
       script
        {
           sh '''
-             mvn --batch-mode package -DskipUTs -DskipITs ${MAVEN_ARGS}
+             mvn --batch-mode install -DskipUTs -DskipITs ${MAVEN_ARGS}
           '''
        }
      }
