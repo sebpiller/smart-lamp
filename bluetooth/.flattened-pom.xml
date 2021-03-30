@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>ch.sebpiller.iot.smartlamp</groupId>
+    <artifactId>smart-lamp-parent</artifactId>
+    <version>0.1.8-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
+  <groupId>ch.sebpiller.iot.smartlamp</groupId>
+  <artifactId>bluetooth</artifactId>
+  <version>0.1.8-SNAPSHOT</version>
+  <name>Smart Lamp - Bluetooth</name>
+  <description>Bluetooth helper classes.</description>
+  <dependencies>
+    <dependency>
+      <groupId>com.github.hypfvieh</groupId>
+      <artifactId>bluez-dbus</artifactId>
+    </dependency>
+  </dependencies>
+</project>

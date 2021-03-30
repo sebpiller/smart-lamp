@@ -3,9 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ch.sebpiller.iot</groupId>
+    <groupId>ch.sebpiller.iot.smartlamp</groupId>
     <artifactId>smart-lamp-parent</artifactId>
-    <version>${branch}${feature}${revision}${modifier}</version>
+    <version>${dynamicVersion}</version>
+
     <packaging>pom</packaging>
     <name>Smart Lamp - Parent</name>
 
@@ -15,6 +16,9 @@
         <feature/> <!-- tag with the feature name for feature branches build -->
         <revision/><!-- will be assigned by jenkins -->
         <modifier>-SNAPSHOT</modifier><!-- replace with blank for a release deploy -->
+        <dynamicVersion>${branch}${feature}${revision}${modifier}</dynamicVersion>
+
+        <checkstyle.version>3.1.2</checkstyle.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
@@ -32,7 +36,7 @@
         <failsafe.jacoco.args/>
 
         <jacoco.mincoverage>0%</jacoco.mincoverage>
-        <failIfNoTests>true</failIfNoTests>
+        <failIfNoTests>false</failIfNoTests>
     </properties>
 
     <developers>
@@ -60,7 +64,13 @@
         <tag>HEAD</tag>
     </scm>
 
+    <issueManagement>
+        <system>Gitea</system>
+        <url>http://git.home/spiller/smart-lamp/issues</url>
+    </issueManagement>
+
     <modules>
+        <module>build-tools</module>
         <module>beatdetect-bpmsource</module>
         <module>bluetooth</module>
         <module>smart-lamp-api</module>
@@ -76,42 +86,47 @@
         <dependencies>
             <!-- ======== CHILDREN =============== -->
             <dependency>
-                <groupId>ch.sebpiller.iot</groupId>
+                <groupId>ch.sebpiller.iot.smartlamp</groupId>
+                <artifactId>build-tools</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.sebpiller.iot.smartlamp</groupId>
                 <artifactId>beatdetect-bpmsource</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>ch.sebpiller.iot</groupId>
+                <groupId>ch.sebpiller.iot.smartlamp</groupId>
                 <artifactId>bluetooth</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>ch.sebpiller.iot</groupId>
+                <groupId>ch.sebpiller.iot.smartlamp</groupId>
                 <artifactId>smart-lamp-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>ch.sebpiller.iot</groupId>
+                <groupId>ch.sebpiller.iot.smartlamp</groupId>
                 <artifactId>smart-lamp-sequencer</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>ch.sebpiller.iot</groupId>
+                <groupId>ch.sebpiller.iot.smartlamp</groupId>
                 <artifactId>luke-roberts-lamp-f</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>ch.sebpiller.iot</groupId>
+                <groupId>ch.sebpiller.iot.smartlamp</groupId>
                 <artifactId>luke-roberts-lamp-f-cli</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>ch.sebpiller.iot</groupId>
+                <groupId>ch.sebpiller.iot.smartlamp</groupId>
                 <artifactId>philips-hue</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>ch.sebpiller.iot</groupId>
+                <groupId>ch.sebpiller.iot.smartlamp</groupId>
                 <artifactId>philips-hue-cli</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -374,11 +389,16 @@
 
                 <plugin>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>${checkstyle.version}</version>
                     <configuration>
-                        <configLocation>${project.basedir}/checkstyle_custom.xml</configLocation>
+                        <configLocation>checkstyle_custom.xml</configLocation>
                     </configuration>
                     <dependencies>
+                        <dependency>
+                            <groupId>ch.sebpiller.iot.smartlamp</groupId>
+                            <artifactId>build-tools</artifactId>
+                            <version>${project.version}</version>
+                        </dependency>
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
                             <artifactId>checkstyle</artifactId>
@@ -607,22 +627,27 @@
                 </plugin>
 
                 <plugin>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>3.9.1</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
                     <executions>
                         <execution>
-                            <id>build-site</id>
+                            <id>build-sources-jar</id>
+                            <phase>site</phase>
+                            <configuration>
+                                <attach>true</attach>
+                            </configuration>
                             <goals>
-                                <goal>site</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>pack-site</id>
-                            <goals>
-                                <goal>jar</goal>
+                                <goal>jar-no-fork</goal>
+                                <goal>test-jar-no-fork</goal>
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.9.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -688,7 +713,9 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${checkstyle.version}</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -734,6 +761,7 @@
                 <configuration>
                     <append>false</append>
                     <dataFile>${project.build.directory}/UT-coverage.jacoco</dataFile>
+                    <outputDirectory>${project.reporting.outputDirectory}/ut</outputDirectory>
                 </configuration>
                 <reportSets>
                     <reportSet>
@@ -749,6 +777,7 @@
                 <configuration>
                     <append>false</append>
                     <dataFile>${project.build.directory}/IT-coverage.jacoco</dataFile>
+                    <outputDirectory>${project.reporting.outputDirectory}/it</outputDirectory>
                 </configuration>
                 <reportSets>
                     <reportSet>
@@ -757,6 +786,12 @@
                         </reports>
                     </reportSet>
                 </reportSets>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>3.0.0</version>
             </plugin>
         </plugins>
     </reporting>

@@ -2,10 +2,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>ch.sebpiller.iot</groupId>
+        <groupId>ch.sebpiller.iot.smartlamp</groupId>
         <artifactId>smart-lamp-parent</artifactId>
-        <version>0.1.8-SNAPSHOT</version>
+        <version>${dynamicVersion}</version>
+        <relativePath>../</relativePath>
     </parent>
+
     <artifactId>luke-roberts-lamp-f</artifactId>
     <name>Smart Lamp - Luke Roberts' Lamp F</name>
     <description>Implementation of the communication with a Lamp F.</description>
@@ -17,11 +19,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>ch.sebpiller.iot</groupId>
+            <groupId>ch.sebpiller.iot.smartlamp</groupId>
             <artifactId>bluetooth</artifactId>
         </dependency>
         <dependency>
-            <groupId>ch.sebpiller.iot</groupId>
+            <groupId>ch.sebpiller.iot.smartlamp</groupId>
             <artifactId>smart-lamp-api</artifactId>
         </dependency>
         <!-- ========= -->
