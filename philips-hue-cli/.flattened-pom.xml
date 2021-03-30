@@ -3,12 +3,12 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>ch.sebpiller.iot</groupId>
+    <groupId>ch.sebpiller.iot.smartlamp</groupId>
     <artifactId>smart-lamp-parent</artifactId>
     <version>{branch}-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <groupId>ch.sebpiller.iot</groupId>
+  <groupId>ch.sebpiller.iot.smartlamp</groupId>
   <artifactId>philips-hue-cli</artifactId>
   <version>{branch}-SNAPSHOT</version>
   <name>Smart Lamp - Philips Hue BLE - CLI</name>
@@ -18,15 +18,15 @@
       <artifactId>logback-classic</artifactId>
     </dependency>
     <dependency>
-      <groupId>ch.sebpiller.iot</groupId>
+      <groupId>ch.sebpiller.iot.smartlamp</groupId>
       <artifactId>smart-lamp-sequencer</artifactId>
     </dependency>
     <dependency>
-      <groupId>ch.sebpiller.iot</groupId>
+      <groupId>ch.sebpiller.iot.smartlamp</groupId>
       <artifactId>beatdetect-bpmsource</artifactId>
     </dependency>
     <dependency>
-      <groupId>ch.sebpiller.iot</groupId>
+      <groupId>ch.sebpiller.iot.smartlamp</groupId>
       <artifactId>philips-hue</artifactId>
     </dependency>
     <dependency>

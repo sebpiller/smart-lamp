@@ -2,7 +2,7 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>ch.sebpiller.iot</groupId>
+  <groupId>ch.sebpiller.iot.smartlamp</groupId>
   <artifactId>smart-lamp-parent</artifactId>
   <version>0.1.8-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -67,47 +67,47 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>ch.sebpiller.iot</groupId>
+        <groupId>ch.sebpiller.iot.smartlamp</groupId>
         <artifactId>build-tools</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>ch.sebpiller.iot</groupId>
+        <groupId>ch.sebpiller.iot.smartlamp</groupId>
         <artifactId>beatdetect-bpmsource</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>ch.sebpiller.iot</groupId>
+        <groupId>ch.sebpiller.iot.smartlamp</groupId>
         <artifactId>bluetooth</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>ch.sebpiller.iot</groupId>
+        <groupId>ch.sebpiller.iot.smartlamp</groupId>
         <artifactId>smart-lamp-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>ch.sebpiller.iot</groupId>
+        <groupId>ch.sebpiller.iot.smartlamp</groupId>
         <artifactId>smart-lamp-sequencer</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>ch.sebpiller.iot</groupId>
+        <groupId>ch.sebpiller.iot.smartlamp</groupId>
         <artifactId>luke-roberts-lamp-f</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>ch.sebpiller.iot</groupId>
+        <groupId>ch.sebpiller.iot.smartlamp</groupId>
         <artifactId>luke-roberts-lamp-f-cli</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>ch.sebpiller.iot</groupId>
+        <groupId>ch.sebpiller.iot.smartlamp</groupId>
         <artifactId>philips-hue</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>ch.sebpiller.iot</groupId>
+        <groupId>ch.sebpiller.iot.smartlamp</groupId>
         <artifactId>philips-hue-cli</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -345,7 +345,7 @@
           <version>${checkstyle.version}</version>
           <dependencies>
             <dependency>
-              <groupId>ch.sebpiller.iot</groupId>
+              <groupId>ch.sebpiller.iot.smartlamp</groupId>
               <artifactId>build-tools</artifactId>
               <version>${project.version}</version>
             </dependency>

@@ -19,11 +19,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>ch.sebpiller.iot</groupId>
+            <groupId>ch.sebpiller.iot.smartlamp</groupId>
             <artifactId>bluetooth</artifactId>
         </dependency>
         <dependency>
-            <groupId>ch.sebpiller.iot</groupId>
+            <groupId>ch.sebpiller.iot.smartlamp</groupId>
             <artifactId>smart-lamp-api</artifactId>
         </dependency>
         <!-- ========= -->

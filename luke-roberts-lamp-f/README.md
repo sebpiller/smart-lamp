@@ -59,7 +59,7 @@ Since it depends on some native packages built for Linux [Bluez](http://www.blue
 Add the dependency: 
 ```xml
 <dependency>
-  <groupId>ch.sebpiller.iot</groupId>
+  <groupId>ch.sebpiller.iot.smartlamp</groupId>
   <artifactId>luke-roberts-lamp-f</artifactId>
   <version>0.1.5</version>
 </dependency>

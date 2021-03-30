@@ -17,15 +17,15 @@
             <artifactId>logback-classic</artifactId>
         </dependency>
         <dependency>
-            <groupId>ch.sebpiller.iot</groupId>
+            <groupId>ch.sebpiller.iot.smartlamp</groupId>
             <artifactId>smart-lamp-sequencer</artifactId>
         </dependency>
         <dependency>
-            <groupId>ch.sebpiller.iot</groupId>
+            <groupId>ch.sebpiller.iot.smartlamp</groupId>
             <artifactId>beatdetect-bpmsource</artifactId>
         </dependency>
         <dependency>
-            <groupId>ch.sebpiller.iot</groupId>
+            <groupId>ch.sebpiller.iot.smartlamp</groupId>
             <artifactId>philips-hue</artifactId>
         </dependency>
         <dependency>
