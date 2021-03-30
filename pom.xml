@@ -516,24 +516,24 @@
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>3.3.0</version>
-                    <configuration>
-                        <archive>
-                            <manifest>
-                                <mainClass>ch.sebpiller.epg.scrapper.ScrapperCli</mainClass>
-                            </manifest>
-                        </archive>
-                        <descriptorRefs>
-                            <descriptorRef>jar-with-dependencies</descriptorRef>
-                        </descriptorRefs>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <phase>install</phase>
-                            <goals>
-                                <goal>single</goal>
-                            </goals>
-                        </execution>
-                    </executions>
+                    <!--                    <configuration>-->
+                    <!--                        <archive>-->
+                    <!--                            <manifest>-->
+                    <!--                                <mainClass>ch.sebpiller.epg.scrapper.ScrapperCli</mainClass>-->
+                    <!--                            </manifest>-->
+                    <!--                        </archive>-->
+                    <!--                        <descriptorRefs>-->
+                    <!--                            <descriptorRef>jar-with-dependencies</descriptorRef>-->
+                    <!--                        </descriptorRefs>-->
+                    <!--                    </configuration>-->
+                    <!--                    <executions>-->
+                    <!--                        <execution>-->
+                    <!--                            <phase>install</phase>-->
+                    <!--                            <goals>-->
+                    <!--                                <goal>single</goal>-->
+                    <!--                            </goals>-->
+                    <!--                        </execution>-->
+                    <!--                    </executions>-->
                 </plugin>
 
                 <plugin>
