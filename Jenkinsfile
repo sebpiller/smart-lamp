@@ -2,10 +2,6 @@ pipeline
         {
             agent any
 
-            environment {
-                BRANCH = "${env.BRANCH_NAME}"
-            }
-
             tools
                     {
                         maven 'Maven'
@@ -22,14 +18,12 @@ pipeline
 
             triggers
                     {
-                        // MINUTE HOUR DOM MONTH DOW
                         pollSCM('H 6-18/4 * * 1-5')
                     }
 
 
             stages
                     {
-
                         stage('Initialize')
                                 {
                                     steps
@@ -60,15 +54,15 @@ pipeline
                                                                 echo "RELEASE BRANCH DETECTED!"
                                                                 env.BRANCH_TYPE = "release"
                                                                 env.DO_TAG = "true"
-                                                                env.BUILD_DOCKER = "true"
+                                                                //env.BUILD_DOCKER = "true"
                                                                 env.RELEASE_VERSION = matcherRelease[0][1]
 
-                                                                // The first build of a release branch do not append a suffix to the version number, only subsequent
+                                                                // The first build of a release branch does not append a suffix to the version number, only subsequent
                                                                 // contain a build number (bX)
-                                                                if (env.BUILD_NUMBER == "1") {
-                                                                    versionOpts = "-Dbranch=" + env.RELEASE_VERSION + " -Dfeature= -Drevision= -Dmodifier="
-                                                                } else {
-                                                                    versionOpts = "-Dbranch=" + env.RELEASE_VERSION + " -Dfeature= -Drevision=.b$BUILD_NUMBER -Dmodifier="
+                                                                versionOpts = "-DmainVersion=" + env.RELEASE_VERSION + " -Dfeature= -Dmodifier= -DbuildNumber="
+
+                                                                if (env.BUILD_NUMBER != "1") {
+                                                                    versionOpts = versionOpts + ".b$BUILD_NUMBER"
                                                                 }
 
                                                                 env.DOCKER_TAG = env.RELEASE_VERSION + ".b$BUILD_NUMBER"
@@ -79,7 +73,7 @@ pipeline
                                                                 env.DO_TAG = "true"
 
                                                                 env.FEATURE_NAME = matcherFeature[0][1]
-                                                                versionOpts = "-Dbranch=FEAT -Dfeature=." + env.FEATURE_NAME + " -Drevision=.b$BUILD_NUMBER -Dmodifier=-SNAPSHOT"
+                                                                versionOpts = "-DmainVersion=FEAT -Dfeature=." + env.FEATURE_NAME + " -Dmodifier=-SNAPSHOT -DbuildNumber=.b$BUILD_NUMBER"
                                                                 mvnOpts = "-Dmaven.site.skip"
                                                             } else if (matcherPr.matches()) {
                                                                 // Pull requests branches are NOT deployed, NOT tagged and NO documentation is generated. Only tests are run.
@@ -87,20 +81,20 @@ pipeline
                                                                 env.BRANCH_TYPE = "pr"
 
                                                                 env.PR_NAME = matcherPr[0][1]
-                                                                versionOpts = "-Dbranch=PR -Dfeature=." + env.PR_NAME + " -Drevision=.b$BUILD_NUMBER -Dmodifier=-SNAPSHOT"
+                                                                versionOpts = "-DmainVersion=PR -Dfeature=." + env.PR_NAME + " -Dmodifier=-SNAPSHOT -DbuildNumber=.b$BUILD_NUMBER"
                                                                 mvnOpts = "-Dmaven.site.skip"
                                                             } else if (env.BRANCH_NAME == "develop") {
                                                                 echo "DEVELOP BRANCH DETECTED"
                                                                 env.BRANCH_TYPE = "develop"
                                                                 env.SKIP_IT = "true"
 
-                                                                versionOpts = "-Dbranch=" + env.BRANCH_NAME + " -Drevision=.b$BUILD_NUMBER -Dmodifier=-SNAPSHOT"
+                                                                versionOpts = "-DmainVersion=" + env.BRANCH_NAME + " -Dfeature= -Dmodifier=-SNAPSHOT -DbuildNumber=.b$BUILD_NUMBER"
                                                                 mvnOpts = "-Dmaven.site.skip"
                                                             } else {
                                                                 echo "OTHER BRANCH DETECTED"
                                                                 env.BRANCH_TYPE = "other"
 
-                                                                versionOpts = "-Dbranch=" + env.BRANCH_NAME + " -Drevision=.b$BUILD_NUMBER -Dmodifier=-SNAPSHOT"
+                                                                versionOpts = "-DmainVersion=" + env.BRANCH_NAME + " -Dfeature= -Dmodifier=-SNAPSHOT -DbuildNumber=.b$BUILD_NUMBER"
                                                                 mvnOpts = "-Dmaven.site.skip"
                                                             }
 
@@ -108,8 +102,6 @@ pipeline
                                                             echo "  > maven settings: " + mvnOpts
 
                                                             env.MAVEN_ARGS = versionOpts + " " + mvnOpts
-
-
                                                         }
                                             }
                                 }
@@ -120,9 +112,7 @@ pipeline
                                             {
                                                 script
                                                         {
-                                                            sh '''
-              mvn --batch-mode clean ${MAVEN_ARGS}
-          '''
+                                                            sh 'mvn --batch-mode clean ${MAVEN_ARGS}'
                                                         }
                                             }
                                 }
@@ -133,9 +123,7 @@ pipeline
                                             {
                                                 script
                                                         {
-                                                            sh '''
-             mvn --batch-mode package -DskipUTs -DskipITs ${MAVEN_ARGS}
-          '''
+                                                            sh 'mvn --batch-mode package -DskipUTs -DskipITs ${MAVEN_ARGS}'
                                                         }
                                             }
                                 }
@@ -147,9 +135,7 @@ pipeline
                                             {
                                                 script
                                                         {
-                                                            sh '''
-             mvn --batch-mode verify -DskipITs ${MAVEN_ARGS}
-          '''
+                                                            sh 'mvn --batch-mode verify -DskipITs ${MAVEN_ARGS}'
                                                         }
                                             }
                                     post
@@ -161,7 +147,7 @@ pipeline
                                             }
                                 }
 
-                        stage('Integration tests')
+                        stage('Integration Tests')
                                 {
                                     steps
                                             {
@@ -171,9 +157,7 @@ pipeline
                                                             if (env.SKIP_IT == "true") {
                                                                 echo "skipping ITs"
                                                             } else {
-                                                                sh '''
-                 mvn --batch-mode verify -DskipUTs ${MAVEN_ARGS}
-             '''
+                                                                sh 'mvn --batch-mode verify -DskipUTs ${MAVEN_ARGS}'
                                                                 junit testResults: 'target/failsafe-reports/*.xml', allowEmptyResults: true
                                                             }
                                                         }
@@ -186,9 +170,7 @@ pipeline
                                             {
                                                 script
                                                         {
-                                                            sh '''
-             mvn --batch-mode install -DskipUTs -DskipITs ${MAVEN_ARGS}
-         '''
+                                                            sh 'mvn --batch-mode install -DskipUTs -DskipITs ${MAVEN_ARGS}'
                                                         }
                                             }
                                 }
@@ -200,9 +182,7 @@ pipeline
                                                 script
                                                         {
                                                             // TODO fix site:stage, fails because of lack of distributionManagement tag in pom.
-                                                            sh '''
-             mvn --batch-mode site -X ${MAVEN_ARGS}
-         '''
+                                                            sh 'mvn --batch-mode site ${MAVEN_ARGS}'
                                                             publishHTML(target: [reportName: 'Site', reportDir: 'target/site', reportFiles: 'index.html', keepAll: false])
                                                         }
                                             }
@@ -216,16 +196,28 @@ pipeline
                                                 script
                                                         {
                                                             if (env.DO_TAG == "true") {
-                                                                echo "Site and tag for this kind of branch: " + env.BRANCH_TYPE
-                                                                sh '''
-                 mvn --batch-mode source:jar site:jar deploy scm:tag -DskipUTs -DskipITs ${MAVEN_ARGS}
-             '''
+                                                                sh 'mvn --batch-mode source:jar site:jar deploy scm:tag -DskipUTs -DskipITs ${MAVEN_ARGS}'
                                                             } else {
-                                                                echo "Skip and doc tag for this kind of branch: " + env.BRANCH_TYPE
+                                                                sh 'mvn --batch-mode source:jar site:jar deploy -DskipUTs -DskipITs ${MAVEN_ARGS}'
+                                                            }
+                                                        }
+                                            }
+                                }
 
-                                                                sh '''
-                 mvn --batch-mode source:jar site:jar deploy -DskipUTs -DskipITs ${MAVEN_ARGS}
-             '''
+
+                        stage('Docker Push')
+                                {
+                                    steps
+                                            {
+                                                script
+                                                        {
+                                                            echo env.BUILD_DOCKER
+                                                            echo env.DOCKER_TAG
+
+                                                            if (env.BUILD_DOCKER == "true") {
+                                                                sh 'docker buildx build --platform linux/arm64,linux/arm/v7 --push -t sebpiller/my-project:latest -t sebpiller/my-project:${DOCKER_TAG} .'
+                                                            } else {
+                                                                echo "No docker push for this kind of branch: " + env.BRANCH_TYPE
                                                             }
                                                         }
                                             }
