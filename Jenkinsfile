@@ -110,10 +110,7 @@ pipeline
                                 {
                                     steps
                                             {
-                                                script
-                                                        {
-                                                            sh 'mvn --batch-mode clean ${MAVEN_ARGS}'
-                                                        }
+                                                sh 'mvn --batch-mode clean ${MAVEN_ARGS}'
                                             }
                                 }
 
@@ -121,10 +118,7 @@ pipeline
                                 {
                                     steps
                                             {
-                                                script
-                                                        {
-                                                            sh 'mvn --batch-mode package -DskipUTs -DskipITs ${MAVEN_ARGS}'
-                                                        }
+                                                sh 'mvn --batch-mode package -DskipUTs -DskipITs ${MAVEN_ARGS}'
                                             }
                                 }
 
@@ -168,10 +162,7 @@ pipeline
                                 {
                                     steps
                                             {
-                                                script
-                                                        {
-                                                            sh 'mvn --batch-mode install -DskipUTs -DskipITs ${MAVEN_ARGS}'
-                                                        }
+                                                sh 'mvn --batch-mode install -DskipUTs -DskipITs ${MAVEN_ARGS}'
                                             }
                                 }
 
@@ -179,10 +170,13 @@ pipeline
                                 {
                                     steps
                                             {
-                                                script
+                                                // TODO fix site:stage, fails because of lack of distributionManagement tag in pom.
+                                                sh 'mvn --batch-mode site ${MAVEN_ARGS}'
+                                            }
+                                    post
+                                            {
+                                                always
                                                         {
-                                                            // TODO fix site:stage, fails because of lack of distributionManagement tag in pom.
-                                                            sh 'mvn --batch-mode site ${MAVEN_ARGS}'
                                                             publishHTML(target: [reportName: 'Site', reportDir: 'target/site', reportFiles: 'index.html', keepAll: false])
                                                         }
                                             }
@@ -205,10 +199,11 @@ pipeline
                                 }
 
 
-                        stage('Docker Push')
+/*                        stage('Docker Push')
                                 {
                                     steps
                                             {
+
                                                 script
                                                         {
                                                             echo env.BUILD_DOCKER
@@ -217,10 +212,15 @@ pipeline
                                                             if (env.BUILD_DOCKER == "true") {
                                                                 sh 'docker buildx build --platform linux/arm64,linux/arm/v7 --push -t sebpiller/my-project:latest -t sebpiller/my-project:${DOCKER_TAG} .'
                                                             } else {
-                                                                sh 'echo "No docker push for this kind of branch: ${BRANCH_TYPE}"'
+                                                                try {
+                                                                    sh 'echo "No docker push for this kind of branch: ${BRANCH_TYPE}"'
+                                                                } catch (e) {
+                                                                    echo "e: " + e
+                                                                    currentBuild.result = 'SUCCESS'
+                                                                }
                                                             }
                                                         }
                                             }
-                                }
+                                }*/
                     }
         }
