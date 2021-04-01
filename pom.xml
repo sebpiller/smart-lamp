@@ -677,7 +677,6 @@
             </plugin>
 
         </plugins>
-
     </build>
 
     <reporting>
@@ -770,5 +769,4 @@
             </plugin>
         </plugins>
     </reporting>
-
 </project>

@@ -217,7 +217,7 @@ pipeline
                                                             if (env.BUILD_DOCKER == "true") {
                                                                 sh 'docker buildx build --platform linux/arm64,linux/arm/v7 --push -t sebpiller/my-project:latest -t sebpiller/my-project:${DOCKER_TAG} .'
                                                             } else {
-                                                                echo "No docker push for this kind of branch: " + env.BRANCH_TYPE
+                                                                sh 'echo "No docker push for this kind of branch: ${BRANCH_TYPE}"'
                                                             }
                                                         }
                                             }
