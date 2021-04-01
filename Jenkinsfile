@@ -33,8 +33,10 @@ pipeline
                                                             echo "Current branch: " + env.BRANCH_NAME
                                                             env.DO_TAG = "false"
                                                             env.SKIP_IT = "false"
+                                                            env.SKIP_SITE = "true"
                                                             env.BUILD_DOCKER = "false"
                                                             env.DOCKER_TAG = "latest"
+
 
                                                             // Early abort if we run the pipeline on master.
                                                             if (env.BRANCH_NAME == "master" || env.BRANCH_NAME == "main") {
@@ -54,6 +56,7 @@ pipeline
                                                                 echo "RELEASE BRANCH DETECTED!"
                                                                 env.BRANCH_TYPE = "release"
                                                                 env.DO_TAG = "true"
+                                                                env.SKIP_SITE = "false"
                                                                 //env.BUILD_DOCKER = "true"
                                                                 env.RELEASE_VERSION = matcherRelease[0][1]
 
@@ -74,7 +77,6 @@ pipeline
 
                                                                 env.FEATURE_NAME = matcherFeature[0][1]
                                                                 versionOpts = "-DmainVersion=FEAT -Dfeature=." + env.FEATURE_NAME + " -Dmodifier=-SNAPSHOT -DbuildNumber=.b$BUILD_NUMBER"
-                                                                mvnOpts = "-Dmaven.site.skip"
                                                             } else if (matcherPr.matches()) {
                                                                 // Pull requests branches are NOT deployed, NOT tagged and NO documentation is generated. Only tests are run.
                                                                 echo "PULL REQUEST BRANCH DETECTED!"
@@ -82,19 +84,21 @@ pipeline
 
                                                                 env.PR_NAME = matcherPr[0][1]
                                                                 versionOpts = "-DmainVersion=PR -Dfeature=." + env.PR_NAME + " -Dmodifier=-SNAPSHOT -DbuildNumber=.b$BUILD_NUMBER"
-                                                                mvnOpts = "-Dmaven.site.skip"
                                                             } else if (env.BRANCH_NAME == "develop") {
                                                                 echo "DEVELOP BRANCH DETECTED"
                                                                 env.BRANCH_TYPE = "develop"
                                                                 env.SKIP_IT = "true"
+                                                                env.SKIP_SITE = "false"
 
                                                                 versionOpts = "-DmainVersion=" + env.BRANCH_NAME + " -Dfeature= -Dmodifier=-SNAPSHOT -DbuildNumber=.b$BUILD_NUMBER"
-                                                                mvnOpts = "-Dmaven.site.skip"
                                                             } else {
                                                                 echo "OTHER BRANCH DETECTED"
                                                                 env.BRANCH_TYPE = "other"
 
                                                                 versionOpts = "-DmainVersion=" + env.BRANCH_NAME + " -Dfeature= -Dmodifier=-SNAPSHOT -DbuildNumber=.b$BUILD_NUMBER"
+                                                            }
+
+                                                            if(env.SKIP_SITE == "true") {
                                                                 mvnOpts = "-Dmaven.site.skip"
                                                             }
 
@@ -110,7 +114,10 @@ pipeline
                                 {
                                     steps
                                             {
-                                                sh 'mvn --batch-mode clean ${MAVEN_ARGS}'
+                                                script
+                                                        {
+                                                            sh 'mvn --batch-mode clean ${MAVEN_ARGS}'
+                                                        }
                                             }
                                 }
 
@@ -118,7 +125,10 @@ pipeline
                                 {
                                     steps
                                             {
-                                                sh 'mvn --batch-mode package -DskipUTs -DskipITs ${MAVEN_ARGS}'
+                                                script
+                                                        {
+                                                            sh 'mvn --batch-mode package -DskipUTs -DskipITs ${MAVEN_ARGS}'
+                                                        }
                                             }
                                 }
 
@@ -162,7 +172,10 @@ pipeline
                                 {
                                     steps
                                             {
-                                                sh 'mvn --batch-mode install -DskipUTs -DskipITs ${MAVEN_ARGS}'
+                                                script
+                                                        {
+                                                            sh 'mvn --batch-mode install -DskipUTs -DskipITs ${MAVEN_ARGS}'
+                                                        }
                                             }
                                 }
 
@@ -170,14 +183,13 @@ pipeline
                                 {
                                     steps
                                             {
-                                                // TODO fix site:stage, fails because of lack of distributionManagement tag in pom.
-                                                sh 'mvn --batch-mode site ${MAVEN_ARGS}'
-                                            }
-                                    post
-                                            {
-                                                always
+                                                script
                                                         {
-                                                            publishHTML(target: [reportName: 'Site', reportDir: 'target/site', reportFiles: 'index.html', keepAll: false])
+                                                            sh 'mvn --batch-mode site ${MAVEN_ARGS}'
+
+                                                            if(env.SKIP_SITE == "false") {
+                                                                publishHTML(target: [reportName: 'Site (STG)', reportDir: 'target/site', reportFiles: 'index.html', keepAll: false])
+                                                            }
                                                         }
                                             }
                                 }
@@ -199,11 +211,10 @@ pipeline
                                 }
 
 
-/*                        stage('Docker Push')
+                        stage('Docker Push')
                                 {
                                     steps
                                             {
-
                                                 script
                                                         {
                                                             echo env.BUILD_DOCKER
@@ -212,15 +223,10 @@ pipeline
                                                             if (env.BUILD_DOCKER == "true") {
                                                                 sh 'docker buildx build --platform linux/arm64,linux/arm/v7 --push -t sebpiller/my-project:latest -t sebpiller/my-project:${DOCKER_TAG} .'
                                                             } else {
-                                                                try {
-                                                                    sh 'echo "No docker push for this kind of branch: ${BRANCH_TYPE}"'
-                                                                } catch (e) {
-                                                                    echo "e: " + e
-                                                                    currentBuild.result = 'SUCCESS'
-                                                                }
+                                                                sh 'echo "No docker push for this kind of branch: ${BRANCH_TYPE}"'
                                                             }
                                                         }
                                             }
-                                }*/
+                                }
                     }
         }
