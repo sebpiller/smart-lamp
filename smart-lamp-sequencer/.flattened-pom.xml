@@ -15,7 +15,7 @@
   <description>Pilot a Smart Lamp using a succession of action to be executed in rhythm with a tempo.</description>
   <dependencies>
     <dependency>
-      <groupId>ch.sebpiller</groupId>
+      <groupId>ch.sebpiller.metronome</groupId>
       <artifactId>metronome</artifactId>
       <scope>test</scope>
     </dependency>

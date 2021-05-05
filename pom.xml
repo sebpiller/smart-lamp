@@ -134,9 +134,9 @@
             <!-- ================================= -->
 
             <dependency>
-                <groupId>ch.sebpiller</groupId>
+                <groupId>ch.sebpiller.metronome</groupId>
                 <artifactId>metronome</artifactId>
-                <version>0.2.4.b4</version>
+                <version>0.2.4.b12</version>
             </dependency>
 
             <dependency>
