@@ -14,7 +14,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>ch.sebpiller</groupId>
+            <groupId>ch.sebpiller.tools.metronome</groupId>
             <artifactId>metronome</artifactId>
             <scope>test</scope>
         </dependency>

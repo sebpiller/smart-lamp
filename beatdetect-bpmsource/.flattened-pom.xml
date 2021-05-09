@@ -23,7 +23,7 @@
       <artifactId>minim</artifactId>
     </dependency>
     <dependency>
-      <groupId>ch.sebpiller</groupId>
+      <groupId>ch.sebpiller.tools.metronome</groupId>
       <artifactId>metronome</artifactId>
     </dependency>
   </dependencies>
