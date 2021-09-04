@@ -134,9 +134,9 @@
             <!-- ================================= -->
 
             <dependency>
-                <groupId>ch.sebpiller.metronome</groupId>
+                <groupId>ch.sebpiller.tools.metronome</groupId>
                 <artifactId>metronome</artifactId>
-                <version>0.2.4.b12</version>
+                <version>0.2.4.b4</version>
             </dependency>
 
             <dependency>
@@ -538,6 +538,10 @@
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
+                    <configuration>
+                        <fork>true</fork>
+                        <executable>javac</executable>
+                    </configuration>
                 </plugin>
 
                 <plugin>
@@ -762,11 +766,27 @@
                 </reportSets>
             </plugin>
 
+            <!--
+            JXR Plugin lead to :
+
+                [INFO] 'generate-test-sources' forked phase execution for maven-jxr-plugin:test-jxr report preparation done
+                [INFO] 2 reports detected for maven-jxr-plugin:3.0.0: jxr, test-jxr
+
+                [INFO] Fork Value is true
+
+                     [java] Unhandled exception
+                     [java] Type=Segmentation error vmState=0x00000000
+                     [java] J9Generic_Signal_Number=00000018 Signal_Number=0000000b Error_Value=00000000 Signal_Code=00000001
+                     [java] Handler1=0000FFFFA91F0EF8 Handler2=0000FFFFA916A3B8 InaccessibleAddress=000000000000000D
+                     [java] R0=0000000000000001 R1=0000000000006AC4 R2=00000000FFFCFBF0 R3=0000000000000000
+
+             with Jenkins Kubernetes Agent
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>3.0.0</version>
-            </plugin>
+            </plugin>-->
         </plugins>
     </reporting>
 </project>
