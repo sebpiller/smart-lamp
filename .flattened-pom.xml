@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ch.sebpiller.iot.smartlamp</groupId>
   <artifactId>smart-lamp-parent</artifactId>
-  <version>0.1.8-SNAPSHOT</version>
+  <version>0.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Smart Lamp - Parent</name>
   <developers>
@@ -33,6 +33,7 @@
     <module>luke-roberts-lamp-f-cli</module>
     <module>philips-hue</module>
     <module>philips-hue-cli</module>
+    <module>smart-lamp-amqp-web</module>
   </modules>
   <scm>
     <connection>scm:git:http://git.home/spiller/smart-lamp.git</connection>
@@ -50,18 +51,19 @@
     <modifier>-SNAPSHOT</modifier>
     <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
     <surefire.jacoco.args></surefire.jacoco.args>
+    <mainVersion>0.0.0</mainVersion>
     <skipUTs>false</skipUTs>
-    <branch>0.1.8</branch>
+    <buildNumber></buildNumber>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <failIfNoTests>false</failIfNoTests>
     <failsafe.jacoco.args></failsafe.jacoco.args>
-    <revision></revision>
     <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
     <feature></feature>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
     <skipITs>false</skipITs>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jacoco.mincoverage>0%</jacoco.mincoverage>
-    <dynamicVersion>branchfeaturemodifier</dynamicVersion>
+    <dynamicVersion>${mainVersion}${feature}${buildNumber}${modifier}</dynamicVersion>
     <timestamp>${maven.build.timestamp}</timestamp>
   </properties>
   <dependencyManagement>
@@ -112,9 +114,9 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>ch.sebpiller.metronome</groupId>
+        <groupId>ch.sebpiller.tools.metronome</groupId>
         <artifactId>metronome</artifactId>
-        <version>0.2.4.b12</version>
+        <version>0.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
@@ -379,9 +381,6 @@
               <goals>
                 <goal>report</goal>
               </goals>
-              <configuration>
-                <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-              </configuration>
             </execution>
             <execution>
               <id>before-integration-test-execution</id>
@@ -400,9 +399,6 @@
               <goals>
                 <goal>report-integration</goal>
               </goals>
-              <configuration>
-                <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
-              </configuration>
             </execution>
             <execution>
               <id>check-UT-coverage</id>
@@ -463,6 +459,10 @@
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.8.1</version>
+          <configuration>
+            <fork>true</fork>
+            <executable>javac</executable>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -654,10 +654,14 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <artifactId>maven-jxr-plugin</artifactId>
-        <version>3.0.0</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>report</report>
+              <report>report-integration</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
     </plugins>
   </reporting>

@@ -5,17 +5,17 @@
   <parent>
     <groupId>ch.sebpiller.iot.smartlamp</groupId>
     <artifactId>smart-lamp-parent</artifactId>
-    <version>0.1.8-SNAPSHOT</version>
+    <version>0.0.0-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <groupId>ch.sebpiller.iot.smartlamp</groupId>
   <artifactId>smart-lamp-sequencer</artifactId>
-  <version>0.1.8-SNAPSHOT</version>
+  <version>0.0.0-SNAPSHOT</version>
   <name>Smart Lamp - Sequencer</name>
   <description>Pilot a Smart Lamp using a succession of action to be executed in rhythm with a tempo.</description>
   <dependencies>
     <dependency>
-      <groupId>ch.sebpiller.metronome</groupId>
+      <groupId>ch.sebpiller.tools.metronome</groupId>
       <artifactId>metronome</artifactId>
       <scope>test</scope>
     </dependency>
