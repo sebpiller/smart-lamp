@@ -20,8 +20,8 @@ sudo apt-get install default-jdk maven -y       # java compilation and runtime
 cd ~
 git clone https://github.com/sebpiller/metronome.git
 cd metronome
-git checkout metronome-0.1.2   # or any other tag you may want to build
-mvn clean install -DskipTests # skip tests on windows or to speed up the build
+git checkout develop                              # or any other tag you may want to build
+mvn clean install -DskipUTs -DskipITs -DskipTests # skip tests on windows or to speed up the build
 ```
 
 - checkout and compile the sources:
@@ -29,7 +29,7 @@ mvn clean install -DskipTests # skip tests on windows or to speed up the build
 cd ~
 git clone https://github.com/sebpiller/smart-lamp.git
 cd smart-lamp
-git checkout smart-lamp-parent-0.1.5 # or any other tag you may want to build
-mvn clean install -DskipTests        # skip tests on windows or to speed up the build
+git checkout develop                               # or any other tag you may want to build
+mvn clean install -DskipUTs -DskipITs -DskipTests  # skip tests on windows or to speed up the build
 ```
 
