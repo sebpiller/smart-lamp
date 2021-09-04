@@ -288,6 +288,7 @@ public class Cli implements Callable<Integer> {
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }
+                        ticTac.stop();
                     }
 
                     ticTac.waitTermination();
