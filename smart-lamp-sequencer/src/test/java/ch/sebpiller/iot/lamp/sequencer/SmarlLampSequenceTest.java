@@ -3,7 +3,6 @@ package ch.sebpiller.iot.lamp.sequencer;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
 import ch.sebpiller.iot.lamp.impl.LoggingLamp;
 import ch.sebpiller.metronome.Metronome;
-import ch.sebpiller.metronome.MetronomeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import org.junit.jupiter.api.Test;
@@ -15,16 +14,13 @@ public class SmarlLampSequenceTest {
 
     @Test
     public void testBasic() throws InterruptedException {
-        final SmartLampSequence playback = SmartLampSequence.record()
+        final SmartLampSequence playback = SmartLampSequence.begin()
                 // beat #1
                 .start().flash(1).end();
 
         final SmartLampFacade lamp = new LoggingLamp();
 
-        Metronome metronome = new MetronomeBuilder()
-                .withRhythm(() -> 120)
-                .withListener((ticOrTac, bpm) -> playback.play(lamp))
-                .build();
+        Metronome metronome = new Metronome(()->120, (ticOrTac, bpm) -> playback.play(lamp));
 
         Thread.sleep(20_000);
         metronome.stop();
@@ -32,13 +28,13 @@ public class SmarlLampSequenceTest {
 
     @Test
     public void testSequencer() throws InterruptedException {
-        final SmartLampSequence boomBoomBoomBoom = SmartLampSequence.record()
+        final SmartLampSequence boomBoomBoomBoom = SmartLampSequence.begin()
                 .start().flash(1).end()
                 .start().flash(1).end()
                 .start().flash(1).end()
                 .start().flash(1).end();
 
-        final SmartLampSequence playback = SmartLampSequence.record()
+        final SmartLampSequence playback = SmartLampSequence.begin()
                 // beat #1
                 .start().run(() -> LOG.info("***********************")).flash(3).end()
                 // beat #2
@@ -67,10 +63,7 @@ public class SmarlLampSequenceTest {
 
         final SmartLampFacade lamp = new LoggingLamp();
 
-        Metronome ticTac = new MetronomeBuilder()
-                .withRhythm(() -> 120)
-                .withListener((ticOrTac, bpm) -> playback.play(lamp))
-                .build();
+        Metronome ticTac = new Metronome(() -> 120,(ticOrTac, bpm) -> playback.play(lamp));
 
         Thread.sleep(20_000);
 
@@ -87,10 +80,7 @@ public class SmarlLampSequenceTest {
 
         SmartLampSequence smarlLampSequence = seq.buildMainLoopSequence();
 
-        Metronome ticTac = new MetronomeBuilder()
-                .withRhythm(() -> 120)
-                .withListener((ticOrTac, bpm) -> smarlLampSequence.play(lamp))
-                .build();
+        Metronome ticTac = new Metronome(() -> 120,(ticOrTac, bpm) -> smarlLampSequence.play(lamp));
 
         Thread.sleep(20_000);
         seq.getAfterSequence().play(lamp);

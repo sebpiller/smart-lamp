@@ -36,7 +36,7 @@ public class SmartLampScript {
         return new SmartLampScript() {
             @Override
             public SmartLampSequence getBeforeSequence() {
-                return parseStep(SmartLampSequence.record(), commandList, null);
+                return parseStep(SmartLampSequence.begin(), commandList, null);
             }
         };
     }
@@ -142,10 +142,10 @@ public class SmartLampScript {
         Map<String, SmartLampSequence> sequences = new HashMap<>();
 
         for (Map.Entry<String, String[]> current : yamlScript.getSequences().entrySet()) {
-            SmartLampSequence record = SmartLampSequence.record();
+            SmartLampSequence r = SmartLampSequence.begin();
 
             for (String step : current.getValue()) {
-                SmartLampSequence currentSeq = parseStep(record, step, this);
+                SmartLampSequence currentSeq = parseStep(r, step, this);
                 sequences.put(current.getKey(), currentSeq);
             }
         }
@@ -160,25 +160,25 @@ public class SmartLampScript {
     public SmartLampSequence buildMainLoopSequence() {
         String[] steps = yamlScript == null ? null : yamlScript.getLoop();
 
-        if (steps == null || steps.length <= 0) {
+        if (steps == null || steps.length == 0) {
             return SmartLampSequence.NOOP;
         }
 
-        SmartLampSequence record = SmartLampSequence.record();
+        SmartLampSequence r = SmartLampSequence.begin();
 
         for (String step : steps) {
-            record = parseStep(record, step, this);
+            r = parseStep(r, step, this);
         }
 
-        return record;
+        return r;
     }
 
-    private static SmartLampSequence parseStep(SmartLampSequence record, String s, SmartLampScript script) {
+    private static SmartLampSequence parseStep(SmartLampSequence r, String s, SmartLampScript script) {
         if (StringUtils.isBlank(s)) {
             // empty line means a pause
-            record = record.pause();
+            r = r.pause();
         } else {
-            record = record.start();
+            r = r.start();
             String token;
 
             StringTokenizer tokenizer = new StringTokenizer(s, ";");
@@ -198,58 +198,58 @@ public class SmartLampScript {
                     if (sequence == null) {
                         throw new IllegalArgumentException("the sequence '" + value + "' is not defined in the script context");
                     }
-                    record = record.then(sequence);
+                    r = r.then(sequence);
                 } else {
-                    record = recordAction(record, key, value);
+                    r = recordAction(r, key, value);
                 }
             }
         }
 
-        record = record.end();
-        return record;
+        r = r.end();
+        return r;
     }
 
-    private static SmartLampSequence recordAction(SmartLampSequence record, String key, String value) {
+    private static SmartLampSequence recordAction(SmartLampSequence r, String key, String value) {
         switch (key.toLowerCase()) {
             case "pause":
-                record = record.pause();
+                r = r.pause();
                 break;
             case "on":
-                record = record.power(true);
+                r = r.power(true);
                 break;
             case "off":
-                record = record.power(false);
+                r = r.power(false);
                 break;
             case "power":
-                record = record.power("1".equals(value) || "on".equals(value) || "true".equals(value));
+                r = r.power("1".equals(value) || "on".equals(value) || "true".equals(value));
                 break;
             case "brightness":
                 if (value != null) {
-                    record = record.setBrightness(Byte.parseByte(value));
+                    r = r.setBrightness(Byte.parseByte(value));
                 }
                 break;
             case "temperature":
                 if (value != null) {
-                    record = record.setTemperature(Integer.parseInt(value));
+                    r = r.setTemperature(Integer.parseInt(value));
                 }
                 break;
             case "sleep":
                 if (value != null) {
-                    record = record.sleep(Integer.parseInt(value));
+                    r = r.sleep(Integer.parseInt(value));
                 }
                 break;
             case "scene":
                 if (value != null) {
-                    record = record.setScene(Byte.parseByte(value));
+                    r = r.setScene(Byte.parseByte(value));
                 }
                 break;
             case "color":
                 int[] color = parseColor(value);
-                record = record.setColor(color[0], color[1], color[2]);
+                r = r.setColor(color[0], color[1], color[2]);
                 break;
             default:
                 throw new IllegalArgumentException("script parse error: could not understand " + key);
         }
-        return record;
+        return r;
     }
 }

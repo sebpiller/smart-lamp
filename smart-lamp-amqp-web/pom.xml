@@ -5,8 +5,7 @@
     <parent>
         <groupId>ch.sebpiller.iot.smartlamp</groupId>
         <artifactId>smart-lamp-parent</artifactId>
-        <version>${dynamicVersion}</version>
-        <relativePath>../</relativePath>
+        <version>0.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>smartlampweb</artifactId>
@@ -416,36 +415,7 @@
         </plugins>
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>${maven-checkstyle.version}</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>com.puppycrawl.tools</groupId>
-                            <artifactId>checkstyle</artifactId>
-                            <version>${checkstyle.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>io.spring.nohttp</groupId>
-                            <artifactId>nohttp-checkstyle</artifactId>
-                            <version>${spring-nohttp-checkstyle.version}</version>
-                        </dependency>
-                    </dependencies>
-                    <configuration>
-                        <configLocation>checkstyle.xml</configLocation>
-                        <includes>pom.xml,README.md</includes>
-                        <excludes>.git/**/*,target/**/*,node_modules/**/*,node/**/*</excludes>
-                        <sourceDirectories>./</sourceDirectories>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -674,11 +644,7 @@
                             <artifactId>liquibase-core</artifactId>
                             <version>${liquibase.version}</version>
                         </dependency>
-                        <dependency>
-                            <groupId>org.liquibase.ext</groupId>
-                            <artifactId>liquibase-hibernate5</artifactId>
-                            <version>${liquibase-hibernate5.version}</version>
-                        </dependency>
+
                         <dependency>
                             <groupId>org.springframework.boot</groupId>
                             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -845,21 +811,7 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring-boot.version}</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>repackage</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <mainClass>${start-class}</mainClass>
-                        <fork>true</fork>
-                        <!--
-                        Enable the line below to have remote debugging of your application on port 5005
-                        <jvmArguments>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmArguments>
-                        -->
-                    </configuration>
+
 
                 </plugin>
                 <!-- jhipster-needle-maven-add-plugin-management -->
@@ -1058,17 +1010,7 @@
                 <spring.profiles.active>prod${profile.swagger}${profile.tls}${profile.no-liquibase}</spring.profiles.active>
             </properties>
         </profile>
-        <profile>
-            <id>war</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-war-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+
         <profile>
             <!--
                 Profile for applying IDE-specific configuration.

@@ -8,7 +8,6 @@ import ch.sebpiller.iot.lamp.cli.SmartLampInteractive;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampScript;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampSequence;
 import ch.sebpiller.metronome.Metronome;
-import ch.sebpiller.metronome.MetronomeBuilder;
 import ch.sebpiller.metronome.Tempo;
 import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
@@ -42,7 +41,7 @@ public class Cli implements Callable<Integer> {
     /**
      * Flashes the lamp 1 time at each beat, 4 times
      */
-    private static final SmartLampSequence BOOM_BOOM_BOOM_BOOM = SmartLampSequence.record()
+    private static final SmartLampSequence BOOM_BOOM_BOOM_BOOM = SmartLampSequence.begin()
             .start().flash(1).end()
             .start().flash(1).end()
             .start().flash(1).end()
@@ -52,7 +51,7 @@ public class Cli implements Callable<Integer> {
     /**
      * The default sequence to be played when the user did not provide any script.
      */
-    private static final SmartLampSequence DEFAULT_PLAYBACK = SmartLampSequence.record()
+    private static final SmartLampSequence DEFAULT_PLAYBACK = SmartLampSequence.begin()
             .then(BOOM_BOOM_BOOM_BOOM)
             .then(BOOM_BOOM_BOOM_BOOM)
             .then(BOOM_BOOM_BOOM_BOOM)
@@ -199,10 +198,7 @@ public class Cli implements Callable<Integer> {
                     source = () -> finalTempo;
                 }
 
-                try (Metronome ticTac = new MetronomeBuilder()
-                        .withRhythm(source)
-                        .withListener((ticOrTac, b) -> loop.play(lamp))
-                        .build()) {
+                try (Metronome ticTac = new Metronome(source, (ticOrTac, b) -> loop.play(lamp))) {
                     if (this.cliParamDuration > 0) {
                         try {
                             Thread.sleep(this.cliParamDuration * 1_000);

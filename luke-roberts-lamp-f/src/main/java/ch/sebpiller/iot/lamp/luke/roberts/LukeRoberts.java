@@ -3,6 +3,7 @@ package ch.sebpiller.iot.lamp.luke.roberts;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.Property;
@@ -204,7 +205,7 @@ public final class LukeRoberts {
              */
             public static Config loadFromStream(InputStream inputStream) {
                 try (InputStream is = inputStream) {
-                    Constructor c = new Constructor(LukeRoberts.LampF.Config.class);
+                    Constructor c = new Constructor(LukeRoberts.LampF.Config.class, new LoaderOptions());
                     // convert dash-separator to camel-case
                     c.setPropertyUtils(new PropertyUtils() {
                         @Override

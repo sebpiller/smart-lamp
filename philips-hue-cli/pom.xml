@@ -3,8 +3,7 @@
     <parent>
         <groupId>ch.sebpiller.iot.smartlamp</groupId>
         <artifactId>smart-lamp-parent</artifactId>
-        <version>${dynamicVersion}</version>
-        <relativePath>../</relativePath>
+        <version>0.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

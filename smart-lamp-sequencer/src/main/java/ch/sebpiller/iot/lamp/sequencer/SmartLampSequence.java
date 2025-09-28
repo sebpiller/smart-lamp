@@ -41,8 +41,8 @@ public class SmartLampSequence implements SmartLampFacade {
         this.parent = parent;
     }
 
-    public static SmartLampSequence record() {
-        return new SmartLampSequence();
+    public static SmartLampSequence begin() {
+        return new SmartLampSequence(null);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class SmartLampSequence implements SmartLampFacade {
     }
 
     @Override
-    public SmartLampSequence setBrightness(byte percent) {
+    public SmartLampSequence setBrightness(byte percent) { // FIXME
         add(facade -> facade.setBrightness(percent));
         return this;
     }
@@ -223,11 +223,15 @@ public class SmartLampSequence implements SmartLampFacade {
     }
 
     public SmartLampSequence flash(int times) {
+        return flash(times, (byte) 100);
+    }
+
+    public SmartLampSequence flash(int times, byte intensity) {
         SmartLampSequence start = start();
 
         for (int i = 0; i < times; i++) {
             start = start
-                    .setBrightness((byte) 100).sleep(30)
+                    .setBrightness(intensity).sleep(30)
                     .setBrightness((byte) 0).sleep(30)
             ;
         }
@@ -250,7 +254,7 @@ public class SmartLampSequence implements SmartLampFacade {
                     errorCount++;
 
                     if (errorCount < 10) {
-                        LOG.error("error #" + errorCount + " in function call: " + e, e);
+                        LOG.error("error #{} in function call: {}", errorCount, e, e);
                     } else if (errorCount == 10) {
                         LOG.error("no more errors will be reported for this function.");
                     }

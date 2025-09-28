@@ -11,7 +11,6 @@ import ch.sebpiller.iot.lamp.SmartLampFacade;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampSequence;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampScript;
 import ch.sebpiller.metronome.Metronome;
-import ch.sebpiller.metronome.MetronomeBuilder;
 import ch.sebpiller.metronome.Tempo;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -100,7 +99,7 @@ public class Cli implements Callable<Integer> {
     /**
      * Flashes the lamp 1 time at each beat, 4 times
      */
-    private static final SmartLampSequence BOOM_BOOM_BOOM_BOOM = SmartLampSequence.record()
+    private static final SmartLampSequence BOOM_BOOM_BOOM_BOOM = SmartLampSequence.begin()
             .start().flash(1).end()
             .start().flash(1).end()
             .start().flash(1).end()
@@ -110,7 +109,7 @@ public class Cli implements Callable<Integer> {
     /**
      * The default sequence to be played when the user did not provide any script.
      */
-    private static final SmartLampSequence DEFAULT_PLAYBACK = SmartLampSequence.record()
+    private static final SmartLampSequence DEFAULT_PLAYBACK = SmartLampSequence.begin()
             .then(BOOM_BOOM_BOOM_BOOM)
             .then(BOOM_BOOM_BOOM_BOOM)
             .then(BOOM_BOOM_BOOM_BOOM)
@@ -259,9 +258,7 @@ public class Cli implements Callable<Integer> {
                     source = () -> finalTempo;
                 }
 
-                try (Metronome ticTac = new MetronomeBuilder()
-                        .withRhythm(source)
-                        .withListener(new Metronome.MetronomeListener() {
+                try (Metronome ticTac = new Metronome(source, new Metronome.MetronomeListener() {
                             private int i = 0;
 
                             @Override
@@ -280,8 +277,7 @@ public class Cli implements Callable<Integer> {
                                 loop.play(lamp);
                                 this.i++;
                             }
-                        })
-                        .build()) {
+                        })) {
                     if (this.cliParamDuration > 0) {
                         try {
                             Thread.sleep(this.cliParamDuration * 1_000);

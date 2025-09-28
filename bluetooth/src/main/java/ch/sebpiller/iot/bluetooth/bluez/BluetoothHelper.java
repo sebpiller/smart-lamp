@@ -97,7 +97,7 @@ public class BluetoothHelper {
 
             try {
                 BluetoothDevice device = charac.getService().getDevice();
-                if (!Boolean.TRUE.equals(device.isConnected()) && !Boolean.TRUE.equals(device.connect())) {
+                if (!Boolean.TRUE.equals(device.isConnected()) && !device.connect()) {
                     throw new BluetoothException("!!! connection to the device was unsuccessful !!!");
                 }
 
