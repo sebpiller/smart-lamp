@@ -20,14 +20,14 @@ public class LoggingLamp implements SmartLampFacade {
     };
 
     @Override
-    public LoggingLamp power(boolean b) {
-        LOG.info("power({})", b);
+    public LoggingLamp sleep(int millis) {
+        LOG.info("sleep({})", millis);
         return this;
     }
 
     @Override
-    public LoggingLamp sleep(int millis) {
-        LOG.info("sleep({})", millis);
+    public LoggingLamp power(boolean b) {
+        LOG.info("power({})", b);
         return this;
     }
 

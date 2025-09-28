@@ -1,7 +1,6 @@
 package ch.sebpiller.iot.lamp.luke.roberts;
 
 import ch.sebpiller.iot.lamp.SmartLampFacade;
-import ch.sebpiller.iot.lamp.luke.roberts.LukeRoberts;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -203,7 +202,7 @@ public class LampFBleIntegrationTest {
         // to test color changes, the best is to use an indirect scene.
         facade.selectScene(LukeRoberts.LampF.Scene.INDIRECT_SCENE);
 
-        for (int i = 2700; i<= 4000; i += 50) {
+        for (int i = 2700; i <= 4000; i += 50) {
             for (int j = 0; j <= 255; j += 5) {
                 LOG.info("TEMP IS " + i + ", BRIGHTNESS IS " + j);
                 facade.immediateLight(0, null, null, null, null, i, (byte) j);

@@ -1,6 +1,9 @@
 package ch.sebpiller.iot.bluetooth.bluez.philipps.hue;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 @Disabled("ignore unless you have a real Philips Hue bulb connected to your system")
 public class PhilipsHueBleTest {

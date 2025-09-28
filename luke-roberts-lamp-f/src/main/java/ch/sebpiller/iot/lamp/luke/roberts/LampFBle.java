@@ -22,9 +22,6 @@ import static java.lang.String.format;
  */
 public class LampFBle extends AbstractLampBase {
     private static final Logger LOG = LoggerFactory.getLogger(LampFBle.class);
-
-    private final BluetoothDelegate bluetoothDelegate;
-
     /**
      * Lamp minimum temperature in kelvin.
      */
@@ -33,7 +30,7 @@ public class LampFBle extends AbstractLampBase {
      * Lamp maximum temperature in kelvin.
      */
     private static final int MAX_TEMP = 4000;
-
+    private final BluetoothDelegate bluetoothDelegate;
     private final LukeRoberts.LampF.Config config;
 
     // values cached by call of #immediateLight
@@ -67,15 +64,18 @@ public class LampFBle extends AbstractLampBase {
         return this;
     }
 
-    private void sendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte... parameters) {
-        BluetoothDelegate.retry(() -> {
-            trySendCommandToExternalApi(command, parameters);
-            return null;
-        }, 3, BluetoothException.class);
+    @Override
+    public LampFBle power(boolean on) {
+        selectScene(on ?
+                LukeRoberts.LampF.Scene.DEFAULT_SCENE :
+                LukeRoberts.LampF.Scene.SHUTDOWN_SCENE
+        );
+        return this;
     }
 
-    private void trySendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte[] parameters) {
-        this.bluetoothDelegate.write(command.toByteArray(parameters));
+    public LampFBle selectScene(LukeRoberts.LampF.Scene scene) {
+        setScene(scene.getId());
+        return this;
     }
 
 
@@ -103,22 +103,16 @@ public class LampFBle extends AbstractLampBase {
 //        }
 //    }
 
-
-    public LampFBle selectScene(LukeRoberts.LampF.Scene scene) {
-        setScene(scene.getId());
-        return this;
-    }
-
-    @Override
-    public LampFBle setScene(byte sceneId) {
-        sendCommandToExternalApi(LukeRoberts.LampF.Command.SELECT_SCENE, sceneId);
-        invalidateCacheFromImmediateLight();
-        return this;
-    }
-
-    public LampFBle adjustBrightness(byte percent) {
-        sendCommandToExternalApi(LukeRoberts.LampF.Command.RELATIVE_BRIGHTNESS, percent);
-        return this;
+    /**
+     * Invalidate cached values from the command {@link #immediateLight(int, Integer, Byte, Byte, Integer, Integer, Byte)}.
+     */
+    private void invalidateCacheFromImmediateLight() {
+        this._sat = null;
+        this._bri = null;
+        this._mbri = null;
+        this._hue = null;
+        this._temp = null;
+        this._mtemp = null;
     }
 
     @Override
@@ -136,19 +130,10 @@ public class LampFBle extends AbstractLampBase {
         return this;
     }
 
-    /**
-     * Range the given kelvin to acceptable lamp temperature.
-     */
-    private int lampTemp(int kelvin) {
-        return min(max(MIN_TEMP, kelvin), MAX_TEMP);
-    }
-
     @Override
-    public LampFBle power(boolean on) {
-        selectScene(on ?
-                LukeRoberts.LampF.Scene.DEFAULT_SCENE :
-                LukeRoberts.LampF.Scene.SHUTDOWN_SCENE
-        );
+    public LampFBle setScene(byte sceneId) {
+        sendCommandToExternalApi(LukeRoberts.LampF.Command.SELECT_SCENE, sceneId);
+        invalidateCacheFromImmediateLight();
         return this;
     }
 
@@ -166,33 +151,6 @@ public class LampFBle extends AbstractLampBase {
                 round(hsb[0] * 65_535f), (byte) round(hsb[1] * 255f), (byte) round(hsb[2] * 255f), null,
                 null, null);
         return this;
-    }
-
-    public void pingV1() {
-        sendCommandToExternalApi(LukeRoberts.LampF.Command.PING_V1);
-    }
-
-    public void pingV2() {
-        sendCommandToExternalApi(LukeRoberts.LampF.Command.PING_V2);
-    }
-
-    public void setTopTemperature(int kelvin) {
-        int k = lampTemp(kelvin);
-        immediateLight(0,
-                null, (byte) 0, null, k,
-                null, null);
-    }
-
-    /**
-     * Invalidate cached values from the command {@link #immediateLight(int, Integer, Byte, Byte, Integer, Integer, Byte)}.
-     */
-    private void invalidateCacheFromImmediateLight() {
-        this._sat = null;
-        this._bri = null;
-        this._mbri = null;
-        this._hue = null;
-        this._temp = null;
-        this._mtemp = null;
     }
 
     /**
@@ -298,6 +256,44 @@ public class LampFBle extends AbstractLampBase {
 
         bytes.add(0, xx);
         sendCommandToExternalApi(LukeRoberts.LampF.Command.IMMEDIATE_LIGHT, bytes.toArray(new Byte[bytes.size()]));
+    }
+
+    /**
+     * Range the given kelvin to acceptable lamp temperature.
+     */
+    private int lampTemp(int kelvin) {
+        return min(max(MIN_TEMP, kelvin), MAX_TEMP);
+    }
+
+    public LampFBle adjustBrightness(byte percent) {
+        sendCommandToExternalApi(LukeRoberts.LampF.Command.RELATIVE_BRIGHTNESS, percent);
+        return this;
+    }
+
+    private void sendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte... parameters) {
+        BluetoothDelegate.retry(() -> {
+            trySendCommandToExternalApi(command, parameters);
+            return null;
+        }, 3, BluetoothException.class);
+    }
+
+    private void trySendCommandToExternalApi(LukeRoberts.LampF.Command command, Byte[] parameters) {
+        this.bluetoothDelegate.write(command.toByteArray(parameters));
+    }
+
+    public void pingV1() {
+        sendCommandToExternalApi(LukeRoberts.LampF.Command.PING_V1);
+    }
+
+    public void pingV2() {
+        sendCommandToExternalApi(LukeRoberts.LampF.Command.PING_V2);
+    }
+
+    public void setTopTemperature(int kelvin) {
+        int k = lampTemp(kelvin);
+        immediateLight(0,
+                null, (byte) 0, null, k,
+                null, null);
     }
 
     @Override

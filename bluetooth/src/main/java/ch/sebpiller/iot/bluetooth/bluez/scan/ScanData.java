@@ -61,10 +61,6 @@ public class ScanData {
         return date;
     }
 
-    public String getDateString() {
-        return new SimpleDateFormat(dateFormat).format(date);
-    }
-
     @Override
     public String toString() {
         return logPrefix +
@@ -72,5 +68,9 @@ public class ScanData {
                 " rssi: " + (rssi != RSSI_UNSET ? String.valueOf(rssi) : "n/a") +
                 " txPower: " + (txPower != TXPOWER_UNSET ? String.valueOf(txPower) : "n/a") +
                 " date: " + getDateString();
+    }
+
+    public String getDateString() {
+        return new SimpleDateFormat(dateFormat).format(date);
     }
 }

@@ -54,12 +54,6 @@ public class SmartLampInteractive {
         }
     }
 
-    private void cls() {
-        for (int i = 0; i < 50; i++) {
-            System.out.println();
-        }
-    }
-
     // return true when quit
     private boolean showMenu(String... args) {
         cls();
@@ -210,5 +204,11 @@ public class SmartLampInteractive {
         }
 
         return true;
+    }
+
+    private void cls() {
+        for (int i = 0; i < 50; i++) {
+            System.out.println();
+        }
     }
 }

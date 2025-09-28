@@ -50,6 +50,21 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
             .setInterceptors(httpSessionHandshakeInterceptor());
     }
 
+    private DefaultHandshakeHandler defaultHandshakeHandler() {
+        return new DefaultHandshakeHandler() {
+            @Override
+            protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
+                Principal principal = request.getPrincipal();
+                if (principal == null) {
+                    Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                    authorities.add(new SimpleGrantedAuthority(AuthoritiesConstants.ANONYMOUS));
+                    principal = new AnonymousAuthenticationToken("WebsocketConfiguration", "anonymous", authorities);
+                }
+                return principal;
+            }
+        };
+    }
+
     @Bean
     public HandshakeInterceptor httpSessionHandshakeInterceptor() {
         return new HandshakeInterceptor() {
@@ -66,21 +81,6 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
             @Override
             public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
 
-            }
-        };
-    }
-
-    private DefaultHandshakeHandler defaultHandshakeHandler() {
-        return new DefaultHandshakeHandler() {
-            @Override
-            protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-                Principal principal = request.getPrincipal();
-                if (principal == null) {
-                    Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                    authorities.add(new SimpleGrantedAuthority(AuthoritiesConstants.ANONYMOUS));
-                    principal = new AnonymousAuthenticationToken("WebsocketConfiguration", "anonymous", authorities);
-                }
-                return principal;
             }
         };
     }

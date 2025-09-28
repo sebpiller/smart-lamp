@@ -30,8 +30,8 @@ public class SmartLampSequence implements SmartLampFacade {
 
     private static final Logger LOG = LoggerFactory.getLogger(SmartLampSequence.class);
     protected final List<InvokeOnSmartLamp> callables = Collections.synchronizedList(new ArrayList<>());
-    private int playIndex = 0;
     private final SmartLampSequence parent;
+    private int playIndex = 0;
 
     public SmartLampSequence() {
         this(null);
@@ -45,12 +45,6 @@ public class SmartLampSequence implements SmartLampFacade {
         return new SmartLampSequence(null);
     }
 
-    @Override
-    public SmartLampSequence sleep(int millis) {
-        add(facade -> facade.sleep(millis));
-        return this;
-    }
-
     /**
      * Skip #count steps (beats) of the sequence currently playing.
      * <p>
@@ -62,6 +56,60 @@ public class SmartLampSequence implements SmartLampFacade {
                 nextCallable();
             }
         }
+    }
+
+    /**
+     * Get the next step defined in this sequence as an instance of {@link InvokeOnSmartLamp}. Restart
+     * at the beginning if the end is reached. Returns {@code null} if and only if this sequence is currently
+     * empty (0 step defined).
+     */
+    private InvokeOnSmartLamp nextCallable() {
+        InvokeOnSmartLamp invoke = null;
+
+        synchronized (callables) {
+            if (!callables.isEmpty()) {
+                invoke = callables.get(playIndex++);
+
+                if (playIndex >= callables.size()) {
+                    playIndex = 0;
+                }
+            }
+        }
+
+        return invoke;
+    }
+
+    public SmartLampSequence pause(int beats) {
+        SmartLampSequence seq = this;
+
+        for (int i = 0; i < beats; i++) {
+            seq = seq.pause();
+        }
+
+        return seq;
+    }
+
+    public SmartLampSequence pause() {
+        return start().end();
+    }
+
+    public SmartLampSequence end() {
+        // protect against multiple call to end()
+        return parent == null ? this : parent;
+    }
+
+    /**
+     * Invoke start to begin the recording of several actions to play sequentially during the same frame (beat).
+     */
+    public SmartLampSequence start() {
+        // protect against multiple call to start()
+        if (parent != null) {
+            return this;
+        }
+
+        final SmartLampSequence inner = new PlayAllAtOneTimeSequence(this);
+        add(inner::play);
+        return inner;
     }
 
     /**
@@ -86,35 +134,37 @@ public class SmartLampSequence implements SmartLampFacade {
         return this;
     }
 
-    /**
-     * Get the next step defined in this sequence as an instance of {@link InvokeOnSmartLamp}. Restart
-     * at the beginning if the end is reached. Returns {@code null} if and only if this sequence is currently
-     * empty (0 step defined).
-     */
-    private InvokeOnSmartLamp nextCallable() {
-        InvokeOnSmartLamp invoke = null;
-
-        synchronized (callables) {
-            if (!callables.isEmpty()) {
-                invoke = callables.get(playIndex++);
-
-                if (playIndex >= callables.size()) {
-                    playIndex = 0;
-                }
-            }
-        }
-
-        return invoke;
+    public SmartLampSequence flash(int times) {
+        return flash(times, (byte) 100);
     }
 
-    void add(InvokeOnSmartLamp c) {
-        callables.add(c);
+    public SmartLampSequence flash(int times, byte intensity) {
+        SmartLampSequence start = start();
+
+        for (int i = 0; i < times; i++) {
+            start = start
+                    .setBrightness(intensity).sleep(30)
+                    .setBrightness((byte) 0).sleep(30)
+            ;
+        }
+
+        return start;
+    }
+
+    @Override
+    public SmartLampSequence sleep(int millis) {
+        add(facade -> facade.sleep(millis));
+        return this;
     }
 
     @Override
     public SmartLampSequence power(boolean on) {
         add(facade -> facade.power(on));
         return this;
+    }
+
+    void add(InvokeOnSmartLamp c) {
+        callables.add(c);
     }
 
     @Override
@@ -187,56 +237,6 @@ public class SmartLampSequence implements SmartLampFacade {
     public SmartLampSequence setColor(int red, int green, int blue) {
         add(facade -> facade.setColor(red, green, blue));
         return this;
-    }
-
-    /**
-     * Invoke start to begin the recording of several actions to play sequentially during the same frame (beat).
-     */
-    public SmartLampSequence start() {
-        // protect against multiple call to start()
-        if (parent != null) {
-            return this;
-        }
-
-        final SmartLampSequence inner = new PlayAllAtOneTimeSequence(this);
-        add(inner::play);
-        return inner;
-    }
-
-    public SmartLampSequence end() {
-        // protect against multiple call to end()
-        return parent == null ? this : parent;
-    }
-
-    public SmartLampSequence pause() {
-        return start().end();
-    }
-
-    public SmartLampSequence pause(int beats) {
-        SmartLampSequence seq = this;
-
-        for (int i = 0; i < beats; i++) {
-            seq = seq.pause();
-        }
-
-        return seq;
-    }
-
-    public SmartLampSequence flash(int times) {
-        return flash(times, (byte) 100);
-    }
-
-    public SmartLampSequence flash(int times, byte intensity) {
-        SmartLampSequence start = start();
-
-        for (int i = 0; i < times; i++) {
-            start = start
-                    .setBrightness(intensity).sleep(30)
-                    .setBrightness((byte) 0).sleep(30)
-            ;
-        }
-
-        return start;
     }
 
     /**

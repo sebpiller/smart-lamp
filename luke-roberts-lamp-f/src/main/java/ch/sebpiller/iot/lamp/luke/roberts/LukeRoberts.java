@@ -23,16 +23,15 @@ public final class LukeRoberts {
     }
 
     public static class LampF {
-        private static final byte COMMAND_PREFIX = (byte) 0xA0;
-        private static final byte VERSION_1 = 0x01;
-        private static final byte VERSION_2 = 0x02;
-
         /**
          * @deprecated as per Luke Roberts' documentation, this characteristic is now deprecated. It was used to change
          * the scene displayed.
          */
         @Deprecated
         static final String UUID_CHARACTERISTICS_SELECT_SCENE_SERVICE = "44092844-0567-11e6-b862-0002a5d5c51b";
+        private static final byte COMMAND_PREFIX = (byte) 0xA0;
+        private static final byte VERSION_1 = 0x01;
+        private static final byte VERSION_2 = 0x02;
 
         public enum Command {
             PING_V1(COMMAND_PREFIX, VERSION_1, (byte) 0x00, bytes -> bytes.length == 0),
@@ -64,18 +63,6 @@ public final class LukeRoberts {
                 this.version = version;
                 this.opcode = opcode;
                 this.validateParams = validateParams;
-            }
-
-            private String bytesToHex(byte[] bytes) {
-                char[] hexChars = new char[bytes.length * 2];
-
-                for (int j = 0; j < bytes.length; j++) {
-                    int v = bytes[j] & 0xFF;
-                    hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-                    hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
-                }
-
-                return new String(hexChars);
             }
 
             /**
@@ -110,6 +97,18 @@ public final class LukeRoberts {
                 }
 
                 return bytes;
+            }
+
+            private String bytesToHex(byte[] bytes) {
+                char[] hexChars = new char[bytes.length * 2];
+
+                for (int j = 0; j < bytes.length; j++) {
+                    int v = bytes[j] & 0xFF;
+                    hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+                    hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+                }
+
+                return new String(hexChars);
             }
         }
 
@@ -253,6 +252,10 @@ public final class LukeRoberts {
                 return newConfig;
             }
 
+            public String getLocalBtAdapter() {
+                return localBtAdapter;
+            }
+
             public String getMac() {
                 return mac;
             }
@@ -261,20 +264,16 @@ public final class LukeRoberts {
                 this.mac = mac;
             }
 
-            public String getLocalBtAdapter() {
-                return localBtAdapter;
-            }
-
-            public void setLocalBtAdapter(String localBtAdapter) {
-                this.localBtAdapter = localBtAdapter;
-            }
-
             public CustomControlService getCustomControlService() {
                 return customControlService;
             }
 
             public void setCustomControlService(CustomControlService customControlService) {
                 this.customControlService = customControlService;
+            }
+
+            public void setLocalBtAdapter(String localBtAdapter) {
+                this.localBtAdapter = localBtAdapter;
             }
 
             @Override

@@ -4,7 +4,6 @@ import ch.sebpiller.iot.lamp.SmartLampFacade;
 import ch.sebpiller.iot.lamp.impl.LoggingLamp;
 import ch.sebpiller.metronome.Metronome;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +19,7 @@ public class SmarlLampSequenceTest {
 
         final SmartLampFacade lamp = new LoggingLamp();
 
-        Metronome metronome = new Metronome(()->120, (ticOrTac, bpm) -> playback.play(lamp));
+        Metronome metronome = new Metronome(() -> 120, (ticOrTac, bpm) -> playback.play(lamp));
 
         Thread.sleep(20_000);
         metronome.stop();
@@ -63,7 +62,7 @@ public class SmarlLampSequenceTest {
 
         final SmartLampFacade lamp = new LoggingLamp();
 
-        Metronome ticTac = new Metronome(() -> 120,(ticOrTac, bpm) -> playback.play(lamp));
+        Metronome ticTac = new Metronome(() -> 120, (ticOrTac, bpm) -> playback.play(lamp));
 
         Thread.sleep(20_000);
 
@@ -80,7 +79,7 @@ public class SmarlLampSequenceTest {
 
         SmartLampSequence smarlLampSequence = seq.buildMainLoopSequence();
 
-        Metronome ticTac = new Metronome(() -> 120,(ticOrTac, bpm) -> smarlLampSequence.play(lamp));
+        Metronome ticTac = new Metronome(() -> 120, (ticOrTac, bpm) -> smarlLampSequence.play(lamp));
 
         Thread.sleep(20_000);
         seq.getAfterSequence().play(lamp);

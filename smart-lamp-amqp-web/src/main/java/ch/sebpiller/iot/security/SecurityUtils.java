@@ -63,6 +63,11 @@ public final class SecurityUtils {
             getAuthorities(authentication).noneMatch(AuthoritiesConstants.ANONYMOUS::equals);
     }
 
+    private static Stream<String> getAuthorities(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority);
+    }
+
     /**
      * If the current user has a specific authority (security role).
      * <p>
@@ -75,11 +80,6 @@ public final class SecurityUtils {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication != null &&
             getAuthorities(authentication).anyMatch(authority::equals);
-    }
-
-    private static Stream<String> getAuthorities(Authentication authentication) {
-        return authentication.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority);
     }
 
 }

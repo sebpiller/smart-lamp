@@ -225,13 +225,13 @@ public class PhilipsHueBle extends AbstractLampBase {
 
     private final String adapter, mac;
 
+    public PhilipsHueBle(String mac) {
+        this("hci0", mac);
+    }
+
     public PhilipsHueBle(String adapter, String mac) {
         this.adapter = Objects.requireNonNull(adapter);
         this.mac = Objects.requireNonNull(mac);
-    }
-
-    public PhilipsHueBle(String mac) {
-        this("hci0", mac);
     }
 
     @Override
