@@ -40,7 +40,7 @@
     <!-- https://checkstyle.org/config_filters.html#SuppressionFilter -->
     <module name="SuppressionFilter">
         <property name="file" value="${org.checkstyle.sun.suppressionfilter.config}"
-                  default="checkstyle-suppressions.xml" />
+                  default="checkstyle-suppressions.xml"/>
         <property name="optional" value="true"/>
     </module>
 
@@ -110,7 +110,8 @@
         <!-- Checks for imports                              -->
         <!-- See https://checkstyle.org/config_imports.html -->
         <module name="AvoidStarImport">
-            <property name="excludes" value="java.io,java.net,java.util" /><!-- CUSTOM : allow some imports to be starred -->
+            <property name="excludes"
+                      value="java.io,java.net,java.util"/><!-- CUSTOM : allow some imports to be starred -->
         </module>
         <module name="IllegalImport"/> <!-- defaults to sun.* packages -->
         <module name="RedundantImport"/>
@@ -180,7 +181,7 @@
         <!-- https://checkstyle.org/config_filters.html#SuppressionXpathFilter -->
         <module name="SuppressionXpathFilter">
             <property name="file" value="${org.checkstyle.sun.suppressionxpathfilter.config}"
-                      default="checkstyle-xpath-suppressions.xml" />
+                      default="checkstyle-xpath-suppressions.xml"/>
             <property name="optional" value="true"/>
         </module>
 

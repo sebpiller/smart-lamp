@@ -40,11 +40,9 @@ public class ExceptionTranslator implements ProblemHandling, SecurityAdviceTrait
     private static final String MESSAGE_KEY = "message";
     private static final String PATH_KEY = "path";
     private static final String VIOLATIONS_KEY = "violations";
-
+    private final Environment env;
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
-
-    private final Environment env;
 
     public ExceptionTranslator(Environment env) {
         this.env = env;
@@ -105,13 +103,13 @@ public class ExceptionTranslator implements ProblemHandling, SecurityAdviceTrait
     @ExceptionHandler
     public ResponseEntity<Problem> handleEmailAlreadyUsedException(ch.sebpiller.iot.service.EmailAlreadyUsedException ex, NativeWebRequest request) {
         EmailAlreadyUsedException problem = new EmailAlreadyUsedException();
-        return create(problem, request, HeaderUtil.createFailureAlert(applicationName,  true, problem.getEntityName(), problem.getErrorKey(), problem.getMessage()));
+        return create(problem, request, HeaderUtil.createFailureAlert(applicationName, true, problem.getEntityName(), problem.getErrorKey(), problem.getMessage()));
     }
 
     @ExceptionHandler
     public ResponseEntity<Problem> handleUsernameAlreadyUsedException(ch.sebpiller.iot.service.UsernameAlreadyUsedException ex, NativeWebRequest request) {
         LoginAlreadyUsedException problem = new LoginAlreadyUsedException();
-        return create(problem, request, HeaderUtil.createFailureAlert(applicationName,  true, problem.getEntityName(), problem.getErrorKey(), problem.getMessage()));
+        return create(problem, request, HeaderUtil.createFailureAlert(applicationName, true, problem.getEntityName(), problem.getErrorKey(), problem.getMessage()));
     }
 
     @ExceptionHandler

@@ -47,7 +47,15 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
      */
     private int[] color = new int[]{0xff, 0xff, 0xff};
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Stop the executor used to schedule fading effects.
+     */
     @Override
+    public void close() throws Exception {
+        this.executor.shutdownNow();
+    }    @Override
     public Future<AbstractLampBase> fadeBrightnessFromTo(byte from, byte to, SmartLampFacade.FadeStyle fadeStyle) {
         Validate.inclusiveBetween(0, 100, from, "percentage not in range 0..100");
         Validate.inclusiveBetween(0, 100, to, "percentage not in range 0..100");
@@ -194,13 +202,5 @@ public abstract class AbstractLampBase implements SmartLampFacade, AutoCloseable
     }
 
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Stop the executor used to schedule fading effects.
-     */
-    @Override
-    public void close() throws Exception {
-        this.executor.shutdownNow();
-    }
+
 }

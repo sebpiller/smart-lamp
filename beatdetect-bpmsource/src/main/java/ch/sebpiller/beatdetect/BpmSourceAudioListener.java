@@ -36,6 +36,14 @@ public class BpmSourceAudioListener implements Tempo, AudioListener {
         initAudioInput(new Minim(new JSMinim(this)).getLineIn());
     }
 
+    private void initAudioInput(AudioInput audioInput) {
+        AudioFormat format = audioInput.getFormat();
+        this.beatDetect = new BeatDetect(format.getFrameSize(), format.getSampleRate());
+        this.beatDetect.detectMode(BeatDetect.SOUND_ENERGY/**//*FREQ_ENERGY*/);
+        this.beatDetect.setSensitivity(300);
+        audioInput.addListener(this);
+    }
+
     public BpmSourceAudioListener(AudioInput audioInput) {
         initAudioInput(audioInput);
     }
@@ -45,14 +53,6 @@ public class BpmSourceAudioListener implements Tempo, AudioListener {
             lineIn = new BpmSourceAudioListener();
         }
         return lineIn;
-    }
-
-    private void initAudioInput(AudioInput audioInput) {
-        AudioFormat format = audioInput.getFormat();
-        this.beatDetect = new BeatDetect(format.getFrameSize(), format.getSampleRate());
-        this.beatDetect.detectMode(BeatDetect.SOUND_ENERGY/**//*FREQ_ENERGY*/);
-        this.beatDetect.setSensitivity(300);
-        audioInput.addListener(this);
     }
 
     @Override
@@ -97,6 +97,6 @@ public class BpmSourceAudioListener implements Tempo, AudioListener {
 
     @Override
     public Number get() {
-            return this.average;
-        }
+        return this.average;
+    }
 }

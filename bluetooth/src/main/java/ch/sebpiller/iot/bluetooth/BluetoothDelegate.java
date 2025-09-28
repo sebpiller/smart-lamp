@@ -14,11 +14,6 @@ import java.util.concurrent.Callable;
 public interface BluetoothDelegate extends AutoCloseable {
     Logger _LOG = LoggerFactory.getLogger(BluetoothDelegate.class);
 
-    @Override
-    default void close() throws Exception {
-        // no-op by default. Override if needed.
-    }
-
     /**
      * Run a callable function a few times until it succeed, or until it has run #maxRetries times. If the call didn't
      * success, it either throws the exception (wraps it in a {@link RuntimeException} if needed) (if it is not in the
@@ -61,6 +56,11 @@ public interface BluetoothDelegate extends AutoCloseable {
         throw lastException instanceof RuntimeException ?
                 ((RuntimeException) lastException) :
                 new RuntimeException(lastException);
+    }
+
+    @Override
+    default void close() throws Exception {
+        // no-op by default. Override if needed.
     }
 
     /**

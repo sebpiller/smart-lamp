@@ -23,28 +23,10 @@ public class Foo implements Serializable {
     @Column(name = "name")
     private String name;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public Foo name(String name) {
         this.name = name;
         return this;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
     public boolean equals(Object o) {
@@ -69,5 +51,23 @@ public class Foo implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             "}";
+    }
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here
+    public Long getId() {
+        return id;
+    }
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

@@ -18,12 +18,12 @@ class ArchTest {
 
         noClasses()
             .that()
-                .resideInAnyPackage("ch.sebpiller.iot.service..")
+            .resideInAnyPackage("ch.sebpiller.iot.service..")
             .or()
-                .resideInAnyPackage("ch.sebpiller.iot.repository..")
+            .resideInAnyPackage("ch.sebpiller.iot.repository..")
             .should().dependOnClassesThat()
-                .resideInAnyPackage("..ch.sebpiller.iot.web..")
-        .because("Services and repositories should not depend on web layer")
-        .check(importedClasses);
+            .resideInAnyPackage("..ch.sebpiller.iot.web..")
+            .because("Services and repositories should not depend on web layer")
+            .check(importedClasses);
     }
 }

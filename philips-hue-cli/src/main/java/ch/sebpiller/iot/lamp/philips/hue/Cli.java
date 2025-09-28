@@ -167,82 +167,6 @@ public class Cli implements Callable<Integer> {
         System.exit(exitCode);
     }
 
-    private String toAsciiArt(String text) {
-        String url = format("http://artii.herokuapp.com/make?text=%s&font=%s",
-                text.replaceAll("\\s", "+"), "standard");
-
-        String asciiArt;
-
-        try (Scanner s = new Scanner(new URL(url).openStream())) {
-            asciiArt = s.useDelimiter("\\A").next();
-        } catch (Exception e) {
-            asciiArt = text;
-        }
-
-        return asciiArt;
-    }
-
-    private void playScriptOnLamp(SmartLampScript script, SmartLampFacade lamp) {
-        try {
-            script.getBeforeSequence().play(lamp);
-            final SmartLampSequence loop = script.buildMainLoopSequence();
-
-            // if we have a main loop, play it.
-            if (!SmartLampSequence.NOOP.equals(loop)) {
-                Tempo source;
-
-                if (this.cliParamTempo == null || this.cliParamTempo <= 0) {
-                    source = BpmSourceAudioListener.getBpmFromLineIn();
-                } else {
-                    int finalTempo = this.cliParamTempo;
-                    source = () -> finalTempo;
-                }
-
-                try (Metronome ticTac = new Metronome(source, (ticOrTac, b) -> loop.play(lamp))) {
-                    if (this.cliParamDuration > 0) {
-                        try {
-                            Thread.sleep(this.cliParamDuration * 1_000);
-                        } catch (InterruptedException e) {
-                            // ignore
-                        }
-                    } else {
-                        ticTac.waitTermination();
-                    }
-                }
-            }
-        } finally {
-            script.getAfterSequence().play(lamp);
-        }
-    }
-
-    private PhilipsHueBle buildPhilipsHueLampFromSettings() {
-        // load config overrides from file if defined
-//        if (cliParamConfig != null) {
-//            LukeRoberts.LampF.Config c;
-//            try {
-//                c = LukeRoberts.LampF.Config.loadFromStream(new FileInputStream(cliParamConfig));
-//            } catch (FileNotFoundException e) {
-//                throw new IllegalArgumentException("file does not exist " + cliParamConfig, e);
-//            }
-//
-//            lampFConfig = lampFConfig.merge(c);
-//        }
-
-        // load cli flags overrides
-//        LukeRoberts.LampF.Config c = new LukeRoberts.LampF.Config();
-//
-//        if (cliParamAdapter != null) {
-//            c.setLocalBtAdapter(cliParamAdapter);
-//        }
-//        if (cliParamMac != null) {
-//            c.setMac(cliParamMac);
-//        }
-//        lampFConfig = lampFConfig.merge(c);
-        // -----
-
-        return new PhilipsHueBle(this.cliParamAdapter, this.cliParamMac);
-    }
-
     @Override
     public Integer call() {
         // Hello world !
@@ -293,6 +217,21 @@ public class Cli implements Callable<Integer> {
         }
     }
 
+    private String toAsciiArt(String text) {
+        String url = format("http://artii.herokuapp.com/make?text=%s&font=%s",
+                text.replaceAll("\\s", "+"), "standard");
+
+        String asciiArt;
+
+        try (Scanner s = new Scanner(new URL(url).openStream())) {
+            asciiArt = s.useDelimiter("\\A").next();
+        } catch (Exception e) {
+            asciiArt = text;
+        }
+
+        return asciiArt;
+    }
+
     private void validateThis() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
@@ -312,6 +251,67 @@ public class Cli implements Callable<Integer> {
 
             LOG.error("invoked command was invalid: {}", s);
             throw new IllegalArgumentException("invalid configuration: " + s);
+        }
+    }
+
+    private PhilipsHueBle buildPhilipsHueLampFromSettings() {
+        // load config overrides from file if defined
+//        if (cliParamConfig != null) {
+//            LukeRoberts.LampF.Config c;
+//            try {
+//                c = LukeRoberts.LampF.Config.loadFromStream(new FileInputStream(cliParamConfig));
+//            } catch (FileNotFoundException e) {
+//                throw new IllegalArgumentException("file does not exist " + cliParamConfig, e);
+//            }
+//
+//            lampFConfig = lampFConfig.merge(c);
+//        }
+
+        // load cli flags overrides
+//        LukeRoberts.LampF.Config c = new LukeRoberts.LampF.Config();
+//
+//        if (cliParamAdapter != null) {
+//            c.setLocalBtAdapter(cliParamAdapter);
+//        }
+//        if (cliParamMac != null) {
+//            c.setMac(cliParamMac);
+//        }
+//        lampFConfig = lampFConfig.merge(c);
+        // -----
+
+        return new PhilipsHueBle(this.cliParamAdapter, this.cliParamMac);
+    }
+
+    private void playScriptOnLamp(SmartLampScript script, SmartLampFacade lamp) {
+        try {
+            script.getBeforeSequence().play(lamp);
+            final SmartLampSequence loop = script.buildMainLoopSequence();
+
+            // if we have a main loop, play it.
+            if (!SmartLampSequence.NOOP.equals(loop)) {
+                Tempo source;
+
+                if (this.cliParamTempo == null || this.cliParamTempo <= 0) {
+                    source = BpmSourceAudioListener.getBpmFromLineIn();
+                } else {
+                    int finalTempo = this.cliParamTempo;
+                    source = () -> finalTempo;
+                }
+
+                try (Metronome ticTac = new Metronome(source, (ticOrTac, b) -> loop.play(lamp))) {
+                    if (this.cliParamDuration > 0) {
+                        try {
+                            Thread.sleep(this.cliParamDuration * 1_000);
+                        } catch (InterruptedException e) {
+                            // ignore
+                        }
+                    } else {
+                        ticTac.waitTermination();
+                    }
+                }
+            }
+        } finally {
+            script.getAfterSequence().play(lamp);
         }
     }
 

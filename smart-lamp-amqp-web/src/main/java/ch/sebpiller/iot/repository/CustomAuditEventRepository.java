@@ -22,13 +22,11 @@ import java.util.Map;
 @Repository
 public class CustomAuditEventRepository implements AuditEventRepository {
 
-    private static final String AUTHORIZATION_FAILURE = "AUTHORIZATION_FAILURE";
-
     /**
      * Should be the same as in Liquibase migration.
      */
     protected static final int EVENT_DATA_COLUMN_MAX_LENGTH = 255;
-
+    private static final String AUTHORIZATION_FAILURE = "AUTHORIZATION_FAILURE";
     private final PersistenceAuditEventRepository persistenceAuditEventRepository;
 
     private final AuditEventConverter auditEventConverter;
@@ -36,7 +34,7 @@ public class CustomAuditEventRepository implements AuditEventRepository {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     public CustomAuditEventRepository(PersistenceAuditEventRepository persistenceAuditEventRepository,
-            AuditEventConverter auditEventConverter) {
+                                      AuditEventConverter auditEventConverter) {
 
         this.persistenceAuditEventRepository = persistenceAuditEventRepository;
         this.auditEventConverter = auditEventConverter;
@@ -79,7 +77,7 @@ public class CustomAuditEventRepository implements AuditEventRepository {
                     if (length > EVENT_DATA_COLUMN_MAX_LENGTH) {
                         value = value.substring(0, EVENT_DATA_COLUMN_MAX_LENGTH);
                         log.warn("Event data for {} too long ({}) has been truncated to {}. Consider increasing column width.",
-                                 entry.getKey(), length, EVENT_DATA_COLUMN_MAX_LENGTH);
+                            entry.getKey(), length, EVENT_DATA_COLUMN_MAX_LENGTH);
                     }
                 }
                 results.put(entry.getKey(), value);

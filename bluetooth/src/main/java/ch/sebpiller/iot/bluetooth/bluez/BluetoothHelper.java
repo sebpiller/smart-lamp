@@ -24,26 +24,7 @@ public class BluetoothHelper {
      */
     private static final int MAX_RETRY = 3;
 
-    public static DeviceManager discoverDeviceManager() throws BluetoothException {
-        DeviceManager man;
-
-        try {
-            try {
-                man = DeviceManager.getInstance();
-            } catch (IllegalStateException e) {
-                try {
-                    man = DeviceManager.createInstance(false);
-                } catch (DBusException | DBusExecutionException e1) {
-                    throw new BluetoothException("could not create bluetooth device manager: " + e1, e1);
-                }
-            }
-        } catch (UnsatisfiedLinkError ule) {
-            // most likely a native dependency problem. either bluez not installed
-            throw new BluetoothException("a link error occurred during bluetooth initialization. The reason is either " +
-                    "that bluez is not installed, or you are running this code on an unsupported platform.: " + ule, ule);
-        }
-
-        return Objects.requireNonNull(man, "no device manager can be acquired");
+    private BluetoothHelper() {
     }
 
     /**
@@ -79,6 +60,28 @@ public class BluetoothHelper {
         } catch (DBusExecutionException e) {
             throw new BluetoothException("Error during scan: " + e, e);
         }
+    }
+
+    public static DeviceManager discoverDeviceManager() throws BluetoothException {
+        DeviceManager man;
+
+        try {
+            try {
+                man = DeviceManager.getInstance();
+            } catch (IllegalStateException e) {
+                try {
+                    man = DeviceManager.createInstance(false);
+                } catch (DBusException | DBusExecutionException e1) {
+                    throw new BluetoothException("could not create bluetooth device manager: " + e1, e1);
+                }
+            }
+        } catch (UnsatisfiedLinkError ule) {
+            // most likely a native dependency problem. either bluez not installed
+            throw new BluetoothException("a link error occurred during bluetooth initialization. The reason is either " +
+                    "that bluez is not installed, or you are running this code on an unsupported platform.: " + ule, ule);
+        }
+
+        return Objects.requireNonNull(man, "no device manager can be acquired");
     }
 
     public static void reconnectIfNeeded(BluetoothGattCharacteristic charac) {
@@ -143,7 +146,4 @@ public class BluetoothHelper {
                 .findFirst()
                 .orElseThrow(() -> new BluetoothException("device " + remoteDeviceMac + " is not registered. Please use 'bluetoothctl' to trust/connect this device."));
     }
-
-
-    private BluetoothHelper() {}
 }

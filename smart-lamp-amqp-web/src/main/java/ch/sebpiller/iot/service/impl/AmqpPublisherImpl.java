@@ -17,12 +17,10 @@ import java.nio.charset.StandardCharsets;
  */
 @Service
 public class AmqpPublisherImpl implements AmqpPublisher {
-    private static final Logger LOG = LoggerFactory.getLogger(AmqpPublisherImpl.class);
-
     public static final String QUEUE = "lampf";
     public static final String EXCHANGE = "command";
     public static final String ROUTING_KEY = "push";
-
+    private static final Logger LOG = LoggerFactory.getLogger(AmqpPublisherImpl.class);
     private final ConnectionFactory factory;
 
     @Autowired

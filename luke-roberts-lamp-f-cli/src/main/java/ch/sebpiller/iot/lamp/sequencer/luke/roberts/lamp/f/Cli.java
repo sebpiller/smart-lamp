@@ -1,15 +1,12 @@
 package ch.sebpiller.iot.lamp.sequencer.luke.roberts.lamp.f;
 
 import ch.sebpiller.beatdetect.BpmSourceAudioListener;
-
-import ch.sebpiller.iot.lamp.luke.roberts.LampFBle;
-import ch.sebpiller.iot.lamp.cli.SmartLampInteractive;
-import ch.sebpiller.iot.lamp.luke.roberts.LukeRoberts;
 import ch.sebpiller.iot.lamp.SmartLampFacade;
-
-
-import ch.sebpiller.iot.lamp.sequencer.SmartLampSequence;
+import ch.sebpiller.iot.lamp.cli.SmartLampInteractive;
+import ch.sebpiller.iot.lamp.luke.roberts.LampFBle;
+import ch.sebpiller.iot.lamp.luke.roberts.LukeRoberts;
 import ch.sebpiller.iot.lamp.sequencer.SmartLampScript;
+import ch.sebpiller.iot.lamp.sequencer.SmartLampSequence;
 import ch.sebpiller.metronome.Metronome;
 import ch.sebpiller.metronome.Tempo;
 import com.rabbitmq.client.Channel;
@@ -61,41 +58,6 @@ import java.util.concurrent.Callable;
 public class Cli implements Callable<Integer> {
     public static final String ARTIFACT_ID = "luke-roberts-lamp-f-cli";
     public static final String QUEUE = "lampf";
-    private ConnectionFactory connectionFactory;
-
-    static class VersionProvider implements CommandLine.IVersionProvider {
-        @Override
-        public String[] getVersion() {
-            String implementationVersion = getClass().getPackage().getImplementationVersion();
-            if (implementationVersion != null) {
-                return new String[]{implementationVersion};
-            }
-
-            String name = "/" + ARTIFACT_ID + ".version";
-            InputStream versionsInfo = getClass().getResourceAsStream(name);
-            if (versionsInfo == null) {
-                System.err.println("unable to find version info file.");
-            } else {
-                try (InputStream is = versionsInfo) {
-                    Properties props = new Properties();
-                    props.load(is);
-
-                    assert props.getProperty("artifact").equals(ARTIFACT_ID);
-
-                    return new String[]{props.getProperty("version") + " (built on " + props.getProperty("timestamp") + ")"};
-                } catch (IOException e) {
-                    System.err.println("unable to load file " + name);
-                }
-            }
-
-            return new String[]{"unknown"};
-        }
-    }
-
-    private String getVersion() {
-        return new VersionProvider().getVersion()[0];
-    }
-
     /**
      * Flashes the lamp 1 time at each beat, 4 times
      */
@@ -121,7 +83,7 @@ public class Cli implements Callable<Integer> {
             ;
     private static final String EMBEDDED_PREFIX = "embedded:";
     private static final Logger LOG = LoggerFactory.getLogger(Cli.class);
-
+    private ConnectionFactory connectionFactory;
     @Option(
             names = {"-v", "--version"},
             description = "Print version information to the console and exit.",
@@ -130,7 +92,6 @@ public class Cli implements Callable<Integer> {
             type = Boolean.class
     )
     private Boolean cliParamVersion;
-
     @Option(
             names = {"-h", "--help"},
             description = "Print usage to the console and exit.",
@@ -139,7 +100,6 @@ public class Cli implements Callable<Integer> {
             type = Boolean.class
     )
     private Boolean cliParamHelp;
-
     @Option(
             order = 0,
             names = {"-c", "--config"},
@@ -148,7 +108,6 @@ public class Cli implements Callable<Integer> {
             type = String.class
     )
     private String cliParamConfig;
-
     @Option(order = 1,
             names = {"-a", "--adapter"},
             description = "The bluetooth adapter to use.",
@@ -158,7 +117,6 @@ public class Cli implements Callable<Integer> {
             type = String.class
     )
     private String cliParamAdapter;
-
     @Option(
             order = 2,
             names = {"-m", "--mac"},
@@ -170,7 +128,6 @@ public class Cli implements Callable<Integer> {
     )
     @Pattern(regexp = "^(([0-9A-F]{2}:){5}[0-9A-F]{2})?$")
     private String cliParamMac;
-
     @Option(
             order = 3,
             names = {"-s", "--script"},
@@ -180,7 +137,6 @@ public class Cli implements Callable<Integer> {
     )
     @Pattern(regexp = "^(([\\w]+\\\\.yaml)|(embedded:(boom|bim|temperature|brightness|alarm|scene|dust)))?$")
     private String cliParamScript;
-
     @Option(
             order = 4,
             names = {"-d", "--duration", "--timeout"},
@@ -190,7 +146,6 @@ public class Cli implements Callable<Integer> {
     )
     @PositiveOrZero
     private Long cliParamDuration;
-
     @Option(
             order = 5,
             names = {"-t", "--tempo", "--rhythm"},
@@ -200,7 +155,6 @@ public class Cli implements Callable<Integer> {
     )
     @Range(min = 20, max = 200)
     private Float cliParamTempo;
-
     @Option(
             order = 6,
             names = {"--amqp"},
@@ -238,6 +192,10 @@ public class Cli implements Callable<Integer> {
         System.exit(exitCode);
     }
 
+    private String getVersion() {
+        return new VersionProvider().getVersion()[0];
+    }
+
     private void playSequenceOnLamp(SmartLampSequence script, SmartLampFacade lamp) {
         script.play(lamp);
     }
@@ -259,25 +217,25 @@ public class Cli implements Callable<Integer> {
                 }
 
                 try (Metronome ticTac = new Metronome(source, new Metronome.MetronomeListener() {
-                            private int i = 0;
+                    private int i = 0;
 
-                            @Override
-                            public void missedBeats(int count, float bpm) {
-                                this.i += count;
-                                LOG.warn("missed beat {} (measure {})", this.i, (this.i / 4) + 1);
-                                loop.skip(count);
-                            }
+                    @Override
+                    public void missedBeats(int count, float bpm) {
+                        this.i += count;
+                        LOG.warn("missed beat {} (measure {})", this.i, (this.i / 4) + 1);
+                        loop.skip(count);
+                    }
 
-                            @Override
-                            public void beat(boolean ticOrTac, float bpm) {
-                                if (LOG.isDebugEnabled()) {
-                                    LOG.debug("beat {} (measure {})", this.i, (this.i / 4) + 1);
-                                }
+                    @Override
+                    public void beat(boolean ticOrTac, float bpm) {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("beat {} (measure {})", this.i, (this.i / 4) + 1);
+                        }
 
-                                loop.play(lamp);
-                                this.i++;
-                            }
-                        })) {
+                        loop.play(lamp);
+                        this.i++;
+                    }
+                })) {
                     if (this.cliParamDuration > 0) {
                         try {
                             Thread.sleep(this.cliParamDuration * 1_000);
@@ -461,5 +419,34 @@ public class Cli implements Callable<Integer> {
                 ", cliParamTempo=" + this.cliParamTempo +
                 ", cliParamAmqp=" + this.cliParamAmqp +
                 '}';
+    }
+
+    static class VersionProvider implements CommandLine.IVersionProvider {
+        @Override
+        public String[] getVersion() {
+            String implementationVersion = getClass().getPackage().getImplementationVersion();
+            if (implementationVersion != null) {
+                return new String[]{implementationVersion};
+            }
+
+            String name = "/" + ARTIFACT_ID + ".version";
+            InputStream versionsInfo = getClass().getResourceAsStream(name);
+            if (versionsInfo == null) {
+                System.err.println("unable to find version info file.");
+            } else {
+                try (InputStream is = versionsInfo) {
+                    Properties props = new Properties();
+                    props.load(is);
+
+                    assert props.getProperty("artifact").equals(ARTIFACT_ID);
+
+                    return new String[]{props.getProperty("version") + " (built on " + props.getProperty("timestamp") + ")"};
+                } catch (IOException e) {
+                    System.err.println("unable to load file " + name);
+                }
+            }
+
+            return new String[]{"unknown"};
+        }
     }
 }

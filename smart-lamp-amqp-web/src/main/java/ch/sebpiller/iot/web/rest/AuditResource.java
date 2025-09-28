@@ -47,7 +47,7 @@ public class AuditResource {
      * {@code GET  /audits} : get a page of {@link AuditEvent} between the {@code fromDate} and {@code toDate}.
      *
      * @param fromDate the start of the time period of {@link AuditEvent} to get.
-     * @param toDate the end of the time period of {@link AuditEvent} to get.
+     * @param toDate   the end of the time period of {@link AuditEvent} to get.
      * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of {@link AuditEvent} in body.
      */

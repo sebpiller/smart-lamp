@@ -50,67 +50,6 @@ public final class BluezDelegate implements BluetoothDelegate {
         this.characUuid = characUuid;
     }
 
-
-    private final BluetoothGattCharacteristic retrieveCharacteristic(String adapter, String mac, String serviceUuid, String characUuid, Map<DiscoveryFilter, Object> filter) throws BluetoothException {
-        try {
-            BluetoothGattService service = getBluetoothDevice(adapter, mac, filter).getGattServiceByUuid(serviceUuid);
-            if (service == null) {
-                throw new BluetoothException("unable to connect to service " + serviceUuid + ": maybe the device is out of range, or has not been connected?");
-            }
-            LOG.info("found service {} at UUID {}", service, serviceUuid);
-
-            BluetoothGattCharacteristic charac = service.getGattCharacteristicByUuid(characUuid);
-            if (charac == null) {
-                throw new BluetoothException("unable to connect to characteristic " + characUuid + ": maybe the device is out of range, or has not been connected?");
-            }
-            LOG.info("found characteristic {} at UUID {}/{}", charac, characUuid, serviceUuid);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("  > inner structure: {}", ToStringBuilder.reflectionToString(charac));
-            }
-
-            return charac;
-        } catch (DBusException | DBusExecutionException e) {
-            throw new BluetoothException(
-                    String.format("dbus error trying to retrieve characteristic %s/%s on device %s@%s: %s", serviceUuid, characUuid, mac, adapter, e),
-                    e
-            );
-        }
-    }
-
-    private BluetoothGattCharacteristic getExternalApi() {
-        if (this.externalApi == null) {
-            EnumMap<DiscoveryFilter, Object> filter = new EnumMap<>(DiscoveryFilter.class);
-            filter.put(DiscoveryFilter.Transport, DiscoveryTransport.LE);
-            filter.put(DiscoveryFilter.UUIDs, new String[]{
-                    this.serviceUuid.toString()
-            });
-
-            this.externalApi = retrieveCharacteristic(
-                    this.btAdapter,
-                    this.macAddr,
-                    this.serviceUuid.toString(),
-                    this.characUuid.toString(),
-                    filter
-            );
-        }
-
-        return this.externalApi;
-    }
-
-    private BluetoothDevice getBluetoothDevice(String adapter, String mac, Map<DiscoveryFilter, Object> filter) throws BluezInvalidArgumentsException, BluezNotReadyException, BluezNotSupportedException, BluezFailedException {
-        DeviceManager manager = BluetoothHelper.discoverDeviceManager();
-        if (filter != null && !filter.isEmpty()) {
-            manager.setScanFilter(filter);
-        }
-
-        this.device = BluetoothHelper.findDeviceOnAdapter(manager, adapter, mac);
-        if (this.device == null || !this.device.connect()) {
-            throw new BluetoothException("can not connect to device " + mac + "@" + adapter);
-        }
-
-        return this.device;
-    }
-
     @Override
     public void close() {
         if (this.device != null) {
@@ -139,5 +78,65 @@ public final class BluezDelegate implements BluetoothDelegate {
         } catch (DBusException e) {
             throw new BluetoothException(e);
         }
+    }
+
+    private BluetoothGattCharacteristic getExternalApi() {
+        if (this.externalApi == null) {
+            EnumMap<DiscoveryFilter, Object> filter = new EnumMap<>(DiscoveryFilter.class);
+            filter.put(DiscoveryFilter.Transport, DiscoveryTransport.LE);
+            filter.put(DiscoveryFilter.UUIDs, new String[]{
+                    this.serviceUuid.toString()
+            });
+
+            this.externalApi = retrieveCharacteristic(
+                    this.btAdapter,
+                    this.macAddr,
+                    this.serviceUuid.toString(),
+                    this.characUuid.toString(),
+                    filter
+            );
+        }
+
+        return this.externalApi;
+    }
+
+    private final BluetoothGattCharacteristic retrieveCharacteristic(String adapter, String mac, String serviceUuid, String characUuid, Map<DiscoveryFilter, Object> filter) throws BluetoothException {
+        try {
+            BluetoothGattService service = getBluetoothDevice(adapter, mac, filter).getGattServiceByUuid(serviceUuid);
+            if (service == null) {
+                throw new BluetoothException("unable to connect to service " + serviceUuid + ": maybe the device is out of range, or has not been connected?");
+            }
+            LOG.info("found service {} at UUID {}", service, serviceUuid);
+
+            BluetoothGattCharacteristic charac = service.getGattCharacteristicByUuid(characUuid);
+            if (charac == null) {
+                throw new BluetoothException("unable to connect to characteristic " + characUuid + ": maybe the device is out of range, or has not been connected?");
+            }
+            LOG.info("found characteristic {} at UUID {}/{}", charac, characUuid, serviceUuid);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("  > inner structure: {}", ToStringBuilder.reflectionToString(charac));
+            }
+
+            return charac;
+        } catch (DBusException | DBusExecutionException e) {
+            throw new BluetoothException(
+                    String.format("dbus error trying to retrieve characteristic %s/%s on device %s@%s: %s", serviceUuid, characUuid, mac, adapter, e),
+                    e
+            );
+        }
+    }
+
+    private BluetoothDevice getBluetoothDevice(String adapter, String mac, Map<DiscoveryFilter, Object> filter) throws BluezInvalidArgumentsException, BluezNotReadyException, BluezNotSupportedException, BluezFailedException {
+        DeviceManager manager = BluetoothHelper.discoverDeviceManager();
+        if (filter != null && !filter.isEmpty()) {
+            manager.setScanFilter(filter);
+        }
+
+        this.device = BluetoothHelper.findDeviceOnAdapter(manager, adapter, mac);
+        if (this.device == null || !this.device.connect()) {
+            throw new BluetoothException("can not connect to device " + mac + "@" + adapter);
+        }
+
+        return this.device;
     }
 }

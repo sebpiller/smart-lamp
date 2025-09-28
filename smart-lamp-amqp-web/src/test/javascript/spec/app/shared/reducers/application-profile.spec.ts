@@ -1,11 +1,11 @@
-import { REQUEST, SUCCESS } from 'app/shared/reducers/action-type.util';
+import {REQUEST, SUCCESS} from 'app/shared/reducers/action-type.util';
 import thunk from 'redux-thunk';
 import axios from 'axios';
 import sinon from 'sinon';
 import configureStore from 'redux-mock-store';
 import promiseMiddleware from 'redux-promise-middleware';
 
-import profile, { ACTION_TYPES, getProfile } from 'app/shared/reducers/application-profile';
+import profile, {ACTION_TYPES, getProfile} from 'app/shared/reducers/application-profile';
 
 describe('Profile reducer tests', () => {
   const initialState = {
@@ -27,7 +27,7 @@ describe('Profile reducer tests', () => {
         },
       };
 
-      expect(profile(undefined, { type: SUCCESS(ACTION_TYPES.GET_PROFILE), payload })).toEqual({
+      expect(profile(undefined, {type: SUCCESS(ACTION_TYPES.GET_PROFILE), payload})).toEqual({
         ribbonEnv: 'awesome ribbon stuff',
         inProduction: true,
         isSwaggerEnabled: false,
@@ -42,7 +42,7 @@ describe('Profile reducer tests', () => {
         },
       };
 
-      expect(profile(undefined, { type: SUCCESS(ACTION_TYPES.GET_PROFILE), payload })).toEqual({
+      expect(profile(undefined, {type: SUCCESS(ACTION_TYPES.GET_PROFILE), payload})).toEqual({
         ribbonEnv: 'awesome ribbon stuff',
         inProduction: false,
         isSwaggerEnabled: true,
@@ -53,7 +53,7 @@ describe('Profile reducer tests', () => {
   describe('Actions', () => {
     let store;
 
-    const resolvedObject = { value: 'whatever' };
+    const resolvedObject = {value: 'whatever'};
     beforeEach(() => {
       const mockStore = configureStore([thunk, promiseMiddleware]);
       store = mockStore({});
