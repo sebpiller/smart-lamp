@@ -2,7 +2,8 @@
 
 NB: Use a [es6 quick tutorial] to understand basic ES6 syntax.
 
-This application was generated using JHipster 6.10.5, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v6.10.5](https://www.jhipster.tech/documentation-archive/v6.10.5).
+This application was generated using JHipster 6.10.5, you can find documentation and help
+at [https://www.jhipster.tech/documentation-archive/v6.10.5](https://www.jhipster.tech/documentation-archive/v6.10.5).
 
 ## Development
 
@@ -32,16 +33,19 @@ npm start
 ```
 
 Npm is also used to manage CSS and JavaScript dependencies used in this application. You can upgrade dependencies by
-specifying a newer version in [package.json](package.json). You can also run `npm update` and `npm install` to manage dependencies.
+specifying a newer version in [package.json](package.json). You can also run `npm update` and `npm install` to manage
+dependencies.
 Add the `help` flag on any command to see how you can use it. For example, `npm help update`.
 
 The `npm run` command will list all of the scripts available to run for this project.
 
 ### PWA Support
 
-JHipster ships with PWA (Progressive Web App) support, and it's turned off by default. One of the main components of a PWA is a service worker.
+JHipster ships with PWA (Progressive Web App) support, and it's turned off by default. One of the main components of a
+PWA is a service worker.
 
-The service worker initialization code is commented out by default. To enable it, uncomment the following code in `src/main/webapp/index.html`:
+The service worker initialization code is commented out by default. To enable it, uncomment the following code in
+`src/main/webapp/index.html`:
 
 ```html
 <script>
@@ -53,7 +57,8 @@ The service worker initialization code is commented out by default. To enable it
 </script>
 ```
 
-Note: [Workbox](https://developers.google.com/web/tools/workbox/) powers JHipster's service worker. It dynamically generates the `service-worker.js` file.
+Note: [Workbox](https://developers.google.com/web/tools/workbox/) powers JHipster's service worker. It dynamically
+generates the `service-worker.js` file.
 
 ### Managing dependencies
 
@@ -63,13 +68,15 @@ For example, to add [Leaflet][] library as a runtime dependency of your applicat
 npm install --save --save-exact leaflet
 ```
 
-To benefit from TypeScript type definitions from [DefinitelyTyped][] repository in development, you would run following command:
+To benefit from TypeScript type definitions from [DefinitelyTyped][] repository in development, you would run following
+command:
 
 ```
 npm install --save-dev --save-exact @types/leaflet
 ```
 
-Then you would import the JS and CSS files specified in library's installation instructions so that [Webpack][] knows about them:
+Then you would import the JS and CSS files specified in library's installation instructions so that [Webpack][] knows
+about them:
 Note: There are still a few other things remaining to do for Leaflet that we won't detail here.
 
 For further instructions on how to develop with JHipster, have a look at [Using JHipster in development][].
@@ -87,7 +94,8 @@ To build the final jar and optimize the smartlampweb application for production,
 
 ```
 
-This will concatenate and minify the client CSS and JavaScript files. It will also modify `index.html` so it references these new files.
+This will concatenate and minify the client CSS and JavaScript files. It will also modify `index.html` so it references
+these new files.
 To ensure everything worked, run:
 
 ```
@@ -122,7 +130,8 @@ To launch your application's tests, run:
 
 ### Client tests
 
-Unit tests are run by [Jest][] and written with [Jasmine][]. They're located in [src/test/javascript/](src/test/javascript/) and can be run with:
+Unit tests are run by [Jest][] and written with [Jasmine][]. They're located
+in [src/test/javascript/](src/test/javascript/) and can be run with:
 
 ```
 npm test
@@ -138,7 +147,9 @@ Sonar is used to analyse code quality. You can start a local Sonar server (acces
 docker-compose -f src/main/docker/sonar.yml up -d
 ```
 
-You can run a Sonar analysis with using the [sonar-scanner](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner) or by using the maven plugin.
+You can run a Sonar analysis with using
+the [sonar-scanner](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner) or by using the maven
+plugin.
 
 Then, run a Sonar analysis:
 
@@ -146,7 +157,8 @@ Then, run a Sonar analysis:
 ./mvnw -Pprod clean verify sonar:sonar
 ```
 
-If you need to re-run the Sonar phase, please be sure to specify at least the `initialize` phase since Sonar properties are loaded from the sonar-project.properties file.
+If you need to re-run the Sonar phase, please be sure to specify at least the `initialize` phase since Sonar properties
+are loaded from the sonar-project.properties file.
 
 ```
 ./mvnw initialize sonar:sonar
@@ -156,7 +168,8 @@ For more information, refer to the [Code quality page][].
 
 ## Using Docker to simplify development (optional)
 
-You can use Docker to improve your JHipster development experience. A number of docker-compose configuration are available in the [src/main/docker](src/main/docker) folder to launch required third party services.
+You can use Docker to improve your JHipster development experience. A number of docker-compose configuration are
+available in the [src/main/docker](src/main/docker) folder to launch required third party services.
 
 For example, to start a mariadb database in a docker container, run:
 
@@ -183,28 +196,50 @@ Then run:
 docker-compose -f src/main/docker/app.yml up -d
 ```
 
-For more information refer to [Using Docker and Docker-Compose][], this page also contains information on the docker-compose sub-generator (`jhipster docker-compose`), which is able to generate docker configurations for one or several JHipster applications.
+For more information refer to [Using Docker and Docker-Compose][], this page also contains information on the
+docker-compose sub-generator (`jhipster docker-compose`), which is able to generate docker configurations for one or
+several JHipster applications.
 
 ## Continuous Integration (optional)
 
-To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration][] page for more information.
+To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate
+configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration][]
+page for more information.
 
 [jhipster homepage and latest documentation]: https://www.jhipster.tech
+
 [jhipster 6.10.5 archive]: https://www.jhipster.tech/documentation-archive/v6.10.5
+
 [using jhipster in development]: https://www.jhipster.tech/documentation-archive/v6.10.5/development/
+
 [using docker and docker-compose]: https://www.jhipster.tech/documentation-archive/v6.10.5/docker-compose
+
 [using jhipster in production]: https://www.jhipster.tech/documentation-archive/v6.10.5/production/
+
 [running tests page]: https://www.jhipster.tech/documentation-archive/v6.10.5/running-tests/
+
 [code quality page]: https://www.jhipster.tech/documentation-archive/v6.10.5/code-quality/
+
 [setting up continuous integration]: https://www.jhipster.tech/documentation-archive/v6.10.5/setting-up-ci/
+
 [node.js]: https://nodejs.org/
+
 [yarn]: https://yarnpkg.org/
+
 [webpack]: https://webpack.github.io/
+
 [angular cli]: https://cli.angular.io/
+
 [browsersync]: https://www.browsersync.io/
+
 [jest]: https://facebook.github.io/jest/
+
 [jasmine]: https://jasmine.github.io/2.0/introduction.html
+
 [protractor]: https://angular.github.io/protractor/
+
 [leaflet]: https://leafletjs.com/
+
 [definitelytyped]: https://definitelytyped.org/
+
 [es6 quick tutorial]: https://www.taniarascia.com/es6-syntax-and-feature-overview/

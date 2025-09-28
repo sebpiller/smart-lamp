@@ -1,12 +1,15 @@
-# Bluetooth 
+# Bluetooth
 
 An unified API to write bytes to a bluetooth device. At the moment, only bluez-dbus API is supported (Linux only!)
 
 ## Useful commands and references
+
 (just a collection of commands I should not forget ^^)
 
 ### bluetoothctl
-Usefull to scan for the MAC address of the device, trust it, pair it, etc.: 
+
+Usefull to scan for the MAC address of the device, trust it, pair it, etc.:
+
 ````
 > bluetoothctl
 scan on
@@ -16,7 +19,9 @@ quit
 ````
 
 ### bluetooth traffic
+
 Monitor the packets on the bluetooth bus:
+
 ````shell script
 sudo dbus-monitor --system "destination='org.bluez'" "sender='org.bluez'"
 ````
@@ -25,8 +30,10 @@ sudo dbus-monitor --system "destination='org.bluez'" "sender='org.bluez'"
 sudo btmon -w btsnoop.data -p error
 ````
 
-### busctl 
+### busctl
+
 Manually send data over the air to a device's service and characteristic:
+
 ```shell script
 busctl call org.bluez /org/bluez/hci0/dev_C4_AC_05_42_73_A4 org.bluez.Device1 Connect
 # brigthness 100%

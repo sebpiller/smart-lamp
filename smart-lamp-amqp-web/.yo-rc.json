@@ -30,14 +30,20 @@
     "clientTheme": "none",
     "clientThemeVariant": "",
     "creationTimestamp": 1611339402109,
-    "testFrameworks": ["cucumber"],
+    "testFrameworks": [
+      "cucumber"
+    ],
     "jhiPrefix": "jhi",
     "entitySuffix": "",
     "dtoSuffix": "DTO",
     "otherModules": [],
     "enableTranslation": true,
     "nativeLanguage": "fr",
-    "languages": ["fr", "en", "de"],
+    "languages": [
+      "fr",
+      "en",
+      "de"
+    ],
     "blueprints": [],
     "lastLiquibaseTimestamp": 1611341026000
   }

@@ -1,15 +1,16 @@
 # Smart Lamp Sequencer
 
 A tool to programmatically record a list of manipulations to do on a smart lamp.
- 
-That in rhythm with a metronome that dispatch the . 
+
+That in rhythm with a metronome that dispatch the .
 
 ## Write your own scripted sequence of changes
 
-You can script the sequence of actions to play with your lamp using a descriptor in yaml (examples are available in 
+You can script the sequence of actions to play with your lamp using a descriptor in yaml (examples are available in
 the folder ``./src/main/resources/embedded-scripts``):
 
 Just create a file "my-script.yaml" next to the sequencer's lamp implementation jar:
+
 ````yaml
 ## my-script.yaml
 
@@ -47,7 +48,8 @@ loop:
   - seq=double-flash;
 ````  
 
-Then: 
+Then:
+
 ````shell script
 java \ 
     -jar <lamp-cli>-*-jar-with-dependencies.jar \

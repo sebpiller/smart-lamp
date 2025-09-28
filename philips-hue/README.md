@@ -1,14 +1,16 @@
-# Philips Hue 
+# Philips Hue
 
 **NOT WORKING YET !!!! WORK IN PROGRESS, NOT ETA AVAILABLE NOW !!**
 
 A facade to a Philips Hue Smart Bulb. Only supports direct bluetooth connection.
 
-__wifi bridge not supported!__. 
+__wifi bridge not supported!__.
 
-## Warning 
+## Warning
 
-At the moment, with a RPi4 bluetooth chipset, the connection to the bulb fails almost 90% of the time with a trace like this:
+At the moment, with a RPi4 bluetooth chipset, the connection to the bulb fails almost 90% of the time with a trace like
+this:
+
 ````
 Caused by: org.freedesktop.dbus.exceptions.DBusExecutionException: Software caused connection abort
         at jdk.internal.reflect.GeneratedConstructorAccessor10.newInstance(Unknown Source)
@@ -29,6 +31,7 @@ The same error occurs at the same frequency using bash ``bluetoothctl > connect 
 When connecting to the bulb with a BCM bluetooth chip on Ubuntu 20.04/amd64, the problem vanish.
 
 Setup that can connect to Philips Hue:
+
 ```shell script
 dmesg | grep -i blue
 [    3.916966] Bluetooth: Core ver 2.22
